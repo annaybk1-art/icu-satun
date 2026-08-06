@@ -2927,7 +2927,7 @@ function renderTbl(){
       <td style="font-size:10.5px;white-space:nowrap">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td>${p['ประเภทผู้ป่วย']||'-'}</td>
       <td style="white-space:nowrap">${fmtDate(p['D/C (Date)'])||'-'}</td>
-      <td style="text-align:center">${(()=>{const los=parseInt(p['รวมวันนอน'])||0;if(los>0)return los;const dc=p['DC (Date)']||new Date().toISOString().split('T')[0];return daysBetween(p['Admit (Date)'],dc)||'-';})()}</td>
+      <td style="text-align:center">${(()=>{if(!p['Admit (Date)'])return '-';const dc=p['DC (Date)']||new Date().toISOString().split('T')[0];return daysBetween(p['Admit (Date)'],dc);})()}</td>
       <td>${dc?`<span class="${dcC}" style="font-size:10.5px">${dc}</span>`:'-'}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
@@ -2948,7 +2948,30 @@ function nextPg(){if(_curPg<Math.ceil(_filtPts.length/pgSz)){_curPg++;renderTbl(
 function fmtDate(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return String(v);}}
 function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function di(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?'':(d.toISOString().split('T')[0]);}catch(e){return'';}}
-function daysBetween(a,b){if(!a||!b)return 0;const d1=new Date(a);d1.setHours(0,0,0,0);const d2=new Date(b);d2.setHours(0,0,0,0);const diff=Math.round((d2-d1)/864e5);return Math.max(1,diff);}
+function parseDate(s){
+  if(!s) return null;
+  const str=String(s).trim();
+  // รองรับ dd/mm/yyyy หรือ yyyy-mm-dd
+  let d;
+  if(str.includes('/')){
+    const [dd,mm,yy]=str.split('/').map(Number);
+    const yyyy=yy>2400?yy-543:yy; // แปลง พ.ศ.→ค.ศ.
+    d=new Date(yyyy,mm-1,dd);
+  } else {
+    d=new Date(str);
+  }
+  if(isNaN(d)) return null;
+  d.setHours(0,0,0,0);
+  return d;
+}
+function daysBetween(a,b){
+  if(!a||!b) return 0;
+  const d1=parseDate(a);
+  const d2=parseDate(b);
+  if(!d1||!d2) return 0;
+  const diff=Math.round((d2-d1)/864e5);
+  return Math.max(1,diff);
+}
 
 // ============================================================
 // MODAL / FORM
