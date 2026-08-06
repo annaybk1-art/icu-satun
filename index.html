@@ -2948,7 +2948,7 @@ function nextPg(){if(_curPg<Math.ceil(_filtPts.length/pgSz)){_curPg++;renderTbl(
 function fmtDate(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return String(v);}}
 function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function di(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?'':(d.toISOString().split('T')[0]);}catch(e){return'';}}
-function daysBetween(a,b){if(!a||!b)return 0;const diff=Math.ceil((new Date(b)-new Date(a))/864e5);return Math.max(1,diff);}
+function daysBetween(a,b){if(!a||!b)return 0;const d1=new Date(a);d1.setHours(0,0,0,0);const d2=new Date(b);d2.setHours(0,0,0,0);const diff=Math.round((d2-d1)/864e5);return Math.max(1,diff);}
 
 // ============================================================
 // MODAL / FORM
