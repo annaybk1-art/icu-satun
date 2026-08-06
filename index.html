@@ -465,6 +465,38 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <span style="font-size:12px;color:#558b2f">ยังไม่มีบัญชี? </span>
       <span style="font-size:12px;color:#2e7d32;cursor:pointer;text-decoration:underline;font-weight:600" onclick="showRegister()">สมัครสมาชิก</span>
     </div>
+    <div style="text-align:center;margin-top:6px">
+      <span style="font-size:12px;color:#1565c0;cursor:pointer;text-decoration:underline" onclick="showChangePwd()">🔑 เปลี่ยนรหัสผ่าน</span>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PASSWORD PAGE -->
+<div id="changePwdPage" style="display:none;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#e8f5e9,#c8e6c9,#a5d6a7);padding:16px">
+  <div class="login-box">
+    <div class="login-icon"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
+    <div class="login-title">เปลี่ยนรหัสผ่าน</div>
+    <div id="cpwdErr" class="err-msg" style="display:none"></div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>Username</label>
+      <input type="text" id="cpwdUser" placeholder="Username..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>รหัสผ่านเดิม</label>
+      <input type="password" id="cpwdOld" placeholder="รหัสผ่านเดิม..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
+    </div>
+    <div class="fg" style="margin-bottom:10px">
+      <label>รหัสผ่านใหม่</label>
+      <input type="password" id="cpwdNew" placeholder="รหัสผ่านใหม่..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
+    </div>
+    <div class="fg" style="margin-bottom:16px">
+      <label>ยืนยันรหัสผ่านใหม่</label>
+      <input type="password" id="cpwdConfirm" placeholder="ยืนยันรหัสผ่านใหม่..." style="width:100%;padding:10px 14px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
+    </div>
+    <button class="btn-login" onclick="doChangePwd()">🔑 เปลี่ยนรหัสผ่าน</button>
+    <div style="text-align:center;margin-top:12px">
+      <span style="font-size:12px;color:#2e7d32;cursor:pointer;text-decoration:underline" onclick="showLogin()">← กลับหน้าเข้าสู่ระบบ</span>
+    </div>
   </div>
 </div>
 
@@ -1630,6 +1662,39 @@ function togglePw(inputId, btn){
   inp.type=show?'text':'password';
   btn.innerHTML=show?`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
 }
+function showChangePwd(){
+  ['configPage','loginPage','registerPage','appPage'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('changePwdPage').style.display='flex';
+  document.querySelector('.bottom-nav').style.display='none';
+  document.getElementById('cpwdErr').style.display='none';
+  document.getElementById('cpwdUser').value='';
+  document.getElementById('cpwdOld').value='';
+  document.getElementById('cpwdNew').value='';
+  document.getElementById('cpwdConfirm').value='';
+}
+
+async function doChangePwd(){
+  const username=document.getElementById('cpwdUser').value.trim();
+  const oldPwd=document.getElementById('cpwdOld').value;
+  const newPwd=document.getElementById('cpwdNew').value;
+  const confirm=document.getElementById('cpwdConfirm').value;
+  const errEl=document.getElementById('cpwdErr');
+
+  if(!username||!oldPwd||!newPwd||!confirm){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.style.display='block';return;}
+  if(newPwd!==confirm){errEl.textContent='รหัสผ่านใหม่ไม่ตรงกัน';errEl.style.display='block';return;}
+  if(newPwd.length<4){errEl.textContent='รหัสผ่านต้องมีอย่างน้อย 4 ตัว';errEl.style.display='block';return;}
+
+  showLoad('กำลังเปลี่ยนรหัสผ่าน...');
+  try{
+    await api('changePassword',{},{username,oldPassword:oldPwd,newPassword:newPwd});
+    toast('✅ เปลี่ยนรหัสผ่านสำเร็จ กรุณา Login ใหม่');
+    setTimeout(()=>showLogin(),1500);
+  }catch(e){
+    errEl.textContent=e.message||'ไม่สำเร็จ กรุณาตรวจสอบ username และรหัสผ่านเดิม';
+    errEl.style.display='block';
+  }finally{hideLoad();}
+}
+
 function showConfig(){document.getElementById('configPage').style.display='flex';document.getElementById('loginPage').style.display='none';document.getElementById('registerPage').style.display='none';document.getElementById('appPage').style.display='none';document.getElementById('apiUrlInput').value=API_URL;document.querySelector('.bottom-nav').style.display='none';}
 function showLogin(){document.getElementById('configPage').style.display='none';document.getElementById('loginPage').style.display='flex';document.getElementById('registerPage').style.display='none';document.getElementById('appPage').style.display='none';document.querySelector('.bottom-nav').style.display='none';}
 function showRegister(){document.getElementById('configPage').style.display='none';document.getElementById('loginPage').style.display='none';document.getElementById('registerPage').style.display='flex';document.getElementById('appPage').style.display='none';document.getElementById('regErr').style.display='none';document.querySelector('.bottom-nav').style.display='none';}
