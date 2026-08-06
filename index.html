@@ -2959,7 +2959,7 @@ function buildForm(p){
         ${fg('ผู้บันทึก Admit',sel('ผู้บันทึก Admit',o('recorderAdmit'),p['ผู้บันทึก Admit']||currentUser.fullname,'recorderAdmit'),'','',true)}
         ${fg('Unplanned ICU',sel('Unplanned ICU',['ใช่','ไม่ใช่'],p['Unplanned ICU']),'','',true)}
         ${fg('Re-admit ICU',sel('Re-admit ICU',['ใช่','ไม่ใช่'],p['Re-admit ICU']),'','',true)}
-        ${fg('แพทย์เจ้าของไข้',sel('แพทย์เจ้าของไข้',o('doctors'),p['แพทย์เจ้าของไข้'],'doctors'),'','',true)}
+        ${fg('แพทย์เจ้าของไข้',searchSel('แพทย์เจ้าของไข้',o('doctors'),p['แพทย์เจ้าของไข้']),'','',true)}
         ${fg('ประเภทผู้ป่วย',sel('ประเภทผู้ป่วย',o('patientType'),p['ประเภทผู้ป่วย'],'patientType'),'','',true)}
       </div></div>
       <div class="fsec"><div class="fsec-title">Dx <span class="req">*</span> <span style="font-size:10px;color:var(--gray400);font-weight:400">เลือกได้หลายตัว (อัปเดตได้ทุกเวร)</span></div>
@@ -3152,6 +3152,26 @@ function setupAutoCalc(){
 }
 
 // MSD functions
+function searchSel(name,opts,val=''){
+  const id='ss_'+name.replace(/\s/g,'_')+Math.random().toString(36).slice(2,6);
+  const items=(opts||[]).map(o=>`<div class="ss-item" onclick="ssPick('${id}','${esc(o)}')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6">${o}</div>`).join('');
+  return `<div class="msd-wrap" id="${id}" style="position:relative">
+    <div style="display:flex;align-items:center;border:1.5px solid var(--g200);border-radius:8px;overflow:hidden;background:white">
+      <input type="text" name="${name}" value="${esc(val)}" placeholder="ค้นหา..." autocomplete="off"
+        oninput="ssFilter('${id}',this.value)" onfocus="ssOpen('${id}')"
+        style="flex:1;padding:8px 12px;border:none;outline:none;font-size:13px">
+    </div>
+    <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid var(--g200);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:999;max-height:200px;overflow-y:auto">
+      <div id="${id}-items">${items}</div>
+    </div>
+  </div>`;
+}
+function ssOpen(id){document.getElementById(id+'-list').style.display='block';document.addEventListener('click',function h(e){if(!document.getElementById(id)?.contains(e.target)){document.getElementById(id+'-list').style.display='none';document.removeEventListener('click',h);}});}
+function ssFilter(id,q){const items=document.querySelectorAll(`#${id}-items .ss-item`);items.forEach(el=>{el.style.display=el.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
+function ssPick(id,val){const inp=document.querySelector(`#${id} input`);if(inp)inp.value=val;document.getElementById(id+'-list').style.display='none';}
+
+function searchSel_end(){}
+
 function msdToggle(id){const l=document.getElementById(id+'-list');if(!l)return;const o=l.classList.contains('open');document.querySelectorAll('.msd-list.open').forEach(x=>x.classList.remove('open'));if(!o){l.classList.add('open');l.querySelector('input[type=text]')?.focus();}}
 function msdClose(id){const l=document.getElementById(id+'-list');if(l)l.classList.remove('open');}
 function msdChange(id,fieldName){const items=document.querySelectorAll(`#${CSS.escape(id)}-items input[type=checkbox]:checked`);const vals=Array.from(items).map(cb=>cb.value);const h=document.getElementById(id+'-hidden'),d=document.getElementById(id+'-display');if(h)h.value=vals.join(', ');if(d)d.textContent=vals.length?vals.join(', '):'-- เลือกได้หลายตัว --';}
