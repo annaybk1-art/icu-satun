@@ -3000,9 +3000,6 @@ function buildForm(p){
         ${fg('หมายเหตุ',`<textarea name="หมายเหตุ">${p['หมายเหตุ']||''}</textarea>`,true)}
       </div></div>`,
     'tab-ic':`
-      <div class="fsec"><div class="fsec-title">💊 ยา High Alert Drug <span style="font-size:10px;color:var(--gray400);font-weight:400">เลือกได้หลายตัว</span></div>
-        ${multiSel('ยา HD',o('haOptions'),p['ยา HD'],'haOptions')}
-      </div>
       <div class="fsec"><div class="fsec-title">🌬️ การหายใจ</div><div class="fgrid">
         ${fg('รูปแบบการหายใจ',sel('การหายใจ',o('ventilatorMode'),p['การหายใจ'],'ventilatorMode'))}
         ${fg('ชนิด Ventilator',sel('Ventilator (Name)',o('ventilator'),p['Ventilator (Name)'],'ventilator'))}
@@ -3286,7 +3283,22 @@ async function savePatient(){
   const baseReq={'ชื่อ-สกุล':'ชื่อ-สกุล','HN':'HN','อายุ':'อายุ','สิทธิ':'สิทธิ์','Admit (Date)':'วันที่ Admit','Admit (Time)':'เวลา Admit','เตียง':'เตียง','การรับ':'ประเภทการรับ','ผู้บันทึก Admit':'ผู้บันทึก Admit','Unplanned ICU':'Unplanned ICU','Re-admit ICU':'Re-admit ICU','ประเภทผู้ป่วย':'ประเภทผู้ป่วย','Falling':'Falling score','ผ่าตัด':'ผ่าตัด','Diagnosis แรกรับ':'Diagnosis แรกรับ (Dx)','U/D':'โรคประจำตัว (U/D)'};
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
-  if(data['สถานะ']==='จำหน่ายแล้ว'){const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','Ward/Hospital':'Ward/Hospital','CPR':'CPR','Palliative':'Palliative'};const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);if(mDC.length){toast('🚪 D/C: '+mDC.join(', '),true);return;}}
+  if(data['สถานะ']==='จำหน่ายแล้ว'){
+    const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','Ward/Hospital':'Ward/Hospital','CPR':'CPR','Palliative':'Palliative'};
+    const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);
+    if(mDC.length){toast('🚪 D/C: '+mDC.join(', '),true);return;}
+    // บังคับกรอก End ของ IC ที่มี Start แต่ไม่มี End
+    const icCheck=[
+      ['Ventilator (Start)','Ventilator (End)','Ventilator End'],
+      ['A-Line (Start)','A-Line (End)','A-Line End'],
+      ['C-Line (Start)','C-Line (End.)','C-Line End'],
+      ['IV (Start)','IV (End)','IV End'],
+      ['F/C (Start)','F/C (END)','F/C End'],
+      ['ICD (Start)','ICD (End)','ICD End'],
+    ];
+    const missingEnd=icCheck.filter(([s,e])=>data[s]&&!data[e]).map(([,,label])=>label);
+    if(missingEnd.length){toast('⚠️ กรุณากรอกวันหยุด: '+missingEnd.join(', '),true);return;}
+  }
   if(data['Admit (Date)']){
     const dcDate=data['D/C (Date)']||new Date().toISOString().split('T')[0];
     data['รวมวันนอน']=daysBetween(data['Admit (Date)'],dcDate);
