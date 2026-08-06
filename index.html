@@ -2927,7 +2927,7 @@ function renderTbl(){
       <td style="font-size:10.5px;white-space:nowrap">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td>${p['ประเภทผู้ป่วย']||'-'}</td>
       <td style="white-space:nowrap">${fmtDate(p['D/C (Date)'])||'-'}</td>
-      <td style="text-align:center">${p['รวมวันนอน']||'-'}</td>
+      <td style="text-align:center">${(()=>{const los=parseInt(p['รวมวันนอน'])||0;if(los>0)return los;const dc=p['DC (Date)']||new Date().toISOString().split('T')[0];return daysBetween(p['Admit (Date)'],dc)||'-';})()}</td>
       <td>${dc?`<span class="${dcC}" style="font-size:10.5px">${dc}</span>`:'-'}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
