@@ -2948,7 +2948,7 @@ function buildForm(p){
         ${fg('AN',inp('AN','text',p['AN']))}
         ${fg('อายุ',inp('อายุ','number',p['อายุ']),'','',true)}
         ${fg('วันเกิด',inp('วันเกิด','date',p['วันเกิด']?di(p['วันเกิด']):''))}
-        ${fg('สิทธิ์การรักษา',sel('สิทธิ',o('rights'),p['สิทธิ'],'rights'),'','',true)}
+        ${fg('สิทธิ์การรักษา',searchSelAdd('สิทธิ',o('rights'),'rights',p['สิทธิ']),'','',true)}
       </div></div>
       <div class="fsec"><div class="fsec-title">ข้อมูลการรับ</div><div class="fgrid">
         ${fg('วันที่ Admit',inp('Admit (Date)','date',p['Admit (Date)']?di(p['Admit (Date)']):todayV),'','',true)}
@@ -2959,7 +2959,7 @@ function buildForm(p){
         ${fg('ผู้บันทึก Admit',sel('ผู้บันทึก Admit',o('recorderAdmit'),p['ผู้บันทึก Admit']||currentUser.fullname,'recorderAdmit'),'','',true)}
         ${fg('Unplanned ICU',sel('Unplanned ICU',['ใช่','ไม่ใช่'],p['Unplanned ICU']),'','',true)}
         ${fg('Re-admit ICU',sel('Re-admit ICU',['ใช่','ไม่ใช่'],p['Re-admit ICU']),'','',true)}
-        ${fg('แพทย์เจ้าของไข้',searchSel('แพทย์เจ้าของไข้',o('doctors'),p['แพทย์เจ้าของไข้']),'','',true)}
+        ${fg('แพทย์เจ้าของไข้',searchSelAdd('แพทย์เจ้าของไข้',o('doctors'),'doctors',p['แพทย์เจ้าของไข้']),'','',true)}
         ${fg('ประเภทผู้ป่วย',sel('ประเภทผู้ป่วย',o('patientType'),p['ประเภทผู้ป่วย'],'patientType'),'','',true)}
       </div></div>
       <div class="fsec"><div class="fsec-title">Dx <span class="req">*</span> <span style="font-size:10px;color:var(--gray400);font-weight:400">เลือกได้หลายตัว (อัปเดตได้ทุกเวร)</span></div>
@@ -3149,6 +3149,45 @@ function setupAutoCalc(){
 }
 
 // MSD functions
+function searchSelAdd(name,opts,optKey,val=''){
+  const id='ssa_'+name.replace(/\s/g,'_')+Math.random().toString(36).slice(2,6);
+  const items=(opts||[]).map(o=>`<div class="ss-item" onclick="ssPick('${id}','${esc(o)}')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6">${o}</div>`).join('');
+  return `<div style="display:flex;gap:6px;align-items:center">
+    <div class="msd-wrap" id="${id}" style="position:relative;flex:1">
+      <div style="display:flex;align-items:center;border:1.5px solid var(--g200);border-radius:8px;overflow:hidden;background:white">
+        <input type="text" name="${name}" value="${esc(val)}" placeholder="ค้นหา..." autocomplete="off"
+          oninput="ssFilter('${id}',this.value)" onfocus="ssOpen('${id}')"
+          style="flex:1;padding:8px 12px;border:none;outline:none;font-size:13px">
+      </div>
+      <div id="${id}-list" style="display:none;position:absolute;top:100%;left:0;right:0;background:white;border:1.5px solid var(--g200);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:999;max-height:200px;overflow-y:auto">
+        <div id="${id}-items">${items}</div>
+      </div>
+    </div>
+    <button type="button" class="btn btn-outline" style="padding:8px 10px;flex-shrink:0" onclick="ssAddNew('${id}','${optKey}')">＋</button>
+  </div>`;
+}
+async function ssAddNew(id,optKey){
+  const v=await showInlinePrompt('เพิ่มรายการใหม่:');
+  if(!v||!v.trim())return;
+  const inp=document.querySelector(`#${id} input`);
+  if(inp) inp.value=v.trim();
+  // เพิ่มใน opts และส่ง pending
+  if(!_opts[optKey]) _opts[optKey]=[];
+  if(!_opts[optKey].includes(v.trim())) _opts[optKey].push(v.trim());
+  // เพิ่มใน dropdown list
+  const items=document.getElementById(id+'-items');
+  if(items){
+    const el=document.createElement('div');
+    el.className='ss-item';
+    el.style.cssText='padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6';
+    el.textContent=v.trim();
+    el.onclick=()=>ssPick(id,v.trim());
+    items.appendChild(el);
+  }
+  try{await api('submitPendingOpt',{},{optKey,value:v.trim(),submittedBy:currentUser?.fullname||''});}catch(e){}
+  toast('✅ เพิ่ม "'+v.trim()+'" แล้ว รอ Admin อนุมัติครับ');
+}
+
 function searchSel(name,opts,val=''){
   const id='ss_'+name.replace(/\s/g,'_')+Math.random().toString(36).slice(2,6);
   const items=(opts||[]).map(o=>`<div class="ss-item" onclick="ssPick('${id}','${esc(o)}')" style="padding:8px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #f3f4f6">${o}</div>`).join('');
