@@ -4902,7 +4902,67 @@ async function loadIC(){
 async function loadMonthly(){
   const m=parseInt(document.getElementById('mMonth').value),y=parseInt(document.getElementById('mYear').value);
   showLoad('กำลังโหลด...');let pts=[];try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
-  document.getElementById('mContent').innerHTML=`<div class="dash-card-title">📊 สรุปประจำเดือน ${MONTHS_TH[m-1]} ${y}</div>${buildSumTable(getStats(pts),'',pts)}`;
+  const s=getStats(pts);
+  const daysInMonth=new Date(y,m,0).getDate();
+  const newAdmit=pts.filter(p=>p['การรับ']==='รับใหม่').length;
+  const transferIn=pts.filter(p=>p['การรับ']==='รับย้าย').length;
+  const carryIn=pts.filter(p=>p['การรับ']==='ยกมา').length;
+  const carryOut=pts.filter(p=>p['สถานะ']==='ค้างเดือน').length;
+  const totalAdmit=newAdmit+transferIn+carryIn;
+  const totalDC=s.discharged;
+  const moveWellTotal=s.moveWell+s.moveBed;
+  const avgPerDay=s.totalDays?(s.totalDays/daysInMonth).toFixed(1):0;
+  const occupancy=s.totalDays?(s.totalDays/(TOTAL_BEDS*daysInMonth)*100).toFixed(1):0;
+  const mortalityRate=totalDC?(s.deadCount/totalDC*100).toFixed(1):0;
+
+  const row=(label,val,bold=false)=>`<tr>
+    <td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;color:#374151">${label}</td>
+    <td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;text-align:center;font-weight:${bold?'700':'500'};color:${bold?'#2e7d32':'#111'}">${val}</td>
+  </tr>`;
+  const divider=`<tr><td colspan="2" style="padding:0;background:#e8f5e9;height:3px"></td></tr>`;
+
+  const sumTable=`<table style="width:100%;border-collapse:collapse;font-size:13px">
+    <thead><tr style="background:#2e7d32;color:white">
+      <th style="padding:9px 12px;text-align:left">รายการ</th>
+      <th style="padding:9px 12px;text-align:center;width:80px">จำนวน</th>
+    </tr></thead>
+    <tbody>
+      ${row('ยอดผู้ป่วย (คน)',totalAdmit,true)}
+      ${row('&nbsp;&nbsp;รับใหม่',newAdmit)}
+      ${row('&nbsp;&nbsp;รับย้าย',transferIn)}
+      ${row('&nbsp;&nbsp;ยกมา',carryIn)}
+      ${row('ค้างเดือน',carryOut)}
+      ${row('จำนวนวันนอน (วัน)',s.totalDays)}
+      ${divider}
+      ${row('รวมยอดรับผู้ป่วย',totalAdmit,true)}
+      ${row('ทุเลาย้าย',s.moveWell)}
+      ${row('รวมผู้ป่วยย้าย',moveWellTotal)}
+      ${row('ไม่สมัครใจอยู่',s.noConsent)}
+      ${row('ผู้ป่วยเสียชีวิต',s.deadCount)}
+      ${row('อัตราการเสียชีวิต (%)',mortalityRate+'%')}
+      ${row('Refer',s.referCount)}
+      ${row('Palliative D/C',s.palliativeDC)}
+      ${row('รวมผู้ป่วยจำหน่าย',totalDC,true)}
+      ${divider}
+      ${row('เฉลี่ยนอน รพ. วันละ (คน)',avgPerDay)}
+      ${row('เฉลี่ยนอน รพ. คนละ (วัน)',s.avgDaysPerPt)}
+      ${row('อัตราการครองเตียง (%)',occupancy+'%',true)}
+      ${divider}
+      ${row('MED',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
+      ${row('SURG',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
+      ${row('Neuro.Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
+      ${row('Ortho',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
+      ${row('Obs/Gynea',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')||(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
+      ${divider}
+      ${row('Unplanned ICU',s.unplannedCount)}
+      ${row('Re-admit ICU',s.readmitCount)}
+    </tbody>
+  </table>`;
+
+  document.getElementById('mContent').innerHTML=`
+    <div class="dash-card-title">📊 สรุปประจำเดือน ${MONTHS_TH[m-1]} ${y+543}</div>
+    <div class="dash-card" style="margin-bottom:14px;padding:0;overflow:hidden;border-radius:10px">${sumTable}</div>
+    ${buildSumTable(s,'',pts)}`;
 }
 
 async function loadYearly(){
