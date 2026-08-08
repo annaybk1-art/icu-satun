@@ -4928,32 +4928,42 @@ async function loadMonthly(){
     </tr></thead>
     <tbody>
       ${row('ยอดผู้ป่วย (คน)',totalAdmit,true)}
-      ${row('&nbsp;&nbsp;รับใหม่',newAdmit)}
-      ${row('&nbsp;&nbsp;รับย้าย',transferIn)}
-      ${row('&nbsp;&nbsp;ยกมา',carryIn)}
+      ${row('ยกมา',carryIn)}
       ${row('ค้างเดือน',carryOut)}
-      ${row('จำนวนวันนอน (วัน)',s.totalDays)}
-      ${divider}
+      ${row('จน.วันนอน รพ. (วัน)',s.totalDays)}
+      ${row('รับใหม่',newAdmit)}
+      ${row('รับย้าย',transferIn)}
       ${row('รวมยอดรับผู้ป่วย',totalAdmit,true)}
+      ${divider}
       ${row('ทุเลาย้าย',s.moveWell)}
-      ${row('รวมผู้ป่วยย้าย',moveWellTotal)}
+      ${row('ต้องการเตียงย้าย',s.moveBed)}
+      ${row('รวมผู้ป่วยย้าย Ward',moveWellTotal,true)}
+      ${row('ทุเลากลับบ้าน',pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'home')||String(p['เหตุผลจำหน่าย']||'').includes('กลับบ้าน')).length)}
+      ${row('Refer',s.referCount)}
+      ${row('Palliative D/C',s.palliativeDC)}
       ${row('ไม่สมัครใจอยู่',s.noConsent)}
       ${row('ผู้ป่วยเสียชีวิต',s.deadCount)}
       ${row('อัตราการเสียชีวิต (%)',mortalityRate+'%')}
-      ${row('Refer',s.referCount)}
-      ${row('Palliative D/C',s.palliativeDC)}
       ${row('รวมผู้ป่วยจำหน่าย',totalDC,true)}
+      ${divider}
+      ${row('Med',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
+      ${row('Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
+      ${row('Neuro.Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
+      ${row('Ortho',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
+      ${row('Obs',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')).length)}
+      ${row('Gynea',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
+      ${row('Maxillo',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('maxillo')).length)}
+      ${row('ENT',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='ENT').length)}
+      ${row('PED',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='PED').length)}
+      ${row('Plastic',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('plastic')).length)}
       ${divider}
       ${row('เฉลี่ยนอน รพ. วันละ (คน)',avgPerDay)}
       ${row('เฉลี่ยนอน รพ. คนละ (วัน)',s.avgDaysPerPt)}
       ${row('อัตราการครองเตียง (%)',occupancy+'%',true)}
       ${divider}
-      ${row('MED',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
-      ${row('SURG',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
-      ${row('Neuro.Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
-      ${row('Ortho',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
-      ${row('Obs/Gynea',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')||(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
-      ${divider}
+      ${row('Case ผ่าตัด',s.surgCount)}
+      ${row('CPR',s.cprCount)}
+      ${row('Palliative care',s.pallCount)}
       ${row('Unplanned ICU',s.unplannedCount)}
       ${row('Re-admit ICU',s.readmitCount)}
     </tbody>
@@ -4961,8 +4971,7 @@ async function loadMonthly(){
 
   document.getElementById('mContent').innerHTML=`
     <div class="dash-card-title">📊 สรุปประจำเดือน ${MONTHS_TH[m-1]} ${y+543}</div>
-    <div class="dash-card" style="margin-bottom:14px;padding:0;overflow:hidden;border-radius:10px">${sumTable}</div>
-    ${buildSumTable(s,'',pts)}`;
+    <div class="dash-card" style="margin-bottom:14px;padding:0;overflow:hidden;border-radius:10px">${sumTable}</div>`;
 }
 
 async function loadYearly(){
