@@ -1570,18 +1570,13 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="fg"><label>ชื่อผู้ใช้ *</label><input type="text" id="uUsername"></div>
         <div class="fg"><label>รหัสผ่าน *</label><input type="text" id="uPassword"></div>
         <div class="fg full"><label>ชื่อ-สกุล *</label><input type="text" id="uFullname"></div>
-        <div class="fg"><label>บทบาท</label><select id="uRole2"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
+        <div class="fg"><label>บทบาท</label><select id="uRole2" onchange="renderPermChecks(this.value)"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
         
-        <div class="fg full">
-          <label>🔒 สิทธิ์การมองเห็น</label>
-          <select id="uViewAccess">
-            <option value="full">เข้าถึงทุกหน้า (ปกติ)</option>
-            <option value="no_opts">จำกัด — ไม่เห็น ตั้งค่า Dropdown และตกแต่งสี</option>
-            <option value="no_admin">จำกัด — ไม่เห็นเมนูจัดการระบบ</option>
-            <option value="dashboard_bedmap">จำกัด — เห็นเฉพาะ Dashboard และแผนผังเตียง</option>
-          </select>
-          <div style="font-size:10.5px;color:var(--gray500);margin-top:4px">เลือก "จำกัด" หากต้องการให้บัญชีนี้เห็นแค่หน้า Dashboard</div>
+        <div class="fg full" id="permBox" style="display:none">
+          <label>🔒 จำกัดเมนู (ติ๊กเพื่อปิด)</label>
+          <div id="permChecks" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
         </div>
+        <input type="hidden" id="uViewAccess" value="full">
       </div>
     </div>
     <div class="modal-ft">
@@ -1947,9 +1942,11 @@ function showApp(user){
     });
   }
   showEditButtonIfAdmin();
-  if(user.viewAccess==='no_opts'){
-    ['nav-opts','nav-theme'].forEach(id=>{
-      const el=document.getElementById(id);
+  // apply hidden menus จาก checkbox
+  if(user.hiddenMenus){
+    const hidden=typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus||'[]'):user.hiddenMenus||[];
+    hidden.forEach(id=>{
+      const el=document.getElementById('nav-'+id);
       if(el) el.style.display='none';
     });
   }
@@ -1970,6 +1967,11 @@ function showApp(user){
     document.getElementById('nav-dashboard').classList.add('active');
     loadDash(); loadLog(); return;
   }
+  // apply hidden menus จาก checkbox
+  try{
+    const hidden=user.hiddenMenus?(typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus):user.hiddenMenus):[];
+    hidden.forEach(id=>{const el=document.getElementById('nav-'+id);if(el)el.style.display='none';});
+  }catch(e){}
   // โหลดหน้าเดิมที่เคยอยู่
   const lastSec=localStorage.getItem('icu_last_sec')||'patients';
   const lastNavEl=document.getElementById('nav-'+lastSec);
@@ -4208,7 +4210,55 @@ async function approveUser(id, action){
   } catch(e){ toast(e.message,true); }
   finally{ hideLoad(); }
 }
-function openAddUser(){if(!requireAdmin())return;editUserId=null;document.getElementById('umTitle').textContent='เพิ่มผู้ใช้ใหม่';['uUsername','uPassword','uFullname'].forEach(id=>document.getElementById(id).value='');document.getElementById('uRole2').value='nurse';document.getElementById('uViewAccess').value='full';document.getElementById('userModal').classList.add('open');}
+// เมนูที่แต่ละ role ปิดได้
+const PERM_MENUS={
+  nurse:[
+    {id:'patients',label:'รายชื่อผู้ป่วย'},
+    {id:'dashboard',label:'Dashboard'},
+    {id:'bedmap',label:'แผนผังเตียง'},
+    {id:'ic',label:'ข้อมูล IC'},
+    {id:'monthly',label:'รายเดือน'},
+    {id:'yearly',label:'รายปี'},
+  ],
+  doctor:[
+    {id:'dashboard',label:'Dashboard'},
+    {id:'bedmap',label:'แผนผังเตียง'},
+  ],
+  admin:[
+    {id:'users',label:'จัดการผู้ใช้'},
+    {id:'carryover',label:'ยกยอดเดือน'},
+    {id:'opts',label:'ตั้งค่า Dropdown'},
+    {id:'theme',label:'ตกแต่ง/ปรับสี'},
+  ],
+};
+
+function renderPermChecks(role,hiddenMenus=[]){
+  const box=document.getElementById('permBox');
+  const checks=document.getElementById('permChecks');
+  const menus=PERM_MENUS[role]||[];
+  if(!menus.length){box.style.display='none';return;}
+  box.style.display='';
+  checks.innerHTML=menus.map(m=>`
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;background:#f9fafb;padding:6px 10px;border-radius:8px;border:1px solid var(--g200);cursor:pointer">
+      <input type="checkbox" value="${m.id}" ${hiddenMenus.includes(m.id)?'checked':''} style="width:14px;height:14px">
+      ปิด ${m.label}
+    </label>`).join('');
+}
+
+function getHiddenMenus(){
+  const checks=document.querySelectorAll('#permChecks input[type=checkbox]');
+  return [...checks].filter(c=>c.checked).map(c=>c.value);
+}
+
+function openAddUser(){
+  if(!requireAdmin())return;
+  editUserId=null;
+  document.getElementById('umTitle').textContent='เพิ่มผู้ใช้ใหม่';
+  ['uUsername','uPassword','uFullname'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('uRole2').value='nurse';
+  renderPermChecks('nurse');
+  document.getElementById('userModal').classList.add('open');
+}
 function openEditUser(id){
   if(!requireAdmin())return;
   editUserId=id;
@@ -4220,16 +4270,17 @@ function openEditUser(id){
   document.getElementById('uPassword').value='';
   document.getElementById('uFullname').value=u.fullname||'';
   document.getElementById('uRole2').value=u.role||'nurse';
-  document.getElementById('uViewAccess').value=u.viewAccess||'full';
+  const hiddenMenus=u.hiddenMenus?JSON.parse(u.hiddenMenus):[];
+  renderPermChecks(u.role||'nurse',hiddenMenus);
   document.getElementById('userModal').classList.add('open');
 }
 function closeUserModal(){document.getElementById('userModal').classList.remove('open');}
 async function saveUser(){
   if(!requireAdmin())return;
-  const uname=document.getElementById('uUsername').value.trim(),pwd=document.getElementById('uPassword').value.trim(),fname=document.getElementById('uFullname').value.trim(),role=document.getElementById('uRole2').value,active='TRUE',viewAccess=document.getElementById('uViewAccess').value;
+  const uname=document.getElementById('uUsername').value.trim(),pwd=document.getElementById('uPassword').value.trim(),fname=document.getElementById('uFullname').value.trim(),role=document.getElementById('uRole2').value,active='TRUE',viewAccess='full',hiddenMenus=JSON.stringify(getHiddenMenus());
   if(!uname||!fname){toast('กรุณากรอกชื่อผู้ใช้และชื่อ-สกุล',true);return;}
   showLoad('กำลังบันทึก...');
-  try{const data={username:uname,fullname:fname,role,active,viewAccess};if(pwd)data.password=pwd;if(editUserId)await api('saveUser',{},{id:editUserId,data});else{if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}await api('saveUser',{},{data});}closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();}
+  try{const data={username:uname,fullname:fname,role,active,viewAccess,hiddenMenus};if(pwd)data.password=pwd;if(editUserId)await api('saveUser',{},{id:editUserId,data});else{if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}await api('saveUser',{},{data});}closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();}
   catch(e){toast(e.message,true);}finally{hideLoad();}
 }
 function confirmDelUser(id,name){document.getElementById('confMsg').textContent=`ต้องการลบผู้ใช้ "${name}" ใช่หรือไม่?`;document.getElementById('confBtn').onclick=async()=>{closeConf();showLoad('กำลังลบ...');try{await api('deleteUser',{},{id});toast('ลบสำเร็จ ✓');await renderUsers();}catch(e){toast(e.message,true);}finally{hideLoad();}};document.getElementById('confDlg').classList.add('open');}
