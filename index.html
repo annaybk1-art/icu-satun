@@ -1708,15 +1708,10 @@ function showRegister(){document.getElementById('configPage').style.display='non
 
 async function api(action,params={},body=null){
   if(!API_URL) throw new Error('ยังไม่ได้ตั้งค่า API URL');
-  // รวมทุกอย่างเป็น GET params เพราะ Apps Script redirect POST→doGet
-  const allParams={action,...params};
-  if(body){
-    Object.entries(body).forEach(([k,v])=>{
-      allParams[k]=typeof v==='object'?JSON.stringify(v):v;
-    });
-  }
-  const q=new URLSearchParams(allParams).toString();
-  const res=await fetch(API_URL+'?'+q,{method:'GET',redirect:'follow'});
+  const q=new URLSearchParams({action,...params}).toString();
+  const opts={method:'GET',redirect:'follow'};
+  if(body){opts.method='POST';opts.headers={'Content-Type':'text/plain'};opts.body=JSON.stringify({action,...body});}
+  const res=await fetch(API_URL+'?'+q,opts);
   const json=await res.json();
   if(!json.ok) throw new Error(json.error||'API Error');
   return json.data;
@@ -4322,12 +4317,8 @@ async function saveUser(){
   try{
     const data={username:uname,fullname:fname,role,active,viewAccess,hiddenMenus};
     if(pwd)data.password=pwd;
-    if(editUserId){
-      await api('saveUser',{id:editUserId,username:uname,fullname:fname,role,active,viewAccess,hiddenMenus,password:pwd||'__KEEP__'},{});
-    }else{
-      if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}
-      await api('saveUser',{username:uname,fullname:fname,role,active,viewAccess,hiddenMenus,password:pwd},{});
-    }
+    if(editUserId)await api('saveUser',{},{id:editUserId,data});
+    else{if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}await api('saveUser',{},{data});}
     closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();
   }
   catch(e){toast(e.message,true);}finally{hideLoad();}
