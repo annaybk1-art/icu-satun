@@ -4986,6 +4986,8 @@ async function loadMonthly(){
       ${row('C-Line (วัน)',icDays(pts,'C-Line (Start)','C-Line (End.)'))}
       ${row('F/C (ราย)',pts.filter(p=>p['F/C (Start)']).length)}
       ${row('F/C (วัน)',icDays(pts,'F/C (Start)','F/C (END)'))}
+      ${row('IV (ราย)',pts.filter(p=>p['IV (Start)']).length)}
+      ${row('IV (วัน)',icDays(pts,'IV (Start)','IV (End)'))}
       ${row('ICD (ราย)',pts.filter(p=>p['ICD (Start)']).length)}
       ${row('ICD (วัน)',icDays(pts,'ICD (Start)','ICD (End)'))}
       ${divider}
