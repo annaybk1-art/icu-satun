@@ -4206,8 +4206,21 @@ async function approveUser(id, action){
   } catch(e){ toast(e.message,true); }
   finally{ hideLoad(); }
 }
-function openAddUser(){if(!requireAdmin())return;editUserId=null;document.getElementById('umTitle').textContent='เพิ่มผู้ใช้ใหม่';['uUsername','uPassword','uFullname'].forEach(id=>document.getElementById(id).value='');document.getElementById('uRole2').value='nurse';document.getElementById('uActive').value='TRUE';document.getElementById('uViewAccess').value='full';document.getElementById('userModal').classList.add('open');}
-function openEditUser(id){if(!requireAdmin())return;editUserId=id;const users=JSON.parse(localStorage.getItem('icu_users_cache')||'[]');const u=users.find(x=>x.id===id);if(!u)return;document.getElementById('umTitle').textContent='แก้ไขผู้ใช้';document.getElementById('uUsername').value=u.username;document.getElementById('uPassword').value='';document.getElementById('uFullname').value=u.fullname;document.getElementById('uRole2').value=u.role;document.getElementById('uActive').value=(u.active==='TRUE'||u.active===true)?'TRUE':'FALSE';document.getElementById('uViewAccess').value=u.viewAccess==='dashboard_only'?'dashboard_only':'full';document.getElementById('userModal').classList.add('open');}
+function openAddUser(){if(!requireAdmin())return;editUserId=null;document.getElementById('umTitle').textContent='เพิ่มผู้ใช้ใหม่';['uUsername','uPassword','uFullname'].forEach(id=>document.getElementById(id).value='');document.getElementById('uRole2').value='nurse';document.getElementById('uViewAccess').value='full';document.getElementById('userModal').classList.add('open');}
+function openEditUser(id){
+  if(!requireAdmin())return;
+  editUserId=id;
+  const users=_allUsers||JSON.parse(localStorage.getItem('icu_users_cache')||'[]');
+  const u=users.find(x=>x.id===id);
+  if(!u){toast('ไม่พบข้อมูลผู้ใช้',true);return;}
+  document.getElementById('umTitle').textContent='แก้ไขผู้ใช้';
+  document.getElementById('uUsername').value=u.username||'';
+  document.getElementById('uPassword').value='';
+  document.getElementById('uFullname').value=u.fullname||'';
+  document.getElementById('uRole2').value=u.role||'nurse';
+  document.getElementById('uViewAccess').value=u.viewAccess||'full';
+  document.getElementById('userModal').classList.add('open');
+}
 function closeUserModal(){document.getElementById('userModal').classList.remove('open');}
 async function saveUser(){
   if(!requireAdmin())return;
