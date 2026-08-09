@@ -2948,6 +2948,16 @@ function nextPg(){if(_curPg<Math.ceil(_filtPts.length/pgSz)){_curPg++;renderTbl(
 function fmtDate(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('th-TH',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return String(v);}}
 function esc(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function di(v){if(!v)return'';try{const d=new Date(v);return isNaN(d)?'':(d.toISOString().split('T')[0]);}catch(e){return'';}}
+function icDays(pts,startKey,endKey){
+  const today=new Date().toISOString().split('T')[0];
+  return pts.reduce((sum,p)=>{
+    if(!p[startKey]) return sum;
+    const s2=parseDate(p[startKey]);
+    const e=parseDate(p[endKey]||today);
+    if(!s2||!e) return sum;
+    return sum+Math.max(1,Math.round((e-s2)/864e5));
+  },0);
+}
 function parseDate(s){
   if(!s) return null;
   const str=String(s).trim();
@@ -4966,6 +4976,25 @@ async function loadMonthly(){
       ${row('Palliative care',s.pallCount)}
       ${row('Unplanned ICU',s.unplannedCount)}
       ${row('Re-admit ICU',s.readmitCount)}
+      ${divider}
+      <tr><td colspan="2" style="padding:8px 12px;background:#1b5e20;color:white;font-weight:700;font-size:13px">🩺 Invasive Care (IC)</td></tr>
+      ${row('Ventilator (ราย)',pts.filter(p=>p['Ventilator (Start)']).length)}
+      ${row('Ventilator (วัน)',icDays(pts,'Ventilator (Start)','Ventilator (End)'))}
+      ${row('A-Line (ราย)',pts.filter(p=>p['A-Line (Start)']).length)}
+      ${row('A-Line (วัน)',icDays(pts,'A-Line (Start)','A-Line (End)'))}
+      ${row('C-Line (ราย)',pts.filter(p=>p['C-Line (Start)']).length)}
+      ${row('C-Line (วัน)',icDays(pts,'C-Line (Start)','C-Line (End.)'))}
+      ${row('F/C (ราย)',pts.filter(p=>p['F/C (Start)']).length)}
+      ${row('F/C (วัน)',icDays(pts,'F/C (Start)','F/C (END)'))}
+      ${row('ICD (ราย)',pts.filter(p=>p['ICD (Start)']).length)}
+      ${row('ICD (วัน)',icDays(pts,'ICD (Start)','ICD (End)'))}
+      ${divider}
+      <tr><td colspan="2" style="padding:8px 12px;background:#b71c1c;color:white;font-weight:700;font-size:13px">🦠 การติดเชื้อ</td></tr>
+      ${row('VAP',s.vapCount)}
+      ${row('CAUTI',s.cautiCount)}
+      ${row('CLABSI',s.clabsiCount)}
+      ${row('SSI',s.ssiCount)}
+      ${row('MDR',s.mdrCount)}
     </tbody>
   </table>`;
 
