@@ -1570,7 +1570,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="fg"><label>ชื่อผู้ใช้ *</label><input type="text" id="uUsername"></div>
         <div class="fg"><label>รหัสผ่าน *</label><input type="text" id="uPassword"></div>
         <div class="fg full"><label>ชื่อ-สกุล *</label><input type="text" id="uFullname"></div>
-        <div class="fg"><label>บทบาท</label><select id="uRole2" onchange="renderPermChecks(this.value)"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
+        <div class="fg"><label>บทบาท</label><select id="uRole2" onchange="msdClose('permMsdWrap');renderPermChecks(this.value)"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
         
         <div class="fg full" id="permBox">
           <label>🔒 จำกัดเมนู</label>
@@ -4291,10 +4291,13 @@ function openAddUser(){
   renderPermChecks('nurse');
   document.getElementById('userModal').classList.add('open');
 }
-function openEditUser(id){
+async function openEditUser(id){
   if(!requireAdmin())return;
   editUserId=id;
-  const users=_allUsers||JSON.parse(localStorage.getItem('icu_users_cache')||'[]');
+  let users=_allUsers||[];
+  if(!users.length){
+    try{users=await api('getUsers');_allUsers=users;}catch(e){}
+  }
   const u=users.find(x=>x.id===id);
   if(!u){toast('ไม่พบข้อมูลผู้ใช้',true);return;}
   document.getElementById('umTitle').textContent='แก้ไขผู้ใช้';
@@ -4302,7 +4305,7 @@ function openEditUser(id){
   document.getElementById('uPassword').value='';
   document.getElementById('uFullname').value=u.fullname||'';
   document.getElementById('uRole2').value=u.role||'nurse';
-  renderPermChecks(u.role||'nurse',u.viewAccess||'none');
+  renderPermChecks(u.role||'nurse',u.viewAccess||'');
   document.getElementById('userModal').classList.add('open');
 }
 function closeUserModal(){document.getElementById('userModal').classList.remove('open');}
