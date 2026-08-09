@@ -4212,7 +4212,7 @@ async function renderUsers(){
         <td style="font-weight:500">${u.username}</td>
         <td>${u.fullname}</td>
         <td><span style="padding:2px 8px;border-radius:9px;font-size:10.5px;font-weight:600;background:${roleBg};color:${roleColor}">${roleLabel}</span></td>
-        <td><span class="${u.active==='TRUE'||u.active==='true'?'f-green':'f-red'}">${u.active==='TRUE'||u.active==='true'?'ใช้งานได้':'ระงับ'}</span></td>
+        <td><span class="${String(u.active||'').toLowerCase()==='true'?'f-green':'f-red'}">${String(u.active||'').toLowerCase()==='true'?'ใช้งานได้':'ระงับ'}</span></td>
         <td><span style="padding:2px 8px;border-radius:9px;font-size:10.5px;font-weight:600;background:${isLim?'#fff3e0':'#e8f5e9'};color:${isLim?'#e65100':'#1b5e20'}">${isLim?'🔒 Dashboard เท่านั้น':'✓ เข้าถึงทุกหน้า'}</span></td>
         <td>${statusCell}</td>
         <td style="font-size:10.5px;color:var(--gray500)">${fmtDate(u.created)||'-'}</td>
