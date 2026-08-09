@@ -4211,7 +4211,7 @@ function openEditUser(id){if(!requireAdmin())return;editUserId=id;const users=JS
 function closeUserModal(){document.getElementById('userModal').classList.remove('open');}
 async function saveUser(){
   if(!requireAdmin())return;
-  const uname=document.getElementById('uUsername').value.trim(),pwd=document.getElementById('uPassword').value.trim(),fname=document.getElementById('uFullname').value.trim(),role=document.getElementById('uRole2').value,active=document.getElementById('uActive').value,viewAccess=document.getElementById('uViewAccess').value;
+  const uname=document.getElementById('uUsername').value.trim(),pwd=document.getElementById('uPassword').value.trim(),fname=document.getElementById('uFullname').value.trim(),role=document.getElementById('uRole2').value,active='TRUE',viewAccess=document.getElementById('uViewAccess').value;
   if(!uname||!fname){toast('กรุณากรอกชื่อผู้ใช้และชื่อ-สกุล',true);return;}
   showLoad('กำลังบันทึก...');
   try{const data={username:uname,fullname:fname,role,active,viewAccess};if(pwd)data.password=pwd;if(editUserId)await api('saveUser',{},{id:editUserId,data});else{if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}await api('saveUser',{},{data});}closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();}
