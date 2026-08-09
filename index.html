@@ -1573,10 +1573,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="fg"><label>บทบาท</label><select id="uRole2" onchange="renderPermChecks(this.value)"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
         
         <div class="fg full" id="permBox">
-          <label>🔒 จำกัดเมนู</label>
-          <select id="uViewAccess" style="width:100%">
-            <option value="">ไม่จำกัด</option>
-          </select>
+          <label>🔒 จำกัดเมนู (เลือกได้หลายอัน)</label>
+          <div id="permMsd" style="background:#f9fafb;border:1.5px solid var(--g200);border-radius:8px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+          <input type="hidden" id="uViewAccess" value="">
         </div>
       </div>
     </div>
@@ -1968,15 +1967,22 @@ function showApp(user){
     document.getElementById('nav-dashboard').classList.add('active');
     loadDash(); loadLog(); return;
   }
-  // apply hidden menus จาก dropdown
+  // apply hidden menus
   try{
-    const hidden=user.hiddenMenus?(typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus):user.hiddenMenus):[];
-    hidden.forEach(id=>{const el=document.getElementById('nav-'+id);if(el)el.style.display='none';});
+    const perms=(user.viewAccess||'').split(',').filter(Boolean);
+    perms.forEach(p=>{
+      if(p==='no_patients') document.getElementById('nav-patients').style.display='none';
+      if(p==='no_ic') document.getElementById('nav-ic').style.display='none';
+      if(p==='no_monthly') document.getElementById('nav-monthly').style.display='none';
+      if(p==='no_yearly') document.getElementById('nav-yearly').style.display='none';
+      if(p==='no_dashboard') document.getElementById('nav-dashboard').style.display='none';
+      if(p==='no_bedmap') document.getElementById('nav-bedmap').style.display='none';
+      if(p==='no_opts') document.getElementById('nav-opts').style.display='none';
+      if(p==='no_theme') document.getElementById('nav-theme').style.display='none';
+      if(p==='no_users') document.getElementById('nav-users').style.display='none';
+      if(p==='no_carryover') document.getElementById('nav-carryover').style.display='none';
+    });
   }catch(e){}
-  if(user.viewAccess==='no_patients') document.getElementById('nav-patients').style.display='none';
-  if(user.viewAccess==='no_ic') document.getElementById('nav-ic').style.display='none';
-  if(user.viewAccess==='no_monthly') document.getElementById('nav-monthly').style.display='none';
-  if(user.viewAccess==='no_yearly') document.getElementById('nav-yearly').style.display='none';
   // โหลดหน้าเดิมที่เคยอยู่
   const lastSec=localStorage.getItem('icu_last_sec')||'patients';
   const lastNavEl=document.getElementById('nav-'+lastSec);
@@ -4195,7 +4201,7 @@ async function renderUsers(){
         <td style="font-size:10.5px;color:var(--gray500)">${fmtDate(u.created)||'-'}</td>
         <td><span style="display:flex;gap:2px;flex-wrap:wrap">
           ${approveBtn}
-          <button class="btn btn-outline btn-sm" onclick="openEditUser('${u.id}')">✏️</button>
+          ${u.username.toLowerCase()==='admin'?'<span style="font-size:10px;color:#9ca3af">🔒</span>':`<button class="btn btn-outline btn-sm" onclick="openEditUser('${u.id}')">✏️</button>`}
           ${u.username.toLowerCase()==='admin'?'<span style="font-size:10px;color:#9ca3af">🔒</span>':`<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.id}','${esc(u.fullname)}')">🗑️</button>`}
         </span></td>
       </tr>`;
@@ -4215,30 +4221,40 @@ async function approveUser(id, action){
   } catch(e){ toast(e.message,true); }
   finally{ hideLoad(); }
 }
-// เมนูที่แต่ละ role ปิดได้
 const PERM_MENUS={
   nurse:[
-    {value:'none',label:'ไม่จำกัด'},
     {value:'no_patients',label:'ปิด รายชื่อผู้ป่วย'},
     {value:'no_ic',label:'ปิด ข้อมูล IC'},
     {value:'no_monthly',label:'ปิด รายเดือน'},
     {value:'no_yearly',label:'ปิด รายปี'},
-    {value:'dashboard_bedmap',label:'เห็นแค่ Dashboard และแผนผังเตียง'},
+    {value:'no_dashboard',label:'ปิด Dashboard'},
+    {value:'no_bedmap',label:'ปิด แผนผังเตียง'},
   ],
-  doctor:[
-    {value:'none',label:'ไม่จำกัด (Dashboard+เตียง)'},
-  ],
+  doctor:[],
   admin:[
-    {value:'none',label:'ไม่จำกัด'},
-    {value:'no_opts',label:'ปิด ตั้งค่า Dropdown และตกแต่งสี'},
-    {value:'no_admin',label:'ปิด เมนูจัดการระบบทั้งหมด'},
+    {value:'no_opts',label:'ปิด ตั้งค่า Dropdown'},
+    {value:'no_theme',label:'ปิด ตกแต่งสี'},
+    {value:'no_users',label:'ปิด จัดการผู้ใช้'},
+    {value:'no_carryover',label:'ปิด ยกยอดเดือน'},
   ],
 };
 
 function renderPermChecks(role,currentVal=''){
-  const sel=document.getElementById('uViewAccess');
-  const menus=PERM_MENUS[role]||[{value:'none',label:'ไม่จำกัด'}];
-  sel.innerHTML=menus.map(m=>`<option value="${m.value}" ${currentVal===m.value?'selected':''}>${m.label}</option>`).join('');
+  const msd=document.getElementById('permMsd');
+  const menus=PERM_MENUS[role]||[];
+  const selected=(currentVal||'').split(',').filter(Boolean);
+  if(!menus.length){msd.innerHTML='<span style="font-size:12px;color:#9ca3af">ไม่มีตัวเลือกสำหรับ role นี้</span>';return;}
+  msd.innerHTML=menus.map(m=>`
+    <label style="display:flex;align-items:center;gap:5px;font-size:12px;background:white;padding:5px 10px;border-radius:8px;border:1px solid var(--g200);cursor:pointer">
+      <input type="checkbox" value="${m.value}" ${selected.includes(m.value)?'checked':''} onchange="updatePermVal()" style="width:13px;height:13px">
+      ${m.label}
+    </label>`).join('');
+}
+
+function updatePermVal(){
+  const checks=document.querySelectorAll('#permMsd input[type=checkbox]');
+  const selected=[...checks].filter(c=>c.checked).map(c=>c.value);
+  document.getElementById('uViewAccess').value=selected.join(',');
 }
 
 function getHiddenMenus(){return [];}
