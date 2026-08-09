@@ -1570,7 +1570,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="fg"><label>ชื่อผู้ใช้ *</label><input type="text" id="uUsername"></div>
         <div class="fg"><label>รหัสผ่าน *</label><input type="text" id="uPassword"></div>
         <div class="fg full"><label>ชื่อ-สกุล *</label><input type="text" id="uFullname"></div>
-        <div class="fg"><label>บทบาท</label><select id="uRole2"><option value="nurse">พยาบาล</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
+        <div class="fg"><label>บทบาท</label><select id="uRole2"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
         
         <div class="fg full">
           <label>🔒 สิทธิ์การมองเห็น</label>
@@ -1935,7 +1935,7 @@ function showApp(user){
   const init=(user.fullname||'U').replace(/นาง(สาว)?|นาย|พญ\.|นพ\./g,'').trim().charAt(0)||'U';
   document.getElementById('uAv').textContent=init;
   document.getElementById('uName').textContent=user.fullname;
-  document.getElementById('uRole').textContent=user.role==='admin'?'👑 ผู้ดูแลระบบ':'👩‍⚕️ พยาบาล';
+  document.getElementById('uRole').textContent=user.role==='admin'?'👑 ผู้ดูแลระบบ':user.role==='doctor'?'👨‍⚕️ แพทย์':'👩‍⚕️ พยาบาล';
   if(user.role==='admin'){
     const adminNav=document.getElementById('adminNav');
     const adminMenuItems=document.getElementById('adminMenuItems');
@@ -1960,8 +1960,7 @@ function showApp(user){
       if(el) el.style.display='none';
     });
   }
-  if(user.viewAccess==='dashboard_bedmap'){
-    // เห็นแค่ Dashboard และแผนผังเตียง
+  if(user.role==='doctor'||user.viewAccess==='dashboard_bedmap'){
     document.getElementById('nav-patients').style.display='none';
     document.getElementById('nav-ic').style.display='none';
     document.getElementById('nav-monthly').style.display='none';
@@ -2119,6 +2118,7 @@ document.getElementById('inPass').addEventListener('keypress',e=>{if(e.key==='En
 // LOG
 // ============================================================
 let _adminUsernames=[];
+let _allUsers=[];
 
 async function loadLog(){
   const logBox=document.querySelector('.log-box');
@@ -4167,7 +4167,7 @@ async function renderUsers(){
       const isLim=u.viewAccess==='dashboard_bedmap';
       const status=u.status||'approved';
       const roleLabel=u.role==='admin'?'👑 Admin':u.role==='doctor'?'👨‍⚕️ แพทย์':'👩‍⚕️ พยาบาล';
-      const roleBg=u.role==='admin'?'#e8f5e9':'#dbeafe';
+      const roleBg=u.role==='admin'?'#e8f5e9':u.role==='doctor'?'#e3f2fd':'#dbeafe';
       const roleColor=u.role==='admin'?'#1b5e20':'#1e40af';
       const statusCell = status==='pending'
         ? `<span style="padding:2px 8px;border-radius:9px;font-size:10.5px;font-weight:600;background:#fff3e0;color:#e65100">⏳ รออนุมัติ</span>`
@@ -4189,7 +4189,7 @@ async function renderUsers(){
         <td><span style="display:flex;gap:2px;flex-wrap:wrap">
           ${approveBtn}
           <button class="btn btn-outline btn-sm" onclick="openEditUser('${u.id}')">✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.id}','${esc(u.fullname)}')">🗑️</button>
+          ${u.username.toLowerCase()==='admin'?'<span style="font-size:10px;color:#9ca3af">🔒</span>':`<button class="btn btn-danger btn-sm" onclick="confirmDelUser('${u.id}','${esc(u.fullname)}')">🗑️</button>`}
         </span></td>
       </tr>`;
     }).join('');
