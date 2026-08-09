@@ -4161,6 +4161,8 @@ async function renderUsers(){
   if(!requireAdmin())return;showLoad('กำลังโหลดผู้ใช้...');
   try{
     const users=await api('getUsers');
+    _allUsers=users;
+    localStorage.setItem('icu_users_cache',JSON.stringify(users));
     document.getElementById('userTbl').innerHTML=users.map(u=>{
       const isLim=u.viewAccess==='dashboard_bedmap';
       const status=u.status||'approved';
