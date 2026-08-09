@@ -1573,8 +1573,20 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="fg"><label>บทบาท</label><select id="uRole2" onchange="renderPermChecks(this.value)"><option value="nurse">พยาบาล</option><option value="doctor">แพทย์</option><option value="admin">ผู้ดูแลระบบ</option></select></div>
         
         <div class="fg full" id="permBox">
-          <label>🔒 จำกัดเมนู (เลือกได้หลายอัน)</label>
-          <div id="permMsd" style="background:#f9fafb;border:1.5px solid var(--g200);border-radius:8px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+          <label>🔒 จำกัดเมนู</label>
+          <div class="msd-wrap" id="permMsdWrap">
+            <div class="msd-btn" onclick="msdToggle('permMsdWrap')">
+              <span class="msd-display" id="permMsdDisplay">-- ไม่จำกัด --</span>
+              <span class="msd-arrow">▾</span>
+            </div>
+            <div class="msd-list" id="permMsdWrap-list">
+              <div class="msd-items" id="permMsd"></div>
+              <div class="msd-footer">
+                <button type="button" class="btn btn-outline btn-sm" onclick="clearPermMsd();event.stopPropagation()">ล้าง</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="msdClose('permMsdWrap');event.stopPropagation()">ตกลง</button>
+              </div>
+            </div>
+          </div>
           <input type="hidden" id="uViewAccess" value="">
         </div>
       </div>
@@ -4243,18 +4255,29 @@ function renderPermChecks(role,currentVal=''){
   const msd=document.getElementById('permMsd');
   const menus=PERM_MENUS[role]||[];
   const selected=(currentVal||'').split(',').filter(Boolean);
-  if(!menus.length){msd.innerHTML='<span style="font-size:12px;color:#9ca3af">ไม่มีตัวเลือกสำหรับ role นี้</span>';return;}
-  msd.innerHTML=menus.map(m=>`
-    <label style="display:flex;align-items:center;gap:5px;font-size:12px;background:white;padding:5px 10px;border-radius:8px;border:1px solid var(--g200);cursor:pointer">
-      <input type="checkbox" value="${m.value}" ${selected.includes(m.value)?'checked':''} onchange="updatePermVal()" style="width:13px;height:13px">
-      ${m.label}
-    </label>`).join('');
+  if(!menus.length){
+    msd.innerHTML='<div style="padding:8px;font-size:12px;color:#9ca3af">ไม่มีตัวเลือกสำหรับ role นี้</div>';
+    document.getElementById('permMsdDisplay').textContent='-- ไม่มีตัวเลือก --';
+    return;
+  }
+  msd.innerHTML=menus.map(m=>`<label class="msd-item"><input type="checkbox" value="${m.value}" ${selected.includes(m.value)?'checked':''} onchange="updatePermVal()"><span>${m.label}</span></label>`).join('');
+  updatePermVal();
 }
 
 function updatePermVal(){
   const checks=document.querySelectorAll('#permMsd input[type=checkbox]');
   const selected=[...checks].filter(c=>c.checked).map(c=>c.value);
   document.getElementById('uViewAccess').value=selected.join(',');
+  const labels=selected.map(v=>{
+    const menus=Object.values(PERM_MENUS).flat();
+    return menus.find(m=>m.value===v)?.label||v;
+  });
+  document.getElementById('permMsdDisplay').textContent=labels.length?labels.join(', '):'-- ไม่จำกัด --';
+}
+
+function clearPermMsd(){
+  document.querySelectorAll('#permMsd input[type=checkbox]').forEach(c=>c.checked=false);
+  updatePermVal();
 }
 
 function getHiddenMenus(){return [];}
