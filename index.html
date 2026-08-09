@@ -1911,6 +1911,7 @@ async function doLogin(){
     try{await loadMarqueeFromServer();}catch(e){}
     loadNewsBoardSettings();
     showApp(user);
+  initAutoLogout();
   }catch(e){
     let msg=e.message||'เกิดข้อผิดพลาด';
     if(msg.includes('fetch')||msg.includes('network')||msg.includes('Failed')) msg='เชื่อมต่อ API ไม่ได้ — กรุณาตรวจสอบ URL';
@@ -2090,6 +2091,20 @@ async function doCarryOver(){
   }finally{
     hideLoad();
   }
+}
+
+// ── Auto Logout 30 นาที ──────────────────────────────────
+let _autoLogoutTimer=null,_autoWarnTimer=null;
+const AUTO_LOGOUT_MS=30*60*1000;
+function resetAutoLogout(){
+  clearTimeout(_autoLogoutTimer);clearTimeout(_autoWarnTimer);
+  if(!currentUser)return;
+  _autoWarnTimer=setTimeout(()=>{if(currentUser)toast('⚠️ จะออกจากระบบใน 5 นาที หากไม่ใช้งาน');},25*60*1000);
+  _autoLogoutTimer=setTimeout(()=>{if(currentUser){toast('⏰ หมดเวลาใช้งาน กรุณา Login ใหม่');setTimeout(()=>doLogout(),1500);}},AUTO_LOGOUT_MS);
+}
+function initAutoLogout(){
+  ['click','keydown','touchstart','scroll','mousemove'].forEach(ev=>document.addEventListener(ev,resetAutoLogout,{passive:true}));
+  resetAutoLogout();
 }
 
 async function doLogout(){
