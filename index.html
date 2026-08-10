@@ -1708,10 +1708,13 @@ function showRegister(){document.getElementById('configPage').style.display='non
 
 async function api(action,params={},body=null){
   if(!API_URL) throw new Error('ยังไม่ได้ตั้งค่า API URL');
-  const q=new URLSearchParams({action,...params}).toString();
-  const opts={method:'GET',redirect:'follow'};
-  if(body){opts.method='POST';opts.headers={'Content-Type':'text/plain'};opts.body=JSON.stringify({action,...body});}
-  const res=await fetch(API_URL+'?'+q,opts);
+  const allParams={action,...params};
+  if(body){
+    // ส่ง body เป็น JSON string ใน URL param
+    allParams['body']=JSON.stringify(body);
+  }
+  const q=new URLSearchParams(allParams).toString();
+  const res=await fetch(API_URL+'?'+q,{method:'GET',redirect:'follow'});
   const json=await res.json();
   if(!json.ok) throw new Error(json.error||'API Error');
   return json.data;
