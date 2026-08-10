@@ -921,7 +921,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div class="tbl-wrap">
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ-สกุล</th><th>บทบาท</th><th>สถานะ</th><th>สิทธิ์การมองเห็น</th><th>สถานะบัญชี</th><th>สร้างเมื่อ</th><th>จัดการ</th></tr></thead>
+            <thead><tr><th>ชื่อผู้ใช้</th><th>ชื่อ-สกุล</th><th>บทบาท</th><th>สิทธิ์การมองเห็น</th><th>สร้างเมื่อ</th><th>จัดการ</th></tr></thead>
             <tbody id="userTbl"></tbody>
           </table>
         </div>
@@ -4203,13 +4203,11 @@ async function renderUsers(){
         ? `<button class="btn btn-sm" style="background:#2e7d32;color:white" onclick="approveUser('${u.id}','approve')">✅ อนุมัติ</button>
            <button class="btn btn-danger btn-sm" onclick="approveUser('${u.id}','reject')">❌ ปฏิเสธ</button>`
         : '';
-      return `<tr style="${status==='pending'?'background:#fffde7':''}" >
+      return `<tr>
         <td style="font-weight:500">${u.username}</td>
         <td>${u.fullname}</td>
         <td><span style="padding:2px 8px;border-radius:9px;font-size:10.5px;font-weight:600;background:${roleBg};color:${roleColor}">${roleLabel}</span></td>
-        <td><span class="${String(u.active||'').toLowerCase()==='true'?'f-green':'f-red'}">${String(u.active||'').toLowerCase()==='true'?'ใช้งานได้':'ระงับ'}</span></td>
-        <td><span style="padding:2px 8px;border-radius:9px;font-size:10.5px;font-weight:600;background:${isLim?'#fff3e0':'#e8f5e9'};color:${isLim?'#e65100':'#1b5e20'}">${isLim?'🔒 Dashboard เท่านั้น':'✓ เข้าถึงทุกหน้า'}</span></td>
-        <td>${statusCell}</td>
+        <td><span style="padding:2px 8px;border-radius:9px;font-size:10.5px">${u.viewAccess||'เข้าถึงทุกหน้า'}</span></td>
         <td style="font-size:10.5px;color:var(--gray500)">${fmtDate(u.created)||'-'}</td>
         <td><span style="display:flex;gap:2px;flex-wrap:wrap">
           ${approveBtn}
