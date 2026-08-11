@@ -4315,8 +4315,13 @@ async function saveUser(){
   try{
     const data={username:uname,fullname:fname,role,active,viewAccess,hiddenMenus};
     if(pwd)data.password=pwd;
-    if(editUserId)await api('saveUser',{},{id:editUserId,data});
-    else{if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}await api('saveUser',{},{data});}
+    if(editUserId){
+      // ส่งผ่าน params เพราะ Apps Script redirect POST→GET
+      await api('saveUser',{id:editUserId,...data},{});
+    }else{
+      if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}
+      await api('saveUser',{...data},{});
+    }
     closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();
   }
   catch(e){toast(e.message,true);}finally{hideLoad();}
