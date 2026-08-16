@@ -4313,7 +4313,7 @@ async function saveUser(){
   if(!uname||!fname){toast('กรุณากรอกชื่อผู้ใช้และชื่อ-สกุล',true);return;}
   showLoad('กำลังบันทึก...');
   try{
-    const data={username:uname,fullname:fname,role,active,viewAccess:viewAccess||'',hiddenMenus:hiddenMenus||''};
+    const data={username:uname,fullname:fname,role,active,viewAccess:viewAccess||'',hiddenMenus:''};
     if(pwd)data.password=pwd;
     const sp=editUserId?{id:editUserId,...data}:{...data};
     await api('saveUser',sp,null);
