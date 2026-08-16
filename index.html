@@ -1801,8 +1801,8 @@ const _dashCache={};
 // INIT
 // ============================================================
 window.onload=async function(){
-  loadThemeFromStorage(); // ใช้ค่าที่ cache ไว้ทันที (กันกระพริบ)
-  loadMarqueeFromStorage(); // โหลดแถบข้อความจาก cache ทันที
+  loadThemeFromStorage();
+  loadMarqueeFromStorage();
   setTimeout(initStickyScroll, 300);
   setupYears();
   const sess=JSON.parse(sessionStorage.getItem('icu_sess')||'null');
@@ -4313,15 +4313,11 @@ async function saveUser(){
   if(!uname||!fname){toast('กรุณากรอกชื่อผู้ใช้และชื่อ-สกุล',true);return;}
   showLoad('กำลังบันทึก...');
   try{
-    const data={username:uname,fullname:fname,role,active,viewAccess,hiddenMenus};
+    const data={username:uname,fullname:fname,role,active,viewAccess:viewAccess||'',hiddenMenus:hiddenMenus||''};
     if(pwd)data.password=pwd;
-    if(editUserId){
-      // ส่งผ่าน params เพราะ Apps Script redirect POST→GET
-      await api('saveUser',{id:editUserId,...data},{});
-    }else{
-      if(!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}
-      await api('saveUser',{...data},{});
-    }
+    const sp=editUserId?{id:editUserId,...data}:{...data};
+    await api('saveUser',sp,null);
+    if(!editUserId&&!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}
     closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();
   }
   catch(e){toast(e.message,true);}finally{hideLoad();}
