@@ -3122,7 +3122,7 @@ function buildForm(p){
         ${multiSel('Diagnosis แรกรับ',o('diagnosis'),p['Diagnosis แรกรับ'],'diagnosis')}
         <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <span style="font-size:11px;font-weight:600;color:var(--gray600)">ประเภทพิเศษ:</span>
-          ${['Stroke','TBI','Trauma','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
+          ${['Stroke','TBI','Trauma','Sepsis','Septic shock','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
             <input type="radio" name="dxSpecialType" value="${v}" ${(p['dxSpecialType']||'ไม่มี')===v?'checked':''}> ${v}
           </label>`).join('')}
         </div>
@@ -3147,7 +3147,11 @@ function buildForm(p){
         </div>
         ${fg('วันที่ D/C',inp('D/C (Date)','date',p['D/C (Date)']?di(p['D/C (Date)']):''))}
         ${fg('เวลา D/C',inp('D/C (Time)','time',p['D/C (Time)']||''))}
-        ${fg('เหตุผลจำหน่าย',sel('เหตุผลจำหน่าย',DC_REASON,p['เหตุผลจำหน่าย']))}
+        ${fg('เหตุผลจำหน่าย',`<select name="เหตุผลจำหน่าย" onchange="onDCReasonChange(this.value)">${['','...เลือก...',...DC_REASON].map((v,i)=>i===0?'':`<option value="${v}" ${p['เหตุผลจำหน่าย']===v?'selected':''}>${v}</option>`).join('')}</select>`)}
+        <div id="causeOfDeathBox" class="fg" style="display:${p['เหตุผลจำหน่าย']==='Dead'?'block':'none'}">
+          <label>สาเหตุการเสียชีวิต</label>
+          ${searchSel('สาเหตุการเสียชีวิต',o('diagnosis'),p['สาเหตุการเสียชีวิต']||'')}
+        </div>
         ${fg('Ward/Hospital จำหน่าย',sel('Ward/Hospital',DC_WARD,p['Ward/Hospital']))}
         ${fg('ผู้บันทึก D/C',sel('ผู้บันทึก D/C',o('recorderDC'),p['ผู้บันทึก D/C'],'recorderDC'))}
         ${fg('รวมวันนอน',inp('รวมวันนอน','number',p['รวมวันนอน']||''),'','auto')}
@@ -3212,7 +3216,7 @@ function buildForm(p){
     'id','ชื่อ-สกุล','HN','AN','อายุ','วันเกิด','สิทธิ','Admit (Date)','Admit (Time)',
     'เตียง','การรับ','Ward ที่รับ','ผู้บันทึก Admit','Unplanned ICU','Re-admit ICU',
     'Diagnosis แรกรับ','แพทย์เจ้าของไข้','ประเภทผู้ป่วย','U/D','สถานะ',
-    'D/C (Date)','D/C (Time)','Diag สุดท้าย','เหตุผลจำหน่าย','Ward/Hospital',
+    'D/C (Date)','D/C (Time)','Diag สุดท้าย','เหตุผลจำหน่าย','สาเหตุการเสียชีวิต','Ward/Hospital',
     'ผู้บันทึก D/C','รวมวันนอน','Ventilator (Name)','Ventilator (Start)','Ventilator (End)',
     'Vent. (day)','A-Line (Start)','A-Line (End)','A-Line (day)','C-Line (Start)',
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
@@ -3242,6 +3246,7 @@ function buildForm(p){
   setTimeout(()=>{setupAutoCalc();if(isDC)onStatusChange('จำหน่ายแล้ว');document.addEventListener('click',function h(e){if(!e.target.closest('.msd-wrap'))document.querySelectorAll('.msd-list.open').forEach(l=>l.classList.remove('open'));});},50);
 }
 
+function onDCReasonChange(v){const box=document.getElementById('causeOfDeathBox');if(box)box.style.display=v==='Dead'?'block':'none';}
 function onStatusChange(val){const isDC=val==='จำหน่ายแล้ว';const n=document.getElementById('dcRequireNote');if(n)n.style.display=isDC?'block':'none';}
 
 // ตรวจสอบปี ค.ศ. ที่กรอกในช่อง date
@@ -5087,7 +5092,9 @@ async function loadKPI(){
     </div>`;
 
   // ── คำนวณ ──────────────────────────────────
-  const icuMortality=(s.deadCount/Math.max(totalDC,1)*100).toFixed(1);
+  const sepsisPts=pts.filter(p=>p['dxSpecialType']==='Sepsis'||p['dxSpecialType']==='Septic shock');
+  const sepsisDead=sepsisPts.filter(p=>p['สถานะ']==='จำหน่ายแล้ว'&&p['เหตุผลจำหน่าย']==='Dead').length;
+  const sepsisMortality=sepsisPts.length>0?(sepsisDead/sepsisPts.length*100).toFixed(1):'-';
   const readmitRate=(s.readmitCount/Math.max(totalDC,1)*100).toFixed(1);
   const avgLOS=s.avgDaysPerPt||0;
   const vap=ventDays>0?(s.vapCount/ventDays*1000).toFixed(2):0;
@@ -5101,7 +5108,7 @@ async function loadKPI(){
     ${table('🏥 1. Clinical Outcomes & Mortality','#1565c0',`
       ${kpiRow('💀','ICU Mortality Rate',icuMortality+'%','%','< 15%',parseFloat(icuMortality)<15)}
       ${kpiRow('🔄','Unplanned ICU Readmission',readmitRate+'%','%','< 5%',parseFloat(readmitRate)<5)}
-      ${kpiRow('🩸','Sepsis Mortality','-','%','< 30%',true)}
+      ${kpiRow('🩸','Sepsis Mortality',sepsisMortality==='−'?'−':sepsisMortality+'%','%','< 30%',sepsisMortality==='-'||parseFloat(sepsisMortality)<30)}
     `)}
 
     ${table('🛡️ 2. Patient Safety & Complications','#6a1b9a',`
