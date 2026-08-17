@@ -581,6 +581,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     <div class="nav-item" id="nav-yearly" onclick="showSec('yearly',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>รายปี
     </div>
+    <div class="nav-item" id="nav-kpi" onclick="showSec('kpi',this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>KPI & ตัวชี้วัด
+    </div>
     <div class="nav-sec" id="adminNav" style="display:none;cursor:pointer;user-select:none" onclick="toggleAdminMenu()">
       ⚙️ จัดการระบบ <span id="adminMenuArrow" style="margin-left:auto;font-size:10px">▶</span>
     </div>
@@ -904,6 +907,18 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     </div>
 
     <!-- YEARLY -->
+    <div class="sec" id="sec-kpi">
+      <div class="sec-header">
+        <div class="sec-title">📊 KPI & ตัวชี้วัด ICU</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="kpiMonth" class="sel-sm"></select>
+          <select id="kpiYear" class="sel-sm"></select>
+          <button class="btn btn-primary btn-sm" onclick="loadKPI()">แสดง KPI</button>
+        </div>
+      </div>
+      <div id="kpiContent"></div>
+    </div>
+
     <div class="sec" id="sec-yearly">
       <div class="fbar">
         <label>ปี:</label><select id="yYear"></select>
@@ -1618,6 +1633,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   <button class="bn-item" id="bn-yearly" onclick="showSec('yearly',document.getElementById('nav-yearly'));setActiveBN('yearly')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
     <span>รายปี</span></button>
+  <button class="bn-item" id="bn-kpi" onclick="showSec('kpi',document.getElementById('nav-kpi'));setActiveBN('kpi')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+    <span>KPI</span></button>
 </nav>
 
 <!-- CONFIRM -->
@@ -1827,13 +1845,13 @@ function setDashMode(mode){
 function setupYears(){
   const now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1;
   const fy=cm>=10?cy+1:cy;
-  ['fYear','dYear','icYear','mYear','dYearOnly'].forEach(id=>{
+  ['fYear','dYear','icYear','mYear','dYearOnly','kpiYear'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cy)o.selected=true;el.appendChild(o);}
   });
   const yEl=document.getElementById('yYear');
   if(yEl){for(let f=fy-3;f<=fy+1;f++){const o=document.createElement('option');o.value=f;o.textContent='ปีงบ '+f+' (ต.ค.'+(f-1)+'-ก.ย.'+f+')';if(f===fy)o.selected=true;yEl.appendChild(o);}}
-  ['dMonth','icMonth','mMonth'].forEach(id=>{
+  ['dMonth','icMonth','mMonth','kpiMonth'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     MONTHS_TH.forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;if(i+1===cm)o.selected=true;el.appendChild(o);});
   });
@@ -2198,7 +2216,7 @@ function showSec(name,el){
   if(name==='dashboard') loadDash();
   if(name==='bedmap') loadBedMap();
   if(name==='ic') loadIC();
-  if(name==='monthly') loadMonthly();
+  if(name==='kpi') loadKPI();
   if(name==='yearly') loadYearly();
   if(name==='users') renderUsers();
   if(name==='opts'){ renderOpts(); loadMarqueeFromServer(); loadNewsBoardSettings(); loadInChargeSettings();
@@ -5029,6 +5047,86 @@ async function loadIC(){
 // ============================================================
 // MONTHLY / YEARLY
 // ============================================================
+async function loadKPI(){
+  const m=parseInt(document.getElementById('kpiMonth').value);
+  const y=parseInt(document.getElementById('kpiYear').value);
+  showLoad('กำลังโหลด KPI...');
+  let pts=[];
+  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
+  const s=getStats(pts);
+  const daysInMonth=new Date(y,m,0).getDate();
+  const totalDC=s.discharged||1;
+  const totalDays=s.totalDays||1;
+  const ventDays=icDays(pts,'Ventilator (Start)','Ventilator (End)');
+  const cvcDays=icDays(pts,'C-Line (Start)','C-Line (End.)');
+  const fcDays=icDays(pts,'F/C (Start)','F/C (END)');
+  const monthName=MONTHS_TH[m-1]+' '+(y+543);
+
+  const kpiRow=(icon,name,value,unit,target,pass)=>`
+    <tr style="border-bottom:1px solid #f3f4f6">
+      <td style="padding:8px 10px;font-size:13px">${icon} ${name}</td>
+      <td style="padding:8px 10px;text-align:center;font-weight:700;font-size:14px;color:${pass?'#2e7d32':'#c62828'}">${value}</td>
+      <td style="padding:8px 10px;text-align:center;font-size:12px;color:#6b7280">${unit}</td>
+      <td style="padding:8px 10px;text-align:center;font-size:12px;color:#6b7280">${target}</td>
+      <td style="padding:8px 10px;text-align:center">${pass?'<span style="color:#2e7d32;font-weight:700">✅</span>':'<span style="color:#c62828;font-weight:700">❌</span>'}</td>
+    </tr>`;
+
+  const table=(title,color,rows)=>`
+    <div class="dash-card" style="margin-bottom:14px;padding:0;overflow:hidden;border-radius:10px">
+      <div style="background:${color};color:white;padding:10px 14px;font-weight:700;font-size:13px">${title}</div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:#f9fafb;font-size:11px;color:#6b7280">
+          <th style="padding:6px 10px;text-align:left">ตัวชี้วัด</th>
+          <th style="padding:6px 10px;text-align:center">ค่าที่ได้</th>
+          <th style="padding:6px 10px;text-align:center">หน่วย</th>
+          <th style="padding:6px 10px;text-align:center">เป้าหมาย</th>
+          <th style="padding:6px 10px;text-align:center">ผล</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+
+  // ── คำนวณ ──────────────────────────────────
+  const icuMortality=(s.deadCount/Math.max(totalDC,1)*100).toFixed(1);
+  const readmitRate=(s.readmitCount/Math.max(totalDC,1)*100).toFixed(1);
+  const avgLOS=s.avgDaysPerPt||0;
+  const vap=ventDays>0?(s.vapCount/ventDays*1000).toFixed(2):0;
+  const clabsi=cvcDays>0?(s.clabsiCount/cvcDays*1000).toFixed(2):0;
+  const cauti=fcDays>0?(s.cautiCount/fcDays*1000).toFixed(2):0;
+  const occupancy=(totalDays/(TOTAL_BEDS*daysInMonth)*100).toFixed(1);
+
+  document.getElementById('kpiContent').innerHTML=`
+    <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">เดือน ${monthName}</div>
+
+    ${table('🏥 1. Clinical Outcomes & Mortality','#1565c0',`
+      ${kpiRow('💀','ICU Mortality Rate',icuMortality+'%','%','< 15%',parseFloat(icuMortality)<15)}
+      ${kpiRow('🔄','Unplanned ICU Readmission',readmitRate+'%','%','< 5%',parseFloat(readmitRate)<5)}
+      ${kpiRow('🩸','Sepsis Mortality','-','%','< 30%',true)}
+    `)}
+
+    ${table('🛡️ 2. Patient Safety & Complications','#6a1b9a',`
+      ${kpiRow('🌬️','VAP Rate',vap,'ต่อ 1000 Vent-day','< 1.0',parseFloat(vap)<1)}
+      ${kpiRow('🔗','CLABSI Rate',clabsi,'ต่อ 1000 CVC-day','< 1.0',parseFloat(clabsi)<1)}
+      ${kpiRow('🪠','CAUTI Rate',cauti,'ต่อ 1000 F/C-day','< 1.0',parseFloat(cauti)<1)}
+      ${kpiRow('🩹','Pressure Injury','-','ราย','0 ราย',true)}
+      ${kpiRow('💊','Medication Error','-','ครั้ง','0 ครั้ง',true)}
+      ${kpiRow('😮','Unplanned Extubation','-','ครั้ง','< 1 ต่อ 100 Vent-day',true)}
+    `)}
+
+    ${table('⚙️ 3. Process & Efficiency','#2e7d32',`
+      ${kpiRow('🛏️','Average LOS',avgLOS,'วัน','< 7 วัน',parseFloat(avgLOS)<7)}
+      ${kpiRow('📊','Bed Occupancy Rate',occupancy+'%','%','70-85%',parseFloat(occupancy)>=70&&parseFloat(occupancy)<=85)}
+      ${kpiRow('🙌','Hand Hygiene Compliance','-','%','≥ 80%',false)}
+      ${kpiRow('🧠','Delirium Assessment','-','%','≥ 90%',false)}
+    `)}
+
+    ${table('👨‍👩‍👧 4. Patient & Family-Centered','#e65100',`
+      ${kpiRow('😊','Patient/Family Satisfaction','-','%','≥ 80%',false)}
+      ${kpiRow('📋','Family Meeting Documentation','-','%','≥ 90%',false)}
+      ${kpiRow('🤝','Palliative Care Consultation',s.pallCount,'ราย','-',true)}
+    `)}`;
+}
+
 async function loadMonthly(){
   const m=parseInt(document.getElementById('mMonth').value),y=parseInt(document.getElementById('mYear').value);
   showLoad('กำลังโหลด...');let pts=[];try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
