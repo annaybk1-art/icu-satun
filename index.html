@@ -1640,8 +1640,8 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 // CONFIG & API
 // ============================================================
 const _DEFAULT_URL='https://script.google.com/macros/s/AKfycbyVlCFpFOCsucn9SkBxs-04s1KLfUIfPD-S_MEIZKgJAs0LsQYDSqeNknX9p6Z6GkfVcA/exec';
-let API_URL = localStorage.getItem('icu_api_url')||_DEFAULT_URL;
-if(!localStorage.getItem('icu_api_url')) localStorage.setItem('icu_api_url',_DEFAULT_URL);
+let API_URL = _DEFAULT_URL;
+localStorage.setItem('icu_api_url',_DEFAULT_URL);
 
 function saveApiUrl(){
   const url=document.getElementById('apiUrlInput').value.trim();
@@ -1711,6 +1711,7 @@ async function api(action,params={},body=null){
   const q=new URLSearchParams({action,...params}).toString();
   const opts={method:'GET',redirect:'follow'};
   if(body){opts.method='POST';opts.headers={'Content-Type':'text/plain'};opts.body=JSON.stringify({action,...body});}
+  console.log('API call:', action, 'URL:', API_URL+'?'+q, 'method:', opts.method);
   const res=await fetch(API_URL+'?'+q,opts);
   const json=await res.json();
   if(!json.ok) throw new Error(json.error||'API Error');
