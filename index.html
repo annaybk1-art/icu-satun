@@ -3486,6 +3486,8 @@ async function savePatient(){
   if(data['สถานะ']==='จำหน่ายแล้ว'){
     const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','Ward/Hospital':'Ward/Hospital','CPR':'CPR','Palliative':'Palliative'};
     const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);
+    // บังคับกรอกสาเหตุการเสียชีวิตเมื่อ Dead
+    if(data['เหตุผลจำหน่าย']==='Dead'&&!data['สาเหตุการเสียชีวิต']) mDC.push('สาเหตุการเสียชีวิต');
     if(mDC.length){toast('🚪 D/C: '+mDC.join(', '),true);return;}
     // บังคับกรอก End ของ IC ที่มี Start แต่ไม่มี End
     const icCheck=[
