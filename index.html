@@ -4316,6 +4316,7 @@ async function saveUser(){
     const data={username:uname,fullname:fname,role,active,viewAccess:viewAccess||'',hiddenMenus:''};
     if(pwd)data.password=pwd;
     const sp=editUserId?{id:editUserId,...data}:{...data};
+    alert('sp: '+JSON.stringify(sp));
     await api('saveUser',sp,null);
     if(!editUserId&&!pwd){toast('กรุณากรอกรหัสผ่าน',true);hideLoad();return;}
     closeUserModal();toast('บันทึกสำเร็จ ✓');await renderUsers();
