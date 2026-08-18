@@ -2542,10 +2542,57 @@ function renderIcBedList(){
           <label style="font-size:10px">หมายเหตุ</label>
           <input type="text" value="${esc(note)}" placeholder="หมายเหตุ..." oninput="icSet('${bedId}','note',this.value)" style="width:100%">
         </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label style="font-size:10px;font-weight:700;color:#c62828">🛡️ Patient Safety</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div>
+              <label style="font-size:9px;color:var(--gray500)">Pressure Injury</label>
+              <select onchange="icSet('${bedId}','pressureInjury',this.value);icTogglePIDate('${bedId}',this.value)" style="width:100%;font-size:11px">
+                <option value="No" ${(bd.pressureInjury||'No')==='No'?'selected':''}>No</option>
+                <option value="Yes" ${(bd.pressureInjury||'No')==='Yes'?'selected':''}>Yes</option>
+              </select>
+              <div id="pi_${bedId}" style="display:${(bd.pressureInjury||'No')==='Yes'?'block':'none'}">
+                <input type="date" value="${bd.pressureInjuryDate||''}" onchange="icSet('${bedId}','pressureInjuryDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--gray500)">Unplanned Extubation</label>
+              <select onchange="icSet('${bedId}','unplannedExtub',this.value);icToggleUEDate('${bedId}',this.value)" style="width:100%;font-size:11px">
+                <option value="No" ${(bd.unplannedExtub||'No')==='No'?'selected':''}>No</option>
+                <option value="Yes" ${(bd.unplannedExtub||'No')==='Yes'?'selected':''}>Yes</option>
+              </select>
+              <div id="ue_${bedId}" style="display:${(bd.unplannedExtub||'No')==='Yes'?'block':'none'}">
+                <input type="date" value="${bd.unplannedExtubDate||''}" onchange="icSet('${bedId}','unplannedExtubDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
+              </div>
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--gray500)">Medication Error</label>
+              <select onchange="icSet('${bedId}','medError',this.value);icToggleMEBox('${bedId}',this.value)" style="width:100%;font-size:11px">
+                <option value="No" ${(bd.medError||'No')==='No'?'selected':''}>No</option>
+                <option value="Yes" ${(bd.medError||'No')==='Yes'?'selected':''}>Yes</option>
+              </select>
+              <div id="me_${bedId}" style="display:${(bd.medError||'No')==='Yes'?'block':'none'}">
+                <input type="date" value="${bd.medErrorDate||''}" onchange="icSet('${bedId}','medErrorDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
+                <select onchange="icSet('${bedId}','medErrorType',this.value)" style="width:100%;font-size:10px;margin-top:2px">
+                  ${['Wrong dose','Wrong drug','Wrong time','Wrong patient','Wrong route','อื่นๆ'].map(t=>`<option value="${t}" ${bd.medErrorType===t?'selected':''}>${t}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--gray500)">ICDSC Score (0-8)</label>
+              <input type="number" min="0" max="8" value="${bd.icdsc||''}" placeholder="0-8" oninput="icSet('${bedId}','icdsc',this.value)" style="width:100%;font-size:11px">
+              ${parseInt(bd.icdsc||0)>=4?`<span style="font-size:9px;color:#c62828;font-weight:700">⚠️ Delirium</span>`:''}
+            </div>
+          </div>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
+
+function icTogglePIDate(bedId,v){const el=document.getElementById('pi_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
+function icToggleUEDate(bedId,v){const el=document.getElementById('ue_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
+function icToggleMEBox(bedId,v){const el=document.getElementById('me_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
 
 function icSet(bedId,key,val){
   if(!_icBedData[bedId]) _icBedData[bedId]={};
