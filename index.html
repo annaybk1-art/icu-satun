@@ -1791,7 +1791,7 @@ function dcMatch(val, type){
   return false;
 }
 const TOTAL_BEDS=14;
-const OPTS_LABELS={beds:'🛏️ เตียง ICU',doctors:'👨‍⚕️ แพทย์เจ้าของไข้',ventilatorMode:'🌬️ การหายใจ',ventilator:'🫁 ชนิด Ventilator',rights:'💳 สิทธิ์การรักษา',patientType:'🏷️ ประเภทผู้ป่วย',drugAllergy:'💊 แพ้ยา',surgeryType:'🔪 ชนิดการผ่าตัด',diagnosis:'🔬 Diagnosis (Dx)',recorderAdmit:'📝 ผู้บันทึก Admit',recorderDC:'📝 ผู้บันทึก D/C',incharge:'👩‍⚕️ รายชื่อ In Charge',udOptions:'📋 U/D (โรคประจำตัว)',specimenType:'🧪 ชนิดสิ่งส่งตรวจ',pathogenType:'🦠 ชนิดของเชื้อที่พบ',haOptions:'💊 ยา High Alert Drug'};
+const OPTS_LABELS={causeOfDeath:'💀 สาเหตุการเสียชีวิต',referReason:'🚑 เหตุผลที่ต้อง Refer',beds:'🛏️ เตียง ICU',doctors:'👨‍⚕️ แพทย์เจ้าของไข้',ventilatorMode:'🌬️ การหายใจ',ventilator:'🫁 ชนิด Ventilator',rights:'💳 สิทธิ์การรักษา',patientType:'🏷️ ประเภทผู้ป่วย',drugAllergy:'💊 แพ้ยา',surgeryType:'🔪 ชนิดการผ่าตัด',diagnosis:'🔬 Diagnosis (Dx)',recorderAdmit:'📝 ผู้บันทึก Admit',recorderDC:'📝 ผู้บันทึก D/C',incharge:'👩‍⚕️ รายชื่อ In Charge',udOptions:'📋 U/D (โรคประจำตัว)',specimenType:'🧪 ชนิดสิ่งส่งตรวจ',pathogenType:'🦠 ชนิดของเชื้อที่พบ',haOptions:'💊 ยา High Alert Drug'};
 const MODAL_TABS=[{id:'tab-admit',label:'📋 ข้อมูลรับ'},{id:'tab-ic',label:'🫁 IC / Ventilator'},{id:'tab-assess',label:'📊 การประเมิน'},{id:'tab-infection',label:'🦠 การติดเชื้อ'},{id:'tab-dc',label:'🚪 ข้อมูล D/C'},{id:'tab-extra',label:'📎 ข้อมูลเพิ่มเติม'}];
 
 let currentUser=null,_opts={},_pts=[],_filtPts=[],_curPg=1;
@@ -1860,7 +1860,7 @@ function setupYears(){
 }
 
 async function loadOpts(){try{_opts=await api('getOpts');}catch(e){_opts=defaultOpts();}}
-function defaultOpts(){return{ward:['อายุรกรรม','ศัลยกรรม','กุมารเวช','สูตินรีเวช','ห้องผ่าตัด','ER','อื่นๆ'],beds:['ICU1','ICU2','ICU3','ICU4','ICU5','ICU6','ICU7','ICU8','ICU9','ICU10','ICU11','ICU12','ICU13','ICU14'],doctors:['พญ.ชัญญา มุกดารัศมี','พญ.วรรณกานต์ พัฒนโกวิท','พญ.ธมน เนียมรัตน์','พญ.จักรปาณี ตั้งสินมั่นคง','นพ.พิทวัส จินดาอิสรชัยกุล','พญ.กชมน ภู่เจริญ','นพ.ภาณุศักดิ์ หล่อตระกูลกูล','พญ.ชุตินันท์ สุปราณี','พญ.กัญญารัตน์ เลิศวาจาจา','นพ.จักรพงษ์ เทศพิทักษ์','นพ.สรวิชญ์ พุฒินาถ','นพ.วรสิทธิ์ ชัยมงคลานนท์','นพ.ภาณุพงศ์ นาคช่วย','นพ.นพเกียรติ อัครนพหงส์','นพ.เนติกรณ์ ผิวทอง','พญ.มนวดี ไชยกุล','พญ.นพวรรณ ฐิติวรการ','นพ.ภาวัฒน์ ไล่เจริญ','นพ.กรณ์ธรรม อู่ไพบูลย์สิน','นพ.กุลวิทย์ อโนทัยสถาพร','นพ.พงศกร กาญจนา','พญ.นริศรา สัณห์พานิชกิจ','นพ.วุฒิพงศ์ วิไลวรางกุล','นพ.ไพบูลย์ แสงยืยยงพิพัฒน์','พญ.ศศิพิมพ์ วรรณรัตน์','นพ.พุทธพงษ์ โฆษิตศุภกุล','พญ.วนพัชร์ ยิ้มซ้าย','นพ.มนัสนันท์ กนกทิพย์นารา','พญ.ณัฐสุดา พันธ์บุญมี','นพ.นัฐพงศ์ เด็นมะเส','พญ.นุสรา ยุทธสมภพ'],ventilatorMode:['Ventilator','HFNC','Canular','Room air','Bipap','T-piece'],ventilator:['840/2','840/3','840/4','840/5','840/6','840/7','840/8','840/9','840/10','840/11','840/12','840/13','840/14','840/15','840/22','Nihon/1','Nihon/2','Bella/1','Bella/2','Vela','Hamilton','HFNC','Canular'],rights:['กำนันผู้ใหญ่บ้านนอกเขต','UC นอกเขต','ประกันสังคม','จ่ายตรง','พ.ร.บ.ฉุกเฉิน','ผู้สูงอายุนอกเขต','ผู้สูงอายุในเขต','ผู้พิการนอกเขต','ผู้พิการในเขต','พรบ.ผู้ประสบภัยจากรถ','UC ต่างจังหวัด','บุคคลในครอบครัว อสม ในเขต','บุคคลในครอบครัว อสม นอกเขต','ชำระเงิน','ผู้มีรายได้น้อยในเขต','ต่างด้าว','สวัสดิการข้าราชการส่วนท้องถิ่น','ผู้มีรายได้น้อยนอกเขต','ภิกษุ นอกเขต','ใช้สิทธิเบิกหน่วยงานต้นสังกัด','บัตรสุขภาพ ผสส.อสม.ในเขต','ประกันสังคมโรงพยาบาลสตูล','ทหารผ่านศึก'],haOptions:['Adrenaline','Adenosine','Dopamine','Dobutamine','NorE (Norepinephrine)','Amiodarone','Chloral hydrate syrup','Digoxin','Esmolol','Magnesium sulfate','Midazolam','Fentanyl','Morphine','Pethidine','Phenytoin inj (Dilantin)','KCL/K2HPO4','Warfarin tab','Alteplase inj','SK inj (Streptokinase)','Nicardipine','Nitroglycerine','Regular insulin','NPH insulin','Insulin glargine','3% NaCl inj.','10% MgSO4 inj.','Clozapine tablet'],patientType:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER'],drugAllergy:['ไม่มี','Penicillin','Sulfa','NSAIDs','Contrast'],surgeryType:['ไม่ได้ผ่าตัด','Craniotomy','Craniectomy','VP Shunt','EVD Insertion','Laparotomy','Appendectomy','Cholecystectomy','Hernia repair','Fracture fixation','Amputation','Tracheostomy','CABG','Valve replacement','Hysterectomy','C-Section','Splenectomy','Bowel resection','Debridement','Wound closure'],diagnosis:['Sepsis','Septic shock','Pneumonia','ARDS','CHF','CVA','DKA','CKD','Trauma','Post-op','Respiratory failure','Stroke','ICH','TBI','SAH','SDH','Meningitis','Encephalitis','Seizure','NSTEMI','STEMI','AF','PE','DVT','UGIB','LGIB','Pancreatitis','Cirrhosis','AKI','Peritonitis','Burn','Polytrauma','Eclampsia','PPH','Ectopic pregnancy','Hypertensive emergency','Thyroid storm','Hypoglycemia','Rhabdomyolysis','Cardiac arrest','Cardiogenic shock','Hypovolemic shock','Hemorrhagic shock','Anaphylaxis','Obstructive shock','Drowning','Snake bite','Drug overdose','Hanging'],recorderAdmit:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],
+function defaultOpts(){return{causeOfDeath:['Septic shock','Respiratory failure','Cardiac arrest','MODS','Hemorrhagic shock','Neurological death','อื่นๆ'],referReason:['ขาดแคลนอุปกรณ์','ต้องการผู้เชี่ยวชาญเฉพาะทาง','ผู้ป่วยขอย้าย','ขาดเตียง ICU','อื่นๆ'],ward:['อายุรกรรม','ศัลยกรรม','กุมารเวช','สูตินรีเวช','ห้องผ่าตัด','ER','อื่นๆ'],beds:['ICU1','ICU2','ICU3','ICU4','ICU5','ICU6','ICU7','ICU8','ICU9','ICU10','ICU11','ICU12','ICU13','ICU14'],doctors:['พญ.ชัญญา มุกดารัศมี','พญ.วรรณกานต์ พัฒนโกวิท','พญ.ธมน เนียมรัตน์','พญ.จักรปาณี ตั้งสินมั่นคง','นพ.พิทวัส จินดาอิสรชัยกุล','พญ.กชมน ภู่เจริญ','นพ.ภาณุศักดิ์ หล่อตระกูลกูล','พญ.ชุตินันท์ สุปราณี','พญ.กัญญารัตน์ เลิศวาจาจา','นพ.จักรพงษ์ เทศพิทักษ์','นพ.สรวิชญ์ พุฒินาถ','นพ.วรสิทธิ์ ชัยมงคลานนท์','นพ.ภาณุพงศ์ นาคช่วย','นพ.นพเกียรติ อัครนพหงส์','นพ.เนติกรณ์ ผิวทอง','พญ.มนวดี ไชยกุล','พญ.นพวรรณ ฐิติวรการ','นพ.ภาวัฒน์ ไล่เจริญ','นพ.กรณ์ธรรม อู่ไพบูลย์สิน','นพ.กุลวิทย์ อโนทัยสถาพร','นพ.พงศกร กาญจนา','พญ.นริศรา สัณห์พานิชกิจ','นพ.วุฒิพงศ์ วิไลวรางกุล','นพ.ไพบูลย์ แสงยืยยงพิพัฒน์','พญ.ศศิพิมพ์ วรรณรัตน์','นพ.พุทธพงษ์ โฆษิตศุภกุล','พญ.วนพัชร์ ยิ้มซ้าย','นพ.มนัสนันท์ กนกทิพย์นารา','พญ.ณัฐสุดา พันธ์บุญมี','นพ.นัฐพงศ์ เด็นมะเส','พญ.นุสรา ยุทธสมภพ'],ventilatorMode:['Ventilator','HFNC','Canular','Room air','Bipap','T-piece'],ventilator:['840/2','840/3','840/4','840/5','840/6','840/7','840/8','840/9','840/10','840/11','840/12','840/13','840/14','840/15','840/22','Nihon/1','Nihon/2','Bella/1','Bella/2','Vela','Hamilton','HFNC','Canular'],rights:['กำนันผู้ใหญ่บ้านนอกเขต','UC นอกเขต','ประกันสังคม','จ่ายตรง','พ.ร.บ.ฉุกเฉิน','ผู้สูงอายุนอกเขต','ผู้สูงอายุในเขต','ผู้พิการนอกเขต','ผู้พิการในเขต','พรบ.ผู้ประสบภัยจากรถ','UC ต่างจังหวัด','บุคคลในครอบครัว อสม ในเขต','บุคคลในครอบครัว อสม นอกเขต','ชำระเงิน','ผู้มีรายได้น้อยในเขต','ต่างด้าว','สวัสดิการข้าราชการส่วนท้องถิ่น','ผู้มีรายได้น้อยนอกเขต','ภิกษุ นอกเขต','ใช้สิทธิเบิกหน่วยงานต้นสังกัด','บัตรสุขภาพ ผสส.อสม.ในเขต','ประกันสังคมโรงพยาบาลสตูล','ทหารผ่านศึก'],haOptions:['Adrenaline','Adenosine','Dopamine','Dobutamine','NorE (Norepinephrine)','Amiodarone','Chloral hydrate syrup','Digoxin','Esmolol','Magnesium sulfate','Midazolam','Fentanyl','Morphine','Pethidine','Phenytoin inj (Dilantin)','KCL/K2HPO4','Warfarin tab','Alteplase inj','SK inj (Streptokinase)','Nicardipine','Nitroglycerine','Regular insulin','NPH insulin','Insulin glargine','3% NaCl inj.','10% MgSO4 inj.','Clozapine tablet'],patientType:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER'],drugAllergy:['ไม่มี','Penicillin','Sulfa','NSAIDs','Contrast'],surgeryType:['ไม่ได้ผ่าตัด','Craniotomy','Craniectomy','VP Shunt','EVD Insertion','Laparotomy','Appendectomy','Cholecystectomy','Hernia repair','Fracture fixation','Amputation','Tracheostomy','CABG','Valve replacement','Hysterectomy','C-Section','Splenectomy','Bowel resection','Debridement','Wound closure'],diagnosis:['Sepsis','Septic shock','Pneumonia','ARDS','CHF','CVA','DKA','CKD','Trauma','Post-op','Respiratory failure','Stroke','ICH','TBI','SAH','SDH','Meningitis','Encephalitis','Seizure','NSTEMI','STEMI','AF','PE','DVT','UGIB','LGIB','Pancreatitis','Cirrhosis','AKI','Peritonitis','Burn','Polytrauma','Eclampsia','PPH','Ectopic pregnancy','Hypertensive emergency','Thyroid storm','Hypoglycemia','Rhabdomyolysis','Cardiac arrest','Cardiogenic shock','Hypovolemic shock','Hemorrhagic shock','Anaphylaxis','Obstructive shock','Drowning','Snake bite','Drug overdose','Hanging'],recorderAdmit:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],
 incharge:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],recorderDC:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],udOptions:['ไม่มี','ปฏิเสธ','HT','IHD','MI','CHF','VHD','AF','VT','SVT','CAD','DLP','CVA','TIA','Stroke','NSTEMI','STEMI','LBBB','MR','MS','DCM','TVD','Old MI','VSD','HFpEF','HFrEF','ICM','Asthma','COPD','Pulmonary tuberculosis','OSA','old TB','Pulmonary fibrosis','DM','Hypothyroid','Hyperthyroid','CKD','ESRD','Obesity','Gout','ภูมิแพ้','Urolithiasis','BPH','Cirrhosis','Chronic Hep B','Chronic Hep C','HCV','PUD','Cholelithiasis','HCC','GERD','Epilepsy','Parkinson','MG','Dementia','Alzheimer','CVST','Anemia','Leukemia','Thrombocytopenia','Lymphoma','HIV','AIDS','SLE','RA','Autoimmune','Pancytopenia','Thalassemia','OA','Rheumatoid arthritis','Osteoporosis','Degenerative spine','MDD','Anxiety','Bipolar','Schizophrenia','Old CVA','Trauma','CA thyroid','ESRD on CAPD','ESRD on AVF','CA cecum','CA lung','CA Breast','CA colon','CA cervix','CA Floor of mouth','CA Sigmoid','CA esophagus','CA Prostate','CA Liver','brain tumor','ITP','AVM','Glaucoma','TB lung','AAA','APS','CBD Stone','Nephrotic syndrome','Thyroid mass'],specimenType:['Sputum Culture','Pus Culture','Hemoculture ขวด 1','Hemoculture ขวด 2','Hemoculture x 2','Pleural fluid Culture','Urine Culture','Stool Culture','BAL Culture','CSF Culture','Wound Culture','Tracheal aspirate Culture'],pathogenType:['A.baum CRAB_PXDR','A.baum CRE_PXDR','A.baum MDR','E.Coli MDR','K.P. CRE_PXDR','K.P. CRAB_PXDR','K.P. MDR','Pseudomonas a. CRAB_PXDR','Pseudomonas a. CRE_PXDR','Pseudomonas a. MDR','Proteus species CRE_PXDR','MRSA','MSSA','VRE','Candida species','Klebsiella pneumoniae','Escherichia coli','Staphylococcus aureus','Streptococcus pneumoniae']};}
 function o(k){return(_opts[k]||defaultOpts()[k]||[]);}
 
@@ -3122,7 +3122,7 @@ function buildForm(p){
         ${multiSel('Diagnosis แรกรับ',o('diagnosis'),p['Diagnosis แรกรับ'],'diagnosis')}
         <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <span style="font-size:11px;font-weight:600;color:var(--gray600)">ประเภทพิเศษ:</span>
-          ${['Stroke','TBI','Trauma','Sepsis','Septic shock','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
+          ${['Stroke','TBI','Trauma','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
             <input type="radio" name="dxSpecialType" value="${v}" ${(p['dxSpecialType']||'ไม่มี')===v?'checked':''}> ${v}
           </label>`).join('')}
         </div>
@@ -3149,8 +3149,12 @@ function buildForm(p){
         ${fg('เวลา D/C',inp('D/C (Time)','time',p['D/C (Time)']||''))}
         ${fg('เหตุผลจำหน่าย',`<select name="เหตุผลจำหน่าย" onchange="onDCReasonChange(this.value)">${['','...เลือก...',...DC_REASON].map((v,i)=>i===0?'':`<option value="${v}" ${p['เหตุผลจำหน่าย']===v?'selected':''}>${v}</option>`).join('')}</select>`)}
         <div id="causeOfDeathBox" class="fg" style="display:${p['เหตุผลจำหน่าย']==='Dead'?'block':'none'}">
-          <label>สาเหตุการเสียชีวิต</label>
-          ${searchSel('สาเหตุการเสียชีวิต',o('diagnosis'),p['สาเหตุการเสียชีวิต']||'')}
+          <label>สาเหตุการเสียชีวิต <span style="color:red">*</span></label>
+          ${searchSelAdd('สาเหตุการเสียชีวิต',o('causeOfDeath'),'causeOfDeath',p['สาเหตุการเสียชีวิต']||'')}
+        </div>
+        <div id="referReasonBox" class="fg" style="display:${p['เหตุผลจำหน่าย']==='Refer'?'block':'none'}">
+          <label>เหตุผลที่ต้อง Refer <span style="color:red">*</span></label>
+          ${searchSelAdd('เหตุผลที่ต้อง Refer',o('referReason'),'referReason',p['เหตุผลที่ต้อง Refer']||'')}
         </div>
         ${fg('Ward/Hospital จำหน่าย',sel('Ward/Hospital',DC_WARD,p['Ward/Hospital']))}
         ${fg('ผู้บันทึก D/C',sel('ผู้บันทึก D/C',o('recorderDC'),p['ผู้บันทึก D/C'],'recorderDC'))}
@@ -3216,7 +3220,7 @@ function buildForm(p){
     'id','ชื่อ-สกุล','HN','AN','อายุ','วันเกิด','สิทธิ','Admit (Date)','Admit (Time)',
     'เตียง','การรับ','Ward ที่รับ','ผู้บันทึก Admit','Unplanned ICU','Re-admit ICU',
     'Diagnosis แรกรับ','แพทย์เจ้าของไข้','ประเภทผู้ป่วย','U/D','สถานะ',
-    'D/C (Date)','D/C (Time)','Diag สุดท้าย','เหตุผลจำหน่าย','สาเหตุการเสียชีวิต','Ward/Hospital',
+    'D/C (Date)','D/C (Time)','Diag สุดท้าย','เหตุผลจำหน่าย','สาเหตุการเสียชีวิต','เหตุผลที่ต้อง Refer','Ward/Hospital',
     'ผู้บันทึก D/C','รวมวันนอน','Ventilator (Name)','Ventilator (Start)','Ventilator (End)',
     'Vent. (day)','A-Line (Start)','A-Line (End)','A-Line (day)','C-Line (Start)',
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
@@ -3246,7 +3250,12 @@ function buildForm(p){
   setTimeout(()=>{setupAutoCalc();if(isDC)onStatusChange('จำหน่ายแล้ว');document.addEventListener('click',function h(e){if(!e.target.closest('.msd-wrap'))document.querySelectorAll('.msd-list.open').forEach(l=>l.classList.remove('open'));});},50);
 }
 
-function onDCReasonChange(v){const box=document.getElementById('causeOfDeathBox');if(box)box.style.display=v==='Dead'?'block':'none';}
+function onDCReasonChange(v){
+  const deadBox=document.getElementById('causeOfDeathBox');
+  const referBox=document.getElementById('referReasonBox');
+  if(deadBox) deadBox.style.display=v==='Dead'?'block':'none';
+  if(referBox) referBox.style.display=v==='Refer'?'block':'none';
+}
 function onStatusChange(val){const isDC=val==='จำหน่ายแล้ว';const n=document.getElementById('dcRequireNote');if(n)n.style.display=isDC?'block':'none';}
 
 // ตรวจสอบปี ค.ศ. ที่กรอกในช่อง date
@@ -3488,6 +3497,7 @@ async function savePatient(){
     const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);
     // บังคับกรอกสาเหตุการเสียชีวิตเมื่อ Dead
     if(data['เหตุผลจำหน่าย']==='Dead'&&!data['สาเหตุการเสียชีวิต']) mDC.push('สาเหตุการเสียชีวิต');
+    if(data['เหตุผลจำหน่าย']==='Refer'&&!data['เหตุผลที่ต้อง Refer']) mDC.push('เหตุผลที่ต้อง Refer');
     if(mDC.length){toast('🚪 D/C: '+mDC.join(', '),true);return;}
     // บังคับกรอก End ของ IC ที่มี Start แต่ไม่มี End
     const icCheck=[
@@ -5094,8 +5104,8 @@ async function loadKPI(){
     </div>`;
 
   // ── คำนวณ ──────────────────────────────────
-  const sepsisPts=pts.filter(p=>p['dxSpecialType']==='Sepsis'||p['dxSpecialType']==='Septic shock');
-  const sepsisDead=sepsisPts.filter(p=>p['สถานะ']==='จำหน่ายแล้ว'&&p['เหตุผลจำหน่าย']==='Dead').length;
+  const sepsisDead=pts.filter(p=>String(p['สาเหตุการเสียชีวิต']||'').toLowerCase().includes('sepsis')||String(p['สาเหตุการเสียชีวิต']||'').toLowerCase().includes('septic')).length;
+  const sepsisPts=pts.filter(p=>String(p['Diagnosis แรกรับ']||'').toLowerCase().includes('sepsis')||String(p['Diagnosis แรกรับ']||'').toLowerCase().includes('septic'));
   const sepsisMortality=sepsisPts.length>0?(sepsisDead/sepsisPts.length*100).toFixed(1):'-';
   const readmitRate=(s.readmitCount/Math.max(totalDC,1)*100).toFixed(1);
   const avgLOS=s.avgDaysPerPt||0;
