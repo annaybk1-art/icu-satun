@@ -583,9 +583,13 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div style="font-size:14px;font-weight:700">คะแนนรวม: <span id="icdscTotal">0</span>/8</div>
       <div id="icdscInterpret" style="font-size:12px;margin-top:4px"></div>
     </div>
-    <div style="margin-top:8px;display:flex;gap:8px">
-      <input type="date" id="icdscAssessDate" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
-      <button onclick="saveIcdscAssess()" class="btn btn-primary" style="flex:1">💾 บันทึก</button>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+      <input type="text" id="icdscAssessor" placeholder="ชื่อผู้ประเมิน..." 
+        style="padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
+      <div style="display:flex;gap:8px">
+        <input type="date" id="icdscAssessDate" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
+        <button onclick="saveIcdscAssess()" class="btn btn-primary" style="flex:1">💾 บันทึก</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2025,7 +2029,7 @@ function showApp(user){
   showEditButtonIfAdmin();
   // แสดงปุ่ม RN เฉพาะ nurse
   const rnBtn=document.getElementById('rnBtn');
-  if(rnBtn) rnBtn.style.display=user.role==='nurse'?'':'none';
+  if(rnBtn) rnBtn.style.display=(user.role==='nurse'||user.role==='admin')?'':'none';
   if(user.hiddenMenus){
     const hidden=typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus||'[]'):user.hiddenMenus||[];
     hidden.forEach(id=>{
@@ -2849,7 +2853,13 @@ function showRNFormForBed(bedId){
   ];
   document.getElementById('rnFormBedTitle').textContent=`${bedId} — ${pt['ชื่อ-สกุล']||''}`;
   document.getElementById('rnFormContent').innerHTML=`
-    <div style="font-size:11px;color:#6b7280;margin-bottom:12px">ผู้บันทึก: <b>${_rnUser?.fullname||_rnUser?.username||''}</b></div>
+    <div style="font-size:11px;color:#6b7280;margin-bottom:8px">ผู้บันทึก: <b>${_rnUser?.fullname||_rnUser?.username||''}</b></div>
+    <div class="fg" style="margin-bottom:12px">
+      <label style="font-size:11px;font-weight:600">👤 ผู้ประเมิน</label>
+      <input type="text" id="rnAssessorInput_${bedId}" value="${_rnUser?.fullname||_rnUser?.username||''}" 
+        placeholder="ชื่อผู้ประเมิน..." 
+        style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+    </div>
     
     <!-- SOS Score -->
     <div class="fsec" style="margin-bottom:12px">
@@ -2938,7 +2948,7 @@ async function saveRNData(close=true){
   const pt=(_icAdmittedPts||[]).find(p=>p['เตียง']===bedId);
   if(!pt) return;
   const bd=_icBedData[bedId]||{};
-  const assessor=_rnUser?.fullname||_rnUser?.username||'';
+  const assessor=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||_rnUser?.username||'';
   
   // บันทึก assessor
   if(assessor) icSet(bedId,'rnAssessor',assessor);
@@ -3006,6 +3016,9 @@ function openIcdscAssess(bedId){
     </div>`).join('');
   calcIcdsc();
   document.getElementById('icdscModal').style.display='flex';
+  // ใส่ชื่อผู้ประเมินอัตโนมัติ
+  const assessorEl=document.getElementById('icdscAssessor');
+  if(assessorEl) assessorEl.value=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||currentUser?.fullname||'';
 }
 
 function calcIcdsc(){
@@ -3029,10 +3042,11 @@ function saveIcdscAssess(){
     if(v==='1') total++;
   });
   const date=document.getElementById('icdscAssessDate').value;
+  const assessor=document.getElementById('icdscAssessor')?.value||'';
   const bd=_icBedData[_icdscBedId]||{};
-  // อัปเดตค่าล่าสุด
   icSet(_icdscBedId,'icdscLatest',total);
   icSet(_icdscBedId,'icdscDate',date);
+  if(assessor) icSet(_icdscBedId,'icdscAssessor',assessor);
   // อัปเดตค่าสูงสุด
   if(total>parseInt(bd.icdscMax||0)){
     icSet(_icdscBedId,'icdscMax',total);
