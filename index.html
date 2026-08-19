@@ -535,6 +535,76 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     </div>
   </div>
 </div>
+<!-- RN Modal -->
+<div id="rnModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:14px;width:min(420px,95vw);max-height:90vh;overflow-y:auto">
+    <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:14px 16px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center">
+      <div style="color:white;font-weight:700;font-size:15px">👩‍⚕️ RN บันทึกข้อมูล</div>
+      <button onclick="closeRNModal()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+    </div>
+    
+    <!-- RN Login -->
+    <div id="rnLoginBox" style="padding:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#374151">เข้าสู่ระบบ RN</div>
+      <div id="rnLoginErr" style="display:none;color:#c62828;font-size:12px;margin-bottom:8px"></div>
+      <div class="fg" style="margin-bottom:8px">
+        <label>Username</label>
+        <input type="text" id="rnUsername" placeholder="Username..." style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <label>รหัสผ่าน</label>
+        <input type="password" id="rnPassword" placeholder="รหัสผ่าน..." style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+      </div>
+      <button onclick="doRNLogin()" class="btn btn-primary" style="width:100%;background:#2e7d32">เข้าสู่ระบบ</button>
+    </div>
+
+    <!-- เลือกเตียง -->
+    <div id="rnBedSelectBox" style="display:none;padding:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:#374151">สวัสดี <span id="rnWelcomeName"></span> 👋</div>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:12px">เลือกเตียงที่คุณดูแล</div>
+      <div id="rnBedList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>
+      <button onclick="openRNForm()" class="btn btn-primary" style="width:100%;background:#2e7d32" id="rnStartBtn" disabled>เริ่มบันทึกข้อมูล</button>
+    </div>
+  </div>
+</div>
+
+<!-- RN Form Modal -->
+<div id="rnFormModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto">
+  <div style="background:white;border-radius:14px;width:min(500px,95vw);margin:auto">
+    <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:14px 16px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center">
+      <div style="color:white;font-weight:700;font-size:14px">👩‍⚕️ RN — <span id="rnFormBedTitle"></span></div>
+      <button onclick="closeRNForm()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
+    </div>
+    <div id="rnFormContent" style="padding:16px"></div>
+    <div style="padding:0 16px 16px;display:flex;gap:8px">
+      <button onclick="saveRNData()" class="btn btn-primary" style="flex:1;background:#2e7d32">💾 บันทึก</button>
+      <button onclick="closeRNForm()" class="btn btn-outline" style="flex:1">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ICDSC Assessment Modal -->
+<div id="icdscModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-weight:700;font-size:15px;color:#1b5e20">🧠 แบบประเมิน ICDSC</div>
+      <button onclick="closeIcdscAssess()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
+    </div>
+    <div style="font-size:11px;color:#6b7280;background:#f9fafb;padding:8px;border-radius:8px;margin-bottom:12px">
+      ⚠️ ประเมินผู้ป่วยในแต่ละเวร/วัน · ข้อ 1-4 ประเมิน ณ ขณะนั้น · ข้อ 5-8 จากข้อมูลย้อนหลัง 24 ชม.
+    </div>
+    <div id="icdscItems"></div>
+    <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="icdscResult">
+      <div style="font-size:14px;font-weight:700">คะแนนรวม: <span id="icdscTotal">0</span>/8</div>
+      <div id="icdscInterpret" style="font-size:12px;margin-top:4px"></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <input type="date" id="icdscAssessDate" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
+      <button onclick="saveIcdscAssess()" class="btn btn-primary" style="flex:1">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <div id="appPage">
   <div class="topbar">
     <div class="topbar-l">
@@ -712,7 +782,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>#</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
               <th>อายุ</th><th>U/D</th><th>Dx แรกรับ</th><th>แพทย์</th><th>ประเภท</th>
-              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
+              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="ptTbl"><tr><td colspan="17" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
@@ -744,13 +814,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="tbl-head" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
           <div class="tbl-title">🛏️ ผู้ป่วยที่กำลัง Admit</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="openRNMode()" style="background:linear-gradient(135deg,#2e7d32,#43a047);font-size:12px;padding:6px 14px">👩‍⚕️ RN</button>
             <button class="btn btn-primary" onclick="openInCharge()" style="background:linear-gradient(135deg,#1565c0,#1e88e5);font-size:12px;padding:6px 14px">📋 In Charge</button>
-            <button class="btn btn-outline btn-sm" onclick="toggleBedTblCols()" title="ซ่อน/แสดงคอลัมน์">⚙️ คอลัมน์</button>
           </div>
-        </div>
-        <!-- ตัวเลือกคอลัมน์ -->
-        <div id="bedTblColPanel" style="display:none;padding:8px 12px;background:#f9fafb;border-bottom:1px solid var(--g100);flex-wrap:wrap;gap:8px">
-          ${['SOS','ประเภท','ยา HD','การหายใจ','A-Line','C-Line','IV','F/C','ICD','หมอ','พยาบาล'].map(c=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;cursor:pointer"><input type="checkbox" checked onchange="setBedCol('${c}',this.checked)"> ${c}</label>`).join('')}
         </div>
         <div style="overflow-x:auto">
           <table id="bedAdmitTbl">
@@ -2421,6 +2487,13 @@ async function doIcLogin(){
         fc_stop:    pt['F/C (END)']?di(pt['F/C (END)']):'' ,
         icd_start:  pt['ICD (Start)']?di(pt['ICD (Start)']):'' ,
         icd_stop:   pt['ICD (End)']?di(pt['ICD (End)']):'' ,
+        piEvents:   tryParseJSON(pt['Pressure Injury'])||[],
+        ueEvents:   tryParseJSON(pt['Unplanned Extubation'])||[],
+        meEvents:   tryParseJSON(pt['Medication Error'])||[],
+        icdscLatest: pt['ICDSC Score']||'',
+        icdscDate:  pt['ICDSC Date']||'',
+        icdscMax:   pt['ICDSC Max']||'',
+        icdscMaxDate: pt['ICDSC Max Date']||'',
       };
     });
     renderIcBedList();
@@ -2572,18 +2645,42 @@ function renderIcBedList(){
             <div id="me_list_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
           </div>
 
-          <!-- ICDSC รายวัน -->
+          <!-- ICDSC -->
           <div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:10px;font-weight:600">🧠 ICDSC Score (วันนี้)</span>
+              <span style="font-size:10px;font-weight:600">🧠 ICDSC Score</span>
             </div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <input type="number" min="0" max="8" value="${bd.icdscToday||''}" placeholder="0-8" 
-                oninput="icSet('${bedId}','icdscToday',this.value)" style="width:80px;font-size:12px">
-              <button type="button" onclick="icSaveIcdsc('${bedId}')" class="btn btn-outline btn-sm" style="font-size:10px">บันทึก</button>
-              ${parseInt(bd.icdscToday||0)>=4?'<span style="font-size:10px;color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
+            <div style="margin-bottom:6px">
+              <button type="button" onclick="openIcdscAssess('${bedId}')" 
+                class="btn btn-outline btn-sm" style="font-size:11px;width:100%;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32">
+                📋 ประเมิน ICDSC (8 ข้อ)
+              </button>
             </div>
-            <div id="icdsc_list_${bedId}" style="margin-top:4px">${renderIcdscHistory(bd.icdscHistory||{})}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px">
+              <div>
+                <label style="font-size:9px;color:var(--gray500)">ล่าสุด</label>
+                <input type="number" min="0" max="8" value="${bd.icdscLatest||''}" placeholder="0-8"
+                  oninput="icSet('${bedId}','icdscLatest',this.value);icUpdateIcdscMax('${bedId}')"
+                  style="width:100%;font-size:11px">
+              </div>
+              <div>
+                <label style="font-size:9px;color:var(--gray500)">วันที่ล่าสุด</label>
+                <input type="date" value="${bd.icdscDate||''}"
+                  onchange="icSet('${bedId}','icdscDate',this.value)"
+                  style="width:100%;font-size:11px">
+              </div>
+              <div>
+                <label style="font-size:9px;color:var(--gray500)">สูงสุด</label>
+                <input type="number" min="0" max="8" value="${bd.icdscMax||''}" placeholder="auto"
+                  style="width:100%;font-size:11px;background:#f0f0f0" readonly>
+              </div>
+              <div>
+                <label style="font-size:9px;color:var(--gray500)">วันที่สูงสุด</label>
+                <input type="date" value="${bd.icdscMaxDate||''}"
+                  style="width:100%;font-size:11px;background:#f0f0f0" readonly>
+              </div>
+            </div>
+            ${parseInt(bd.icdscLatest||0)>=4?'<span style="font-size:9px;color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
           </div>
         </div>
       </div>
@@ -2663,6 +2760,271 @@ function icSaveIcdsc(bedId){
 function icTogglePIDate(bedId,v){const el=document.getElementById('pi_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
 function icToggleUEDate(bedId,v){const el=document.getElementById('ue_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
 function icToggleMEBox(bedId,v){const el=document.getElementById('me_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
+
+// ── RN System ────────────────────────────────────────────
+let _rnUser=null;
+let _rnSelectedBeds=[];
+
+function openRNMode(){
+  _rnUser=null;
+  _rnSelectedBeds=[];
+  document.getElementById('rnUsername').value='';
+  document.getElementById('rnPassword').value='';
+  document.getElementById('rnLoginErr').style.display='none';
+  document.getElementById('rnLoginBox').style.display='block';
+  document.getElementById('rnBedSelectBox').style.display='none';
+  document.getElementById('rnModal').style.display='flex';
+}
+
+function closeRNModal(){document.getElementById('rnModal').style.display='none';}
+
+async function doRNLogin(){
+  const uname=document.getElementById('rnUsername').value.trim();
+  const pwd=document.getElementById('rnPassword').value;
+  const errEl=document.getElementById('rnLoginErr');
+  if(!uname||!pwd){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.style.display='block';return;}
+  showLoad('กำลังเข้าสู่ระบบ...');
+  try{
+    const res=await api('login',{username:uname,password:pwd});
+    if(!res||res.status!=='approved') throw new Error('บัญชีนี้ยังไม่ได้รับการอนุมัติ');
+    _rnUser=res;
+    document.getElementById('rnWelcomeName').textContent=res.fullname||res.username;
+    // แสดงเตียงที่มีผู้ป่วย admit อยู่
+    const beds=(_icAdmittedPts||[]).map(p=>p['เตียง']).filter(Boolean);
+    document.getElementById('rnBedList').innerHTML=beds.map(b=>`
+      <button onclick="toggleRNBed('${b}',this)" 
+        style="padding:10px;border:2px solid var(--g200);border-radius:8px;background:white;cursor:pointer;font-size:12px;font-weight:600">
+        ${b}
+      </button>`).join('');
+    document.getElementById('rnLoginBox').style.display='none';
+    document.getElementById('rnBedSelectBox').style.display='block';
+  }catch(e){
+    errEl.textContent=e.message||'เข้าสู่ระบบไม่สำเร็จ';
+    errEl.style.display='block';
+  }finally{hideLoad();}
+}
+
+function toggleRNBed(bed,btn){
+  const idx=_rnSelectedBeds.indexOf(bed);
+  if(idx>=0){
+    _rnSelectedBeds.splice(idx,1);
+    btn.style.background='white';
+    btn.style.borderColor='var(--g200)';
+    btn.style.color='inherit';
+  } else {
+    _rnSelectedBeds.push(bed);
+    btn.style.background='#2e7d32';
+    btn.style.borderColor='#2e7d32';
+    btn.style.color='white';
+  }
+  document.getElementById('rnStartBtn').disabled=_rnSelectedBeds.length===0;
+}
+
+let _rnCurrentBedIdx=0;
+
+function openRNForm(){
+  if(!_rnSelectedBeds.length) return;
+  _rnCurrentBedIdx=0;
+  document.getElementById('rnModal').style.display='none';
+  showRNFormForBed(_rnSelectedBeds[0]);
+  document.getElementById('rnFormModal').style.display='flex';
+}
+
+function showRNFormForBed(bedId){
+  const pt=(_icAdmittedPts||[]).find(p=>p['เตียง']===bedId);
+  if(!pt) return;
+  if(!_icBedData[bedId]) _icBedData[bedId]={};
+  const bd=_icBedData[bedId];
+  document.getElementById('rnFormBedTitle').textContent=`${bedId} — ${pt['ชื่อ-สกุล']||''}`;
+  document.getElementById('rnFormContent').innerHTML=`
+    <div style="font-size:11px;color:#6b7280;margin-bottom:12px">ผู้บันทึก: <b>${_rnUser?.fullname||_rnUser?.username||''}</b></div>
+    
+    <!-- ICDSC -->
+    <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">🧠 ICDSC Score</div>
+      <button type="button" onclick="openIcdscAssess('${bedId}')" 
+        class="btn btn-outline btn-sm" style="width:100%;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;margin-bottom:6px">
+        📋 ประเมิน ICDSC (8 ข้อ)
+      </button>
+      <div style="display:flex;gap:6px;font-size:11px">
+        <span>ล่าสุด: <b>${bd.icdscLatest||'-'}</b> (${bd.icdscDate||'-'})</span>
+        <span>สูงสุด: <b>${bd.icdscMax||'-'}</b></span>
+      </div>
+    </div>
+
+    <!-- Patient Safety -->
+    <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">🛡️ Patient Safety</div>
+      
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:600">🩹 Pressure Injury</span>
+          <button type="button" onclick="icAddEvent('${bedId}','pi')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
+        </div>
+        <div id="rn_pi_${bedId}">${renderIcEvents(bd.piEvents||[],'pi','${bedId}')}</div>
+      </div>
+
+      <div style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:600">😮 Unplanned Extubation</span>
+          <button type="button" onclick="icAddEvent('${bedId}','ue')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
+        </div>
+        <div id="rn_ue_${bedId}">${renderIcEvents(bd.ueEvents||[],'ue','${bedId}')}</div>
+      </div>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:11px;font-weight:600">💊 Medication Error</span>
+          <button type="button" onclick="icAddEvent('${bedId}','me')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
+        </div>
+        <div id="rn_me_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
+      </div>
+    </div>
+
+    <!-- ผู้บันทึก -->
+    <input type="hidden" id="rnAssessor_${bedId}" value="${_rnUser?.fullname||_rnUser?.username||''}">
+    
+    <!-- ปุ่มเตียงถัดไป -->
+    ${_rnSelectedBeds.length>1?`
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-top:8px">
+      <span>เตียง ${_rnCurrentBedIdx+1}/${_rnSelectedBeds.length}</span>
+      ${_rnCurrentBedIdx<_rnSelectedBeds.length-1?`<button onclick="rnNextBed()" class="btn btn-outline btn-sm">เตียงถัดไป →</button>`:''}
+    </div>`:''}
+  `;
+}
+
+function rnNextBed(){
+  saveRNData(false);
+  _rnCurrentBedIdx++;
+  if(_rnCurrentBedIdx<_rnSelectedBeds.length){
+    showRNFormForBed(_rnSelectedBeds[_rnCurrentBedIdx]);
+  }
+}
+
+async function saveRNData(close=true){
+  const bedId=_rnSelectedBeds[_rnCurrentBedIdx];
+  const pt=(_icAdmittedPts||[]).find(p=>p['เตียง']===bedId);
+  if(!pt) return;
+  const bd=_icBedData[bedId]||{};
+  const assessor=_rnUser?.fullname||_rnUser?.username||'';
+  
+  // บันทึก assessor
+  if(assessor) icSet(bedId,'rnAssessor',assessor);
+
+  const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
+  const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
+  const updated={...pt};
+  if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
+  if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
+  if(bd.icdscMax!==undefined) updated['ICDSC Max']=bd.icdscMax;
+  if(bd.icdscMaxDate!==undefined) updated['ICDSC Max Date']=bd.icdscMaxDate;
+  if(bd.piEvents!==undefined) updated['Pressure Injury']=JSON.stringify(bd.piEvents);
+  if(bd.ueEvents!==undefined) updated['Unplanned Extubation']=JSON.stringify(bd.ueEvents);
+  if(bd.meEvents!==undefined) updated['Medication Error']=JSON.stringify(bd.meEvents);
+  if(assessor) updated['RN Assessor']=assessor;
+
+  try{
+    await api('savePatient',{},{id:pt['id'],month:m,year:y,data:updated});
+    if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
+  }catch(e){toast('⚠️ '+e.message,true);}
+}
+
+function closeRNForm(){
+  document.getElementById('rnFormModal').style.display='none';
+}
+
+function openRNMode_fromIcdsc(){
+  document.getElementById('rnFormModal').style.display='flex';
+}
+
+// ── End RN System ─────────────────────────────────────────
+
+const ICDSC_ITEMS=[
+  {q:'การเปลี่ยนแปลงระดับรู้สึกตัว',desc:'Agitation [RASS 1-4] = 1, ตื่นตัวปกติ [RASS 0] = 0, หลับลึก [RASS -4/-5] = ไม่สามารถประเมิน'},
+  {q:'การขาดความสนใจ (Inattention)',desc:'ไม่สามารถทำตามคำสั่ง หรือฟุ้งซ่าน'},
+  {q:'การเกิดอาการสับสน (Disorientation)',desc:'ไม่รู้ว่าตัวเองอยู่ที่ไหน วันเวลา'},
+  {q:'Hallucination, delusion หรือ psychosis',desc:'มีอาการหลอน หวาดระแวง'},
+  {q:'Psychomotor agitation หรือ retardation',desc:'ดึงสาย IV หรือซึมเฉื่อยผิดปกติ'},
+  {q:'การใช้คำพูดหรืออารมณ์ไม่เหมาะสม',desc:'พูดไม่ต่อเนื่อง หรืออารมณ์แปรปรวน'},
+  {q:'วงจรการหลับ-ตื่นผิดปกติ',desc:'นอนน้อยกว่า 4 ชม. หรือหลับมากช่วงกลางวัน'},
+  {q:'อาการขึ้นลงตลอดเวลา',desc:'อาการเปลี่ยนแปลงในช่วง 24 ชม.'},
+];
+
+let _icdscBedId='';
+
+function openIcdscAssess(bedId){
+  _icdscBedId=bedId;
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('icdscAssessDate').value=today;
+  document.getElementById('icdscItems').innerHTML=ICDSC_ITEMS.map((item,i)=>`
+    <div style="padding:10px;border-bottom:1px solid #f3f4f6">
+      <div style="font-size:12px;font-weight:600;margin-bottom:2px">${i+1}. ${item.q}</div>
+      <div style="font-size:10px;color:#6b7280;margin-bottom:6px">${item.desc}</div>
+      <div style="display:flex;gap:8px">
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
+          <input type="radio" name="icdsc_${i}" value="0" checked onchange="calcIcdsc()"> 0 ไม่มี
+        </label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
+          <input type="radio" name="icdsc_${i}" value="1" onchange="calcIcdsc()"> 1 มี
+        </label>
+        ${i===0?`<label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
+          <input type="radio" name="icdsc_${i}" value="na" onchange="calcIcdsc()"> ไม่สามารถประเมิน
+        </label>`:''}
+      </div>
+    </div>`).join('');
+  calcIcdsc();
+  document.getElementById('icdscModal').style.display='flex';
+}
+
+function calcIcdsc(){
+  let total=0;
+  ICDSC_ITEMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="icdsc_${i}"]:checked`)?.value;
+    if(v==='1') total++;
+  });
+  document.getElementById('icdscTotal').textContent=total;
+  const res=document.getElementById('icdscResult');
+  const interp=document.getElementById('icdscInterpret');
+  if(total===0){res.style.background='#e8f5e9';interp.textContent='ปกติ ไม่มีภาวะ Delirium';}
+  else if(total<=3){res.style.background='#fff3e0';interp.textContent='Subsyndromal Delirium (SSD)';}
+  else{res.style.background='#ffebee';interp.textContent='⚠️ มีภาวะสับสนเฉียบพลัน Delirium';}
+}
+
+function saveIcdscAssess(){
+  let total=0;
+  ICDSC_ITEMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="icdsc_${i}"]:checked`)?.value;
+    if(v==='1') total++;
+  });
+  const date=document.getElementById('icdscAssessDate').value;
+  const bd=_icBedData[_icdscBedId]||{};
+  // อัปเดตค่าล่าสุด
+  icSet(_icdscBedId,'icdscLatest',total);
+  icSet(_icdscBedId,'icdscDate',date);
+  // อัปเดตค่าสูงสุด
+  if(total>parseInt(bd.icdscMax||0)){
+    icSet(_icdscBedId,'icdscMax',total);
+    icSet(_icdscBedId,'icdscMaxDate',date);
+  }
+  closeIcdscAssess();
+  toast(`✅ บันทึก ICDSC = ${total} คะแนน`);
+  // Re-render IC form
+  renderIcBedList();
+}
+
+function closeIcdscAssess(){document.getElementById('icdscModal').style.display='none';}
+
+function icUpdateIcdscMax(bedId){
+  const bd=_icBedData[bedId]||{};
+  const latest=parseInt(bd.icdscLatest||0);
+  const currentMax=parseInt(bd.icdscMax||0);
+  if(latest>currentMax){
+    icSet(bedId,'icdscMax',latest);
+    icSet(bedId,'icdscMaxDate',bd.icdscDate||new Date().toISOString().split('T')[0]);
+  }
+}
+
+function tryParseJSON(str){try{return str?JSON.parse(str):null;}catch(e){return null;}}
 
 function icSet(bedId,key,val){
   if(!_icBedData[bedId]) _icBedData[bedId]={};
@@ -2805,6 +3167,15 @@ async function saveInChargeToPatients(){
     if(bd.sos!==undefined) updated['SOS Score']=bd.sos;
     if(bd.patType!==undefined) updated['ประเภทผู้ป่วย ICU']=bd.patType;
     if(bd.note!==undefined) updated['หมายเหตุ']=bd.note;
+    // Patient Safety
+    if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
+    if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
+    if(bd.icdscMax!==undefined) updated['ICDSC Max']=bd.icdscMax;
+    if(bd.icdscMaxDate!==undefined) updated['ICDSC Max Date']=bd.icdscMaxDate;
+    if(bd.piEvents!==undefined) updated['Pressure Injury']=JSON.stringify(bd.piEvents);
+    if(bd.ueEvents!==undefined) updated['Unplanned Extubation']=JSON.stringify(bd.ueEvents);
+    if(bd.meEvents!==undefined) updated['Medication Error']=JSON.stringify(bd.meEvents);
+    if(bd.icdscHistory!==undefined) updated['ICDSC History']=JSON.stringify(bd.icdscHistory);
     const icMap={vent:['Ventilator (Start)','Ventilator (End)'],aline:['A-Line (Start)','A-Line (End)'],cline:['C-Line (Start)','C-Line (End.)'],iv:['IV (Start)','IV (End)'],fc:['F/C (Start)','F/C (END)'],icd:['ICD (Start)','ICD (End)']};
     Object.entries(icMap).forEach(([k,[s,e]])=>{
       if(bd[k+'_start']!==undefined) updated[s]=bd[k+'_start'];
@@ -3104,6 +3475,7 @@ function renderTbl(){
       <td style="white-space:nowrap">${fmtDate(p['D/C (Date)'])||'-'}</td>
       <td style="text-align:center">${(()=>{if(!p['Admit (Date)'])return '-';const dc=p['D/C (Date)']||new Date().toISOString().split('T')[0];return daysBetween(p['Admit (Date)'],dc);})()}</td>
       <td>${dc?`<span class="${dcC}" style="font-size:10.5px">${dc}</span>`:'-'}</td>
+      <td style="font-size:10.5px;white-space:nowrap">${p['ผู้บันทึก D/C']||'-'}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
