@@ -799,7 +799,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div class="tbl-head" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
           <div class="tbl-title">🛏️ ผู้ป่วยที่กำลัง Admit</div>
           <div style="display:flex;gap:4px;flex-wrap:wrap">
-            <button class="btn btn-primary" onclick="openRNMode()" style="background:linear-gradient(135deg,#2e7d32,#43a047);font-size:12px;padding:6px 14px">👩‍⚕️ RN</button>
+            <button class="btn btn-primary" id="rnBtn" onclick="openRNMode()" style="display:none;background:linear-gradient(135deg,#2e7d32,#43a047);font-size:12px;padding:6px 14px">👩‍⚕️ RN</button>
             <button class="btn btn-primary" onclick="openInCharge()" style="background:linear-gradient(135deg,#1565c0,#1e88e5);font-size:12px;padding:6px 14px">📋 In Charge</button>
           </div>
         </div>
@@ -2023,7 +2023,9 @@ function showApp(user){
     });
   }
   showEditButtonIfAdmin();
-  // apply hidden menus จาก checkbox
+  // แสดงปุ่ม RN เฉพาะ nurse
+  const rnBtn=document.getElementById('rnBtn');
+  if(rnBtn) rnBtn.style.display=user.role==='nurse'?'':'none';
   if(user.hiddenMenus){
     const hidden=typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus||'[]'):user.hiddenMenus||[];
     hidden.forEach(id=>{
@@ -2555,13 +2557,10 @@ function renderIcBedList(){
         ${dept?`<span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px">${dept}</span>`:''}
       </div>
       <div class="ic-bed-grid">
+        <!-- In Charge section -->
         <div class="fg" style="grid-column:1/-1">
           <label style="font-size:10px">Dx (อัปเดต)</label>
           <input type="text" value="${esc(dx)}" placeholder="Diagnosis..." oninput="icSet('${bedId}','dx',this.value)" style="width:100%">
-        </div>
-        <div class="fg">
-          <label style="font-size:10px">SOS Score</label>
-          <input type="number" min="0" max="16" value="${esc(sos)}" placeholder="0-16" oninput="icSet('${bedId}','sos',this.value)" style="width:100%">
         </div>
         <div class="fg">
           <label style="font-size:10px">ประเภทผู้ป่วย ICU</label>
@@ -2573,6 +2572,11 @@ function renderIcBedList(){
             <option value="${esc(doc)}" selected>${doc||'-- เลือก --'}</option>
             ${(_opts['doctors']||[]).filter(d=>d!==doc).map(d=>`<option value="${esc(d)}">${d}</option>`).join('')}
           </select>
+        </div>
+        <!-- SOS read-only (RN กรอก) -->
+        <div class="fg">
+          <label style="font-size:10px;color:#6b7280">SOS Score <span style="font-size:9px">(RN)</span></label>
+          <div style="padding:6px 10px;background:#f9fafb;border:1px solid var(--g200);border-radius:8px;font-weight:700;font-size:13px">${sos||'-'}</div>
         </div>
         <div class="fg" style="grid-column:1/-1">
           <label style="font-size:10px">💊 ยา HD (เลือกได้หลายตัว)</label>
@@ -2593,8 +2597,19 @@ function renderIcBedList(){
           </div>
         </div>
         <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px">🩺 IC (เริ่ม / หยุด)</label>
-          <div style="background:#f9fafb;border-radius:6px;padding:8px;border:1px solid var(--g100)">${icRows}</div>
+          <label style="font-size:10px;color:#6b7280">🩺 IC Devices <span style="font-size:9px">(RN)</span></label>
+          <div style="background:#f9fafb;border-radius:6px;padding:8px;border:1px solid var(--g100)">
+            ${icItems.map(ic=>{
+              const started=bd[ic.key+'_start']!==undefined?bd[ic.key+'_start']:(pt[ic.startF]?di(pt[ic.startF]):'');
+              const stopped=bd[ic.key+'_stop']!==undefined?bd[ic.key+'_stop']:(pt[ic.endF]?di(pt[ic.endF]):'');
+              if(!started) return '';
+              return `<div style="display:flex;gap:8px;font-size:10px;padding:3px 0;border-bottom:1px solid var(--g100)">
+                <span style="font-weight:600;width:80px">${ic.label}</span>
+                <span>เริ่ม: ${started||'-'}</span>
+                <span>หยุด: ${stopped||'-'}</span>
+              </div>`;
+            }).join('')||'<span style="font-size:10px;color:#9ca3af">ยังไม่มีข้อมูล</span>'}
+          </div>
         </div>
         <div class="fg" style="grid-column:1/-1">
           <label style="font-size:10px">หมายเหตุ</label>
@@ -2630,39 +2645,15 @@ function renderIcBedList(){
             <div id="me_list_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
           </div>
 
-          <!-- ICDSC -->
+          <!-- ICDSC read-only (RN กรอก) -->
           <div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:10px;font-weight:600">🧠 ICDSC Score</span>
+            <label style="font-size:10px;color:#6b7280">🧠 ICDSC Score <span style="font-size:9px">(RN)</span></label>
+            <div style="display:flex;gap:8px;font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
+              <span>ล่าสุด: <b>${bd.icdscLatest||'-'}</b> (${bd.icdscDate||'-'})</span>
+              <span>สูงสุด: <b>${bd.icdscMax||'-'}</b> (${bd.icdscMaxDate||'-'})</span>
+              ${parseInt(bd.icdscLatest||0)>=4?'<span style="color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
             </div>
-            <div style="margin-bottom:6px">
-              <button type="button" onclick="openIcdscAssess('${bedId}')" 
-                class="btn btn-outline btn-sm" style="font-size:11px;width:100%;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32">
-                📋 ประเมิน ICDSC (8 ข้อ)
-              </button>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px">
-              <div>
-                <label style="font-size:9px;color:var(--gray500)">ล่าสุด</label>
-                <input type="number" min="0" max="8" value="${bd.icdscLatest||''}" placeholder="0-8"
-                  oninput="icSet('${bedId}','icdscLatest',this.value);icUpdateIcdscMax('${bedId}')"
-                  style="width:100%;font-size:11px">
-              </div>
-              <div>
-                <label style="font-size:9px;color:var(--gray500)">วันที่ล่าสุด</label>
-                <input type="date" value="${bd.icdscDate||''}"
-                  onchange="icSet('${bedId}','icdscDate',this.value)"
-                  style="width:100%;font-size:11px">
-              </div>
-              <div>
-                <label style="font-size:9px;color:var(--gray500)">สูงสุด</label>
-                <input type="number" min="0" max="8" value="${bd.icdscMax||''}" placeholder="auto"
-                  style="width:100%;font-size:11px;background:#f0f0f0" readonly>
-              </div>
-              <div>
-                <label style="font-size:9px;color:var(--gray500)">วันที่สูงสุด</label>
-                <input type="date" value="${bd.icdscMaxDate||''}"
-                  style="width:100%;font-size:11px;background:#f0f0f0" readonly>
+          </div>
               </div>
             </div>
             ${parseInt(bd.icdscLatest||0)>=4?'<span style="font-size:9px;color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
@@ -2848,11 +2839,39 @@ function showRNFormForBed(bedId){
   if(!pt) return;
   if(!_icBedData[bedId]) _icBedData[bedId]={};
   const bd=_icBedData[bedId];
+  const icItems=[
+    {key:'vent',label:'🫁 Vent'},
+    {key:'aline',label:'💉 A-Line'},
+    {key:'cline',label:'🔗 C-Line'},
+    {key:'iv',label:'🩸 IV'},
+    {key:'fc',label:'🪠 F/C'},
+    {key:'icd',label:'🩺 ICD'},
+  ];
   document.getElementById('rnFormBedTitle').textContent=`${bedId} — ${pt['ชื่อ-สกุล']||''}`;
   document.getElementById('rnFormContent').innerHTML=`
     <div style="font-size:11px;color:#6b7280;margin-bottom:12px">ผู้บันทึก: <b>${_rnUser?.fullname||_rnUser?.username||''}</b></div>
     
-    <!-- ICDSC -->
+    <!-- SOS Score -->
+    <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">📊 SOS Score (ล่าสุด)</div>
+      <input type="number" min="0" max="16" value="${bd.sos||''}" placeholder="0-16"
+        oninput="icSet('${bedId}','sos',this.value)"
+        style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
+    </div>
+
+    <!-- IC Devices -->
+    <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">🩺 IC Devices</div>
+      ${icItems.map(ic=>{
+        const started=bd[ic.key+'_start']||'';
+        const stopped=bd[ic.key+'_stop']||'';
+        return `<div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:4px;align-items:center;padding:4px 0;border-bottom:1px solid var(--g100)">
+          <span style="font-size:10px;font-weight:600">${ic.label}</span>
+          <label style="font-size:9px;color:var(--gray500)">เริ่ม<input type="date" value="${started}" onchange="icSet('${bedId}','${ic.key}_start',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
+          <label style="font-size:9px;color:var(--gray500)">หยุด<input type="date" value="${stopped}" onchange="icSet('${bedId}','${ic.key}_stop',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
+        </div>`;
+      }).join('')}
+    </div>
     <div class="fsec" style="margin-bottom:12px">
       <div class="fsec-title" style="font-size:12px">🧠 ICDSC Score</div>
       <button type="button" onclick="openIcdscAssess('${bedId}')" 
