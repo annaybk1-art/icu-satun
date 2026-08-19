@@ -543,23 +543,8 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <button onclick="closeRNModal()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
     </div>
     
-    <!-- RN Login -->
-    <div id="rnLoginBox" style="padding:16px">
-      <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:#374151">เข้าสู่ระบบ RN</div>
-      <div id="rnLoginErr" style="display:none;color:#c62828;font-size:12px;margin-bottom:8px"></div>
-      <div class="fg" style="margin-bottom:8px">
-        <label>Username</label>
-        <input type="text" id="rnUsername" placeholder="Username..." style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
-      </div>
-      <div class="fg" style="margin-bottom:12px">
-        <label>รหัสผ่าน</label>
-        <input type="password" id="rnPassword" placeholder="รหัสผ่าน..." onkeydown="if(event.key==='Enter')doRNLogin()" style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
-      </div>
-      <button type="button" onclick="doRNLogin()" class="btn btn-primary" style="width:100%;background:#2e7d32">เข้าสู่ระบบ</button>
-    </div>
-
     <!-- เลือกเตียง -->
-    <div id="rnBedSelectBox" style="display:none;padding:16px">
+    <div id="rnBedSelectBox" style="padding:16px">
       <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:#374151">สวัสดี <span id="rnWelcomeName"></span> 👋</div>
       <div style="font-size:12px;color:#6b7280;margin-bottom:12px">เลือกเตียงที่คุณดูแล</div>
       <div id="rnBedList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>
@@ -2768,12 +2753,52 @@ let _rnSelectedBeds=[];
 function openRNMode(){
   _rnUser=null;
   _rnSelectedBeds=[];
-  document.getElementById('rnUsername').value='';
-  document.getElementById('rnPassword').value='';
-  document.getElementById('rnLoginErr').style.display='none';
-  document.getElementById('rnLoginBox').style.display='block';
-  document.getElementById('rnBedSelectBox').style.display='none';
+  // ใช้ระบบเดียวกับ In Charge — เลือก RN จากรายชื่อ
+  document.getElementById('rnLoginBox').style.display='none';
+  document.getElementById('rnBedSelectBox').style.display='block';
+  document.getElementById('rnWelcomeName').textContent=currentUser?.fullname||currentUser?.username||'';
+  _rnUser=currentUser;
+  // โหลดเตียง
+  const beds=(_icAdmittedPts&&_icAdmittedPts.length)?
+    _icAdmittedPts.map(p=>p['เตียง']).filter(Boolean):[];
+  if(!beds.length){
+    // โหลดใหม่
+    const m=new Date().getMonth()+1;
+    const y=new Date().getFullYear();
+    fetchMonthPts(m,y).then(pts=>{
+      _icAdmittedPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
+      _icAdmittedPts.forEach(pt=>{
+        const bedId=(pt['เตียง']||'').trim();
+        if(!_icBedData[bedId]) _icBedData[bedId]={
+          dx:pt['Diagnosis แรกรับ']||'',
+          hadrugsList:pt['ยา HD']||'',
+          doctor:pt['แพทย์เจ้าของไข้']||'',
+          sos:pt['SOS Score']||'',
+          patType:pt['ประเภทผู้ป่วย ICU']||'',
+          note:pt['หมายเหตุ']||'',
+          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
+          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
+          meEvents:tryParseJSON(pt['Medication Error'])||[],
+          icdscLatest:pt['ICDSC Score']||'',
+          icdscDate:pt['ICDSC Date']||'',
+          icdscMax:pt['ICDSC Max']||'',
+          icdscMaxDate:pt['ICDSC Max Date']||'',
+        };
+      });
+      renderRNBedList(_icAdmittedPts.map(p=>p['เตียง']).filter(Boolean));
+    }).catch(e=>toast(e.message,true));
+  } else {
+    renderRNBedList(beds);
+  }
   document.getElementById('rnModal').style.display='flex';
+}
+
+function renderRNBedList(beds){
+  document.getElementById('rnBedList').innerHTML=beds.map(b=>`
+    <button type="button" onclick="toggleRNBed('${b}',this)" 
+      style="padding:10px;border:2px solid var(--g200);border-radius:8px;background:white;cursor:pointer;font-size:12px;font-weight:600">
+      ${b}
+    </button>`).join('');
 }
 
 function closeRNModal(){document.getElementById('rnModal').style.display='none';}
