@@ -5209,6 +5209,7 @@ async function loadKPI(){
   showLoad('กำลังโหลด KPI...');
   let pts=[];
   try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
+  try{
   const s=getStats(pts);
   const totalDC=s.discharged||1;
   const totalDays=s.totalDays||1;
@@ -5282,6 +5283,7 @@ async function loadKPI(){
       ${kpiRow('📋','Family Meeting Documentation','-','%','≥ 90%',false)}
       ${kpiRow('🤝','Palliative Care Consultation',s.pallCount,'ราย','-',true)}
     `)}`;
+  }catch(err){toast('KPI Error: '+err.message,true);console.error(err);}
 }
 
 async function loadMonthly(){
