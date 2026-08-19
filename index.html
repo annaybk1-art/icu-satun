@@ -2544,50 +2544,120 @@ function renderIcBedList(){
         </div>
         <div class="fg" style="grid-column:1/-1">
           <label style="font-size:10px;font-weight:700;color:#c62828">🛡️ Patient Safety</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-            <div>
-              <label style="font-size:9px;color:var(--gray500)">Pressure Injury</label>
-              <select onchange="icSet('${bedId}','pressureInjury',this.value);icTogglePIDate('${bedId}',this.value)" style="width:100%;font-size:11px">
-                <option value="No" ${(bd.pressureInjury||'No')==='No'?'selected':''}>No</option>
-                <option value="Yes" ${(bd.pressureInjury||'No')==='Yes'?'selected':''}>Yes</option>
-              </select>
-              <div id="pi_${bedId}" style="display:${(bd.pressureInjury||'No')==='Yes'?'block':'none'}">
-                <input type="date" value="${bd.pressureInjuryDate||''}" onchange="icSet('${bedId}','pressureInjuryDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
-              </div>
+          
+          <!-- Pressure Injury -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:10px;font-weight:600">🩹 Pressure Injury</span>
+              <button type="button" onclick="icAddEvent('${bedId}','pi')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
             </div>
-            <div>
-              <label style="font-size:9px;color:var(--gray500)">Unplanned Extubation</label>
-              <select onchange="icSet('${bedId}','unplannedExtub',this.value);icToggleUEDate('${bedId}',this.value)" style="width:100%;font-size:11px">
-                <option value="No" ${(bd.unplannedExtub||'No')==='No'?'selected':''}>No</option>
-                <option value="Yes" ${(bd.unplannedExtub||'No')==='Yes'?'selected':''}>Yes</option>
-              </select>
-              <div id="ue_${bedId}" style="display:${(bd.unplannedExtub||'No')==='Yes'?'block':'none'}">
-                <input type="date" value="${bd.unplannedExtubDate||''}" onchange="icSet('${bedId}','unplannedExtubDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
-              </div>
+            <div id="pi_list_${bedId}">${renderIcEvents(bd.piEvents||[],'pi','${bedId}')}</div>
+          </div>
+
+          <!-- Unplanned Extubation -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:10px;font-weight:600">😮 Unplanned Extubation</span>
+              <button type="button" onclick="icAddEvent('${bedId}','ue')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
             </div>
-            <div>
-              <label style="font-size:9px;color:var(--gray500)">Medication Error</label>
-              <select onchange="icSet('${bedId}','medError',this.value);icToggleMEBox('${bedId}',this.value)" style="width:100%;font-size:11px">
-                <option value="No" ${(bd.medError||'No')==='No'?'selected':''}>No</option>
-                <option value="Yes" ${(bd.medError||'No')==='Yes'?'selected':''}>Yes</option>
-              </select>
-              <div id="me_${bedId}" style="display:${(bd.medError||'No')==='Yes'?'block':'none'}">
-                <input type="date" value="${bd.medErrorDate||''}" onchange="icSet('${bedId}','medErrorDate',this.value)" style="width:100%;font-size:10px;margin-top:2px">
-                <select onchange="icSet('${bedId}','medErrorType',this.value)" style="width:100%;font-size:10px;margin-top:2px">
-                  ${['Wrong dose','Wrong drug','Wrong time','Wrong patient','Wrong route','อื่นๆ'].map(t=>`<option value="${t}" ${bd.medErrorType===t?'selected':''}>${t}</option>`).join('')}
-                </select>
-              </div>
+            <div id="ue_list_${bedId}">${renderIcEvents(bd.ueEvents||[],'ue','${bedId}')}</div>
+          </div>
+
+          <!-- Medication Error -->
+          <div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:10px;font-weight:600">💊 Medication Error</span>
+              <button type="button" onclick="icAddEvent('${bedId}','me')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
             </div>
-            <div>
-              <label style="font-size:9px;color:var(--gray500)">ICDSC Score (0-8)</label>
-              <input type="number" min="0" max="8" value="${bd.icdsc||''}" placeholder="0-8" oninput="icSet('${bedId}','icdsc',this.value)" style="width:100%;font-size:11px">
-              ${parseInt(bd.icdsc||0)>=4?`<span style="font-size:9px;color:#c62828;font-weight:700">⚠️ Delirium</span>`:''}
+            <div id="me_list_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
+          </div>
+
+          <!-- ICDSC รายวัน -->
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <span style="font-size:10px;font-weight:600">🧠 ICDSC Score (วันนี้)</span>
             </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <input type="number" min="0" max="8" value="${bd.icdscToday||''}" placeholder="0-8" 
+                oninput="icSet('${bedId}','icdscToday',this.value)" style="width:80px;font-size:12px">
+              <button type="button" onclick="icSaveIcdsc('${bedId}')" class="btn btn-outline btn-sm" style="font-size:10px">บันทึก</button>
+              ${parseInt(bd.icdscToday||0)>=4?'<span style="font-size:10px;color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
+            </div>
+            <div id="icdsc_list_${bedId}" style="margin-top:4px">${renderIcdscHistory(bd.icdscHistory||{})}</div>
           </div>
         </div>
       </div>
     </div>`;
   }).join('');
+}
+
+function renderIcEvents(events,type,bedId){
+  if(!events||!events.length) return '<div style="font-size:10px;color:#9ca3af">ยังไม่มีข้อมูล</div>';
+  return events.map((ev,i)=>`
+    <div style="display:flex;align-items:center;gap:4px;background:#f9fafb;border-radius:6px;padding:4px 6px;margin-bottom:2px;font-size:10px">
+      <span>📅 ${ev.date}</span>
+      ${ev.type?`<span style="background:#fee2e2;color:#c62828;padding:1px 6px;border-radius:4px">${ev.type}</span>`:''}
+      ${ev.status?`<span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px">${ev.status}</span>`:''}
+      <button type="button" onclick="icRemoveEvent('${bedId}','${type}',${i})" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#c62828;font-size:12px">×</button>
+    </div>`).join('');
+}
+
+function renderIcdscHistory(history){
+  const entries=Object.entries(history).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
+  if(!entries.length) return '<div style="font-size:10px;color:#9ca3af">ยังไม่มีประวัติ</div>';
+  return `<div style="display:flex;flex-wrap:wrap;gap:4px">${entries.map(([d,s])=>`
+    <div style="font-size:9px;background:${parseInt(s)>=4?'#fee2e2':'#f3f4f6'};color:${parseInt(s)>=4?'#c62828':'#374151'};padding:2px 6px;border-radius:4px">
+      ${d.slice(5)}: <b>${s}</b>
+    </div>`).join('')}</div>`;
+}
+
+async function icAddEvent(bedId,type){
+  const today=new Date().toISOString().split('T')[0];
+  if(!_icBedData[bedId]) _icBedData[bedId]={};
+  const bd=_icBedData[bedId];
+  
+  if(type==='pi'){
+    const status=await showInlinePrompt('สถานะ: พิมพ์ "เกิด" หรือ "หาย"');
+    if(!status) return;
+    const date=await showInlinePrompt('วันที่ (YYYY-MM-DD):');
+    if(!date) return;
+    if(!bd.piEvents) bd.piEvents=[];
+    bd.piEvents.push({date:date||today,status});
+    document.getElementById('pi_list_'+bedId).innerHTML=renderIcEvents(bd.piEvents,'pi',bedId);
+  } else if(type==='ue'){
+    const date=await showInlinePrompt('วันที่เกิด (YYYY-MM-DD):');
+    if(!date) return;
+    if(!bd.ueEvents) bd.ueEvents=[];
+    bd.ueEvents.push({date:date||today});
+    document.getElementById('ue_list_'+bedId).innerHTML=renderIcEvents(bd.ueEvents,'ue',bedId);
+  } else if(type==='me'){
+    const date=await showInlinePrompt('วันที่เกิด (YYYY-MM-DD):');
+    if(!date) return;
+    const meType=await showInlinePrompt('ประเภท: Wrong dose / Wrong drug / Wrong time / Wrong patient / Wrong route / อื่นๆ');
+    if(!bd.meEvents) bd.meEvents=[];
+    bd.meEvents.push({date:date||today,type:meType||'อื่นๆ'});
+    document.getElementById('me_list_'+bedId).innerHTML=renderIcEvents(bd.meEvents,'me',bedId);
+  }
+}
+
+function icRemoveEvent(bedId,type,idx){
+  if(!_icBedData[bedId]) return;
+  const bd=_icBedData[bedId];
+  const key=type==='pi'?'piEvents':type==='ue'?'ueEvents':'meEvents';
+  if(bd[key]) bd[key].splice(idx,1);
+  document.getElementById(type+'_list_'+bedId).innerHTML=renderIcEvents(bd[key]||[],type,bedId);
+}
+
+function icSaveIcdsc(bedId){
+  if(!_icBedData[bedId]) _icBedData[bedId]={};
+  const bd=_icBedData[bedId];
+  const score=bd.icdscToday;
+  if(!score&&score!=='0'){toast('กรุณากรอก ICDSC Score',true);return;}
+  const today=new Date().toISOString().split('T')[0];
+  if(!bd.icdscHistory) bd.icdscHistory={};
+  bd.icdscHistory[today]=score;
+  document.getElementById('icdsc_list_'+bedId).innerHTML=renderIcdscHistory(bd.icdscHistory);
+  toast('✅ บันทึก ICDSC แล้ว');
 }
 
 function icTogglePIDate(bedId,v){const el=document.getElementById('pi_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
@@ -5138,7 +5208,7 @@ async function loadKPI(){
   const y=parseInt(document.getElementById('kpiYear').value);
   showLoad('กำลังโหลด KPI...');
   let pts=[];
-  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
+  try{pts=await fetchMonthPts(m,y);toast('โหลดข้อมูล '+pts.length+' รายการ');}catch(e){toast(e.message,true);}finally{hideLoad();}
   const s=getStats(pts);
   const daysInMonth=new Date(y,m,0).getDate();
   const totalDC=s.discharged||1;
