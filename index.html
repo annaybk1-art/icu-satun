@@ -5208,9 +5208,8 @@ async function loadKPI(){
   const y=parseInt(document.getElementById('kpiYear').value);
   showLoad('กำลังโหลด KPI...');
   let pts=[];
-  try{pts=await fetchMonthPts(m,y);toast('โหลดข้อมูล '+pts.length+' รายการ');}catch(e){toast(e.message,true);}finally{hideLoad();}
+  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
   const s=getStats(pts);
-  const daysInMonth=new Date(y,m,0).getDate();
   const totalDC=s.discharged||1;
   const totalDays=s.totalDays||1;
   const ventDays=icDays(pts,'Ventilator (Start)','Ventilator (End)');
