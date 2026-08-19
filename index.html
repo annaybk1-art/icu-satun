@@ -553,9 +553,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       </div>
       <div class="fg" style="margin-bottom:12px">
         <label>รหัสผ่าน</label>
-        <input type="password" id="rnPassword" placeholder="รหัสผ่าน..." style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+        <input type="password" id="rnPassword" placeholder="รหัสผ่าน..." onkeydown="if(event.key==='Enter')doRNLogin()" style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
       </div>
-      <button onclick="doRNLogin()" class="btn btn-primary" style="width:100%;background:#2e7d32">เข้าสู่ระบบ</button>
+      <button type="button" onclick="doRNLogin()" class="btn btn-primary" style="width:100%;background:#2e7d32">เข้าสู่ระบบ</button>
     </div>
 
     <!-- เลือกเตียง -->
@@ -2783,6 +2783,7 @@ async function doRNLogin(){
   const pwd=document.getElementById('rnPassword').value;
   const errEl=document.getElementById('rnLoginErr');
   if(!uname||!pwd){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.style.display='block';return;}
+  errEl.style.display='none';
   showLoad('กำลังเข้าสู่ระบบ...');
   try{
     const res=await api('login',{username:uname,password:pwd},null);
