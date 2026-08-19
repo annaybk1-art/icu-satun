@@ -5244,6 +5244,7 @@ async function loadKPI(){
     </div>`;
 
   // ── คำนวณ ──────────────────────────────────
+  const icuMortality=(s.deadCount/Math.max(totalDC,1)*100).toFixed(1);
   const sepsisDead=pts.filter(p=>String(p['สาเหตุการเสียชีวิต']||'').toLowerCase().includes('sepsis')||String(p['สาเหตุการเสียชีวิต']||'').toLowerCase().includes('septic')).length;
   const sepsisPts=pts.filter(p=>String(p['Diagnosis แรกรับ']||'').toLowerCase().includes('sepsis')||String(p['Diagnosis แรกรับ']||'').toLowerCase().includes('septic'));
   const sepsisMortality=sepsisPts.length>0?(sepsisDead/sepsisPts.length*100).toFixed(1):'-';
