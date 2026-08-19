@@ -2751,46 +2751,24 @@ let _rnUser=null;
 let _rnSelectedBeds=[];
 
 function openRNMode(){
-  _rnUser=null;
-  _rnSelectedBeds=[];
-  // ใช้ระบบเดียวกับ In Charge — เลือก RN จากรายชื่อ
-  document.getElementById('rnLoginBox').style.display='none';
-  document.getElementById('rnBedSelectBox').style.display='block';
-  document.getElementById('rnWelcomeName').textContent=currentUser?.fullname||currentUser?.username||'';
   _rnUser=currentUser;
-  // โหลดเตียง
-  const beds=(_icAdmittedPts&&_icAdmittedPts.length)?
-    _icAdmittedPts.map(p=>p['เตียง']).filter(Boolean):[];
-  if(!beds.length){
-    // โหลดใหม่
-    const m=new Date().getMonth()+1;
-    const y=new Date().getFullYear();
-    fetchMonthPts(m,y).then(pts=>{
-      _icAdmittedPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
-      _icAdmittedPts.forEach(pt=>{
-        const bedId=(pt['เตียง']||'').trim();
-        if(!_icBedData[bedId]) _icBedData[bedId]={
-          dx:pt['Diagnosis แรกรับ']||'',
-          hadrugsList:pt['ยา HD']||'',
-          doctor:pt['แพทย์เจ้าของไข้']||'',
-          sos:pt['SOS Score']||'',
-          patType:pt['ประเภทผู้ป่วย ICU']||'',
-          note:pt['หมายเหตุ']||'',
-          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
-          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
-          meEvents:tryParseJSON(pt['Medication Error'])||[],
-          icdscLatest:pt['ICDSC Score']||'',
-          icdscDate:pt['ICDSC Date']||'',
-          icdscMax:pt['ICDSC Max']||'',
-          icdscMaxDate:pt['ICDSC Max Date']||'',
-        };
-      });
-      renderRNBedList(_icAdmittedPts.map(p=>p['เตียง']).filter(Boolean));
-    }).catch(e=>toast(e.message,true));
-  } else {
-    renderRNBedList(beds);
-  }
+  _rnSelectedBeds=[];
+  document.getElementById('rnWelcomeName').textContent=currentUser?.fullname||currentUser?.username||'';
+  document.getElementById('rnBedList').innerHTML='<div style="color:#9ca3af;font-size:12px">กำลังโหลด...</div>';
+  document.getElementById('rnStartBtn').disabled=true;
   document.getElementById('rnModal').style.display='flex';
+  // โหลดเตียง
+  const m=new Date().getMonth()+1;
+  const y=new Date().getFullYear();
+  const pts=_icAdmittedPts&&_icAdmittedPts.length?Promise.resolve(_icAdmittedPts):
+    fetchMonthPts(m,y).then(p=>p.filter(x=>x['สถานะ']==='กำลัง admit'));
+  pts.then(admitted=>{
+    if(!_icAdmittedPts||!_icAdmittedPts.length) _icAdmittedPts=admitted;
+    const beds=admitted.map(p=>p['เตียง']).filter(Boolean);
+    renderRNBedList(beds);
+  }).catch(e=>{
+    document.getElementById('rnBedList').innerHTML=`<div style="color:#c62828;font-size:12px">${e.message}</div>`;
+  });
 }
 
 function renderRNBedList(beds){
