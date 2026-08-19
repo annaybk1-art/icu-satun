@@ -2785,10 +2785,19 @@ async function doRNLogin(){
   if(!uname||!pwd){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.style.display='block';return;}
   showLoad('กำลังเข้าสู่ระบบ...');
   try{
-    const res=await api('login',{username:uname,password:pwd});
+    const res=await api('login',{username:uname,password:pwd},null);
     if(!res||res.status!=='approved') throw new Error('บัญชีนี้ยังไม่ได้รับการอนุมัติ');
     _rnUser=res;
     document.getElementById('rnWelcomeName').textContent=res.fullname||res.username;
+    // โหลดผู้ป่วยถ้ายังไม่มี
+    if(!_icAdmittedPts||!_icAdmittedPts.length){
+      const m=new Date().getMonth()+1;
+      const y=new Date().getFullYear();
+      try{
+        let pts=await fetchMonthPts(m,y);
+        _icAdmittedPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
+      }catch(e){}
+    }
     // แสดงเตียงที่มีผู้ป่วย admit อยู่
     const beds=(_icAdmittedPts||[]).map(p=>p['เตียง']).filter(Boolean);
     document.getElementById('rnBedList').innerHTML=beds.map(b=>`
