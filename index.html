@@ -2843,6 +2843,27 @@ function showRNFormForBed(bedId){
   if(!pt) return;
   if(!_icBedData[bedId]) _icBedData[bedId]={};
   const bd=_icBedData[bedId];
+  // โหลดข้อมูลเดิมจาก Sheet ถ้ายังไม่มีใน bd
+  if(!bd._loaded){
+    bd.sos=bd.sos||pt['SOS Score']||'';
+    bd.vent_start=bd.vent_start||(pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'')||'';
+    bd.vent_stop=bd.vent_stop||(pt['Ventilator (End)']?di(pt['Ventilator (End)']):'')||'';
+    bd.aline_start=bd.aline_start||(pt['A-Line (Start)']?di(pt['A-Line (Start)']):'')||'';
+    bd.aline_stop=bd.aline_stop||(pt['A-Line (End)']?di(pt['A-Line (End)']):'')||'';
+    bd.cline_start=bd.cline_start||(pt['C-Line (Start)']?di(pt['C-Line (Start)']):'')||'';
+    bd.cline_stop=bd.cline_stop||(pt['C-Line (End.)']?di(pt['C-Line (End.)']):'')||'';
+    bd.iv_start=bd.iv_start||(pt['IV (Start)']?di(pt['IV (Start)']):'')||'';
+    bd.iv_stop=bd.iv_stop||(pt['IV (End)']?di(pt['IV (End)']):'')||'';
+    bd.fc_start=bd.fc_start||(pt['F/C (Start)']?di(pt['F/C (Start)']):'')||'';
+    bd.fc_stop=bd.fc_stop||(pt['F/C (END)']?di(pt['F/C (END)']):'')||'';
+    bd.icd_start=bd.icd_start||(pt['ICD (Start)']?di(pt['ICD (Start)']):'')||'';
+    bd.icd_stop=bd.icd_stop||(pt['ICD (End)']?di(pt['ICD (End)']):'')||'';
+    bd.icdscLatest=bd.icdscLatest||pt['ICDSC Score']||'';
+    bd.icdscDate=bd.icdscDate||pt['ICDSC Date']||'';
+    bd.icdscMax=bd.icdscMax||pt['ICDSC Max']||'';
+    bd.icdscMaxDate=bd.icdscMaxDate||pt['ICDSC Max Date']||'';
+    bd._loaded=true;
+  }
   const icItems=[
     {key:'vent',label:'🫁 Vent'},
     {key:'aline',label:'💉 A-Line'},
