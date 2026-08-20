@@ -2775,7 +2775,18 @@ function icRemoveEvent(bedId,type,idx){
   const bd=_icBedData[bedId];
   const key=type==='pi'?'piEvents':type==='ue'?'ueEvents':'meEvents';
   if(bd[key]) bd[key].splice(idx,1);
-  document.getElementById(type+'_list_'+bedId).innerHTML=renderIcEvents(bd[key]||[],type,bedId);
+  // อัปเดตทั้ง In Charge และ RN list
+  ['pi_list_','ue_list_','me_list_','rn_pi_','rn_ue_','rn_me_'].forEach(prefix=>{
+    if(prefix.includes(type.replace('pi','pi').replace('ue','ue').replace('me','me'))){
+      const el=document.getElementById(prefix+bedId);
+      if(el) el.innerHTML=renderIcEvents(bd[key]||[],type,bedId);
+    }
+  });
+  // อัปเดตทุก element ที่เกี่ยวข้อง
+  [type+'_list_'+bedId, 'rn_'+type+'_'+bedId].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.innerHTML=renderIcEvents(bd[key]||[],type,bedId);
+  });
 }
 
 function icSaveIcdsc(bedId){
@@ -2965,35 +2976,6 @@ function showRNFormForBed(bedId){
       <div style="display:flex;gap:6px;font-size:11px">
         <span>ล่าสุด: <b>${bd.icdscLatest||'-'}</b> (${bd.icdscDate||'-'})</span>
         <span>สูงสุด: <b>${bd.icdscMax||'-'}</b></span>
-      </div>
-    </div>
-
-    <!-- Patient Safety -->
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">🛡️ Patient Safety</div>
-      
-      <div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:11px;font-weight:600">🩹 Pressure Injury</span>
-          <button type="button" onclick="icAddEvent('${bedId}','pi')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-        </div>
-        <div id="rn_pi_${bedId}">${renderIcEvents(bd.piEvents||[],'pi','${bedId}')}</div>
-      </div>
-
-      <div style="margin-bottom:8px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:11px;font-weight:600">😮 Unplanned Extubation</span>
-          <button type="button" onclick="icAddEvent('${bedId}','ue')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-        </div>
-        <div id="rn_ue_${bedId}">${renderIcEvents(bd.ueEvents||[],'ue','${bedId}')}</div>
-      </div>
-
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-          <span style="font-size:11px;font-weight:600">💊 Medication Error</span>
-          <button type="button" onclick="icAddEvent('${bedId}','me')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-        </div>
-        <div id="rn_me_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
       </div>
     </div>
 
