@@ -2672,9 +2672,9 @@ function renderIcEvents(events,type,bedId){
   if(!events||!events.length) return '<div style="font-size:10px;color:#9ca3af">ยังไม่มีข้อมูล</div>';
   return events.map((ev,i)=>`
     <div style="display:flex;align-items:center;gap:4px;background:#f9fafb;border-radius:6px;padding:4px 6px;margin-bottom:2px;font-size:10px">
-      <span>📅 ${ev.date}</span>
-      ${ev.type?`<span style="background:#fee2e2;color:#c62828;padding:1px 6px;border-radius:4px">${ev.type}</span>`:''}
-      ${ev.status?`<span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px">${ev.status}</span>`:''}
+      ${type==='pi'?`<span>📅 ${ev.date}</span><span style="background:#fee2e2;color:#c62828;padding:1px 6px;border-radius:4px">${ev.grade||''}</span>`:''}
+      ${type==='ue'?`<span>ครั้งที่ ${ev.count||i+1}</span><span>📅 ${ev.date}</span>`:''}
+      ${type==='me'?`<span>📅 ${ev.date}</span><span style="background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:4px">${ev.type||''}</span>${ev.detail?`<span style="color:#6b7280">${ev.detail}</span>`:''}`:'' }
       <button type="button" onclick="icRemoveEvent('${bedId}','${type}',${i})" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#c62828;font-size:12px">×</button>
     </div>`).join('');
 }
@@ -2688,32 +2688,85 @@ function renderIcdscHistory(history){
     </div>`).join('')}</div>`;
 }
 
+function showInlineSelect(label, options){
+  return new Promise(resolve=>{
+    const old=document.getElementById('inlinePromptBox');
+    if(old) old.remove();
+    const box=document.createElement('div');
+    box.id='inlinePromptBox';
+    box.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:12px;padding:20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);width:min(320px,90vw)';
+    box.innerHTML=`
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1b5e20">${label}</div>
+      <select id="inlineSelectEl" style="width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:8px;font-size:14px">
+        ${options.map(o=>`<option value="${o}">${o}</option>`).join('')}
+      </select>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button onclick="document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve('')" style="padding:6px 16px;border-radius:8px;border:1.5px solid #ccc;background:white;cursor:pointer;font-size:13px">ยกเลิก</button>
+        <button onclick="const v=document.getElementById('inlineSelectEl').value;document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve(v)" style="padding:6px 16px;border-radius:8px;border:none;background:#2e7d32;color:white;cursor:pointer;font-size:13px;font-weight:700">ตกลง</button>
+      </div>`;
+    window._inlinePromptResolve=resolve;
+    document.body.appendChild(box);
+  });
+}
+
+function showInlineDatePicker(label){
+  return new Promise(resolve=>{
+    const old=document.getElementById('inlinePromptBox');
+    if(old) old.remove();
+    const today=new Date().toISOString().split('T')[0];
+    const box=document.createElement('div');
+    box.id='inlinePromptBox';
+    box.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:12px;padding:20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);width:min(320px,90vw)';
+    box.innerHTML=`
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1b5e20">${label}</div>
+      <input type="date" id="inlineDateEl" value="${today}" style="width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:8px;font-size:14px">
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button onclick="document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve('')" style="padding:6px 16px;border-radius:8px;border:1.5px solid #ccc;background:white;cursor:pointer;font-size:13px">ยกเลิก</button>
+        <button onclick="const v=document.getElementById('inlineDateEl').value;document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve(v)" style="padding:6px 16px;border-radius:8px;border:none;background:#2e7d32;color:white;cursor:pointer;font-size:13px;font-weight:700">ตกลง</button>
+      </div>`;
+    window._inlinePromptResolve=resolve;
+    document.body.appendChild(box);
+    setTimeout(()=>document.getElementById('inlineDateEl')?.focus(),100);
+  });
+}
+
 async function icAddEvent(bedId,type){
   const today=new Date().toISOString().split('T')[0];
   if(!_icBedData[bedId]) _icBedData[bedId]={};
   const bd=_icBedData[bedId];
   
   if(type==='pi'){
-    const status=await showInlinePrompt('สถานะ: พิมพ์ "เกิด" หรือ "หาย"');
-    if(!status) return;
-    const date=await showInlinePrompt('วันที่ (YYYY-MM-DD):');
+    // Pressure Injury — เกรด + วันที่
+    const grade=await showInlineSelect('เลือกเกรด Pressure Injury',['Grade 1','Grade 2','Grade 3','Grade 4','Unstageable','Deep Tissue Injury']);
+    if(!grade) return;
+    const date=await showInlineDatePicker('วันที่พบ Pressure Injury');
     if(!date) return;
     if(!bd.piEvents) bd.piEvents=[];
-    bd.piEvents.push({date:date||today,status});
-    document.getElementById('pi_list_'+bedId).innerHTML=renderIcEvents(bd.piEvents,'pi',bedId);
+    bd.piEvents.push({date,grade});
+    const listEl=document.getElementById('pi_list_'+bedId);
+    if(listEl) listEl.innerHTML=renderIcEvents(bd.piEvents,'pi',bedId);
+    
   } else if(type==='ue'){
-    const date=await showInlinePrompt('วันที่เกิด (YYYY-MM-DD):');
+    // Unplanned Extubation — ครั้งที่ + วันที่
+    const date=await showInlineDatePicker('วันที่เกิด Unplanned Extubation');
     if(!date) return;
     if(!bd.ueEvents) bd.ueEvents=[];
-    bd.ueEvents.push({date:date||today});
-    document.getElementById('ue_list_'+bedId).innerHTML=renderIcEvents(bd.ueEvents,'ue',bedId);
+    const count=bd.ueEvents.length+1;
+    bd.ueEvents.push({date,count});
+    const listEl=document.getElementById('ue_list_'+bedId);
+    if(listEl) listEl.innerHTML=renderIcEvents(bd.ueEvents,'ue',bedId);
+    
   } else if(type==='me'){
-    const date=await showInlinePrompt('วันที่เกิด (YYYY-MM-DD):');
+    // Medication Error — ประเภท + รายละเอียด + วันที่
+    const meType=await showInlineSelect('ประเภท Medication Error',['Wrong dose','Wrong drug','Wrong time','Wrong patient','Wrong route','อื่นๆ']);
+    if(!meType) return;
+    const detail=await showInlinePrompt('รายละเอียด (เช่น ชื่อยา, ขนาดยา):');
+    const date=await showInlineDatePicker('วันที่เกิด ME');
     if(!date) return;
-    const meType=await showInlinePrompt('ประเภท: Wrong dose / Wrong drug / Wrong time / Wrong patient / Wrong route / อื่นๆ');
     if(!bd.meEvents) bd.meEvents=[];
-    bd.meEvents.push({date:date||today,type:meType||'อื่นๆ'});
-    document.getElementById('me_list_'+bedId).innerHTML=renderIcEvents(bd.meEvents,'me',bedId);
+    bd.meEvents.push({date,type:meType,detail:detail||''});
+    const listEl=document.getElementById('me_list_'+bedId);
+    if(listEl) listEl.innerHTML=renderIcEvents(bd.meEvents,'me',bedId);
   }
 }
 
