@@ -821,6 +821,8 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
               <th class="bc-IV">🩸 IV</th>
               <th class="bc-F/C">🪠 F/C</th>
               <th class="bc-ICD">🩺 ICD</th>
+              <th class="bc-ICDSC">🧠 ICDSC</th>
+              <th class="bc-PI">🩹 Bedsore</th>
               <th class="bc-หมอ">👨‍⚕️ แพทย์</th>
               <th class="bc-พยาบาล">👩‍⚕️ พยาบาล</th>
             </tr></thead>
@@ -3022,7 +3024,7 @@ async function saveRNData(close=true){
   if(assessor) updated['RN Assessor']=assessor;
 
   try{
-    await api('savePatient',{},{id:pt['id'],month:m,year:y,data:updated});
+    await api('savePatient',{id:pt['id'],month:m,year:y},{data:updated});
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
 }
@@ -3291,7 +3293,7 @@ async function saveInChargeToPatients(){
   showLoad(`กำลังอัปเดต ${updates.length} เตียง...`);
   try{
     for(const u of updates){
-      await api('savePatient',{},{id:u.id,month:u.month,year:u.year,data:u.data});
+      await api('savePatient',{id:u.id,month:u.month,year:u.year},{data:u.data});
     }
     _pts=await api('getPatients',{month:m,year:y});
     applyFilter(); updateStats(); startNewsBoard();
@@ -4134,8 +4136,8 @@ async function savePatient(){
   if(dupBed){toast(`เตียง ${data['เตียง']} ถูกใช้งานอยู่`,true);return;}
   const saveBtn=document.getElementById('saveBtn');saveBtn.textContent='⏳...';saveBtn.disabled=true;showLoad('กำลังบันทึก...');
   try{
-    if(editPtId){await api('savePatient',{},{id:editPtId,month:m,year:yr,data});await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขผู้ป่วย '+data['ชื่อ-สกุล']});}
-    else{await api('savePatient',{},{month:m,year:yr,data});await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
+    if(editPtId){await api('savePatient',{id:editPtId,month:m,year:yr},{data});await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขผู้ป่วย '+data['ชื่อ-สกุล']});}
+    else{await api('savePatient',{month:m,year:yr},{data});await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
     closeModal();toast('บันทึกสำเร็จ ✓');
     Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
     await loadPatients(true);loadLog();
@@ -5345,6 +5347,8 @@ function renderBedAdmitTable(pts){
       <td class="bc-IV" style="text-align:center">${ic(p,'IV (Start)','IV (End)','IV (day)')}</td>
       <td class="bc-F/C" style="text-align:center">${ic(p,'F/C (Start)','F/C (END)','F/C (day)')}</td>
       <td class="bc-ICD" style="text-align:center">${ic(p,'ICD (Start)','ICD (End)','ICD (day)')}</td>
+      <td class="bc-ICDSC" style="text-align:center">${(()=>{const s=p['ICDSC Score'];if(!s)return'-';const n=parseInt(s);return `<span style="font-weight:700;color:${n>=4?'#c62828':n>=1?'#e65100':'#2e7d32'}">${s}${n>=4?' ⚠️':''}</span>`;})()}</td>
+      <td class="bc-PI" style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td class="bc-หมอ" style="font-size:10px">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td class="bc-พยาบาล" style="font-size:10px">${p['nurseInCharge']||'-'}</td>
     </tr>`;
