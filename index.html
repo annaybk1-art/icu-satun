@@ -2912,6 +2912,7 @@ function showRNFormForBed(bedId){
   // โหลดข้อมูลเดิมจาก Sheet ถ้ายังไม่มีใน bd
   if(!bd._loaded){
     bd.sos=bd.sos||pt['SOS Score']||'';
+    bd.rass=bd.rass||pt['RASS']||'';
     bd.vent_start=bd.vent_start||(pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'')||'';
     bd.vent_stop=bd.vent_stop||(pt['Ventilator (End)']?di(pt['Ventilator (End)']):'')||'';
     bd.aline_start=bd.aline_start||(pt['A-Line (Start)']?di(pt['A-Line (Start)']):'')||'';
@@ -2948,6 +2949,27 @@ function showRNFormForBed(bedId){
         style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
     </div>
     
+    <!-- RASS -->
+    <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">🧠 RASS Score</div>
+      <select id="rnRass_${bedId}" onchange="icSet('${bedId}','rass',this.value)" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+        <option value="">-- เลือก RASS --</option>
+        ${[
+          ['+4','ต่อสู้ ก้าวร้าวรุนแรง เป็นอันตรายทันที'],
+          ['+3','กระวนกระวายมาก ดึงท่อหรือสายต่างๆ'],
+          ['+2','กระวนกระวาย เคลื่อนไหวไม่มีเป้าหมาย'],
+          ['+1','กระสับกระส่าย วิตกกังวล ไม่ก้าวร้าว'],
+          ['0','ตื่นตัวและสงบ'],
+          ['-1','ง่วงซึม ปลุกด้วยเสียงได้ >10 วิ'],
+          ['-2','ง่วงซึมเล็กน้อย สบตาได้ ≤10 วิ'],
+          ['-3','ง่วงซึมปานกลาง ขยับเมื่อเรียก ไม่สบตา'],
+          ['-4','ง่วงซึมลึก ไม่ตอบสนองเสียง'],
+          ['-5','ไม่ตื่น ไม่ตอบสนองทุกอย่าง'],
+        ].map(([v,l])=>`<option value="${v}" ${(bd.rass||'')=== v?'selected':''}>${v}: ${l}</option>`).join('')}
+      </select>
+      ${bd.rass?`<div style="margin-top:4px;font-size:11px;color:${parseInt(bd.rass)>=1?'#c62828':parseInt(bd.rass)<=-3?'#1565c0':'#2e7d32'};font-weight:700">RASS = ${bd.rass}</div>`:''}
+    </div>
+
     <!-- SOS Score -->
     <div class="fsec" style="margin-bottom:12px">
       <div class="fsec-title" style="font-size:12px">📊 SOS Score (ล่าสุด)</div>
@@ -3014,6 +3036,7 @@ async function saveRNData(close=true){
   const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
   const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
   const updated={...pt};
+  if(bd.rass!==undefined) updated['RASS']=bd.rass;
   if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
   if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
   if(bd.icdscMax!==undefined) updated['ICDSC Max']=bd.icdscMax;
