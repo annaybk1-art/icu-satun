@@ -3033,8 +3033,8 @@ async function saveRNData(close=true){
   // บันทึก assessor
   if(assessor) icSet(bedId,'rnAssessor',assessor);
 
-  const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
-  const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
+  const now_=new Date();const m=parseInt(document.getElementById('fMonth')?.value||document.getElementById('mMonth')?.value||now_.getMonth()+1);
+  const y=parseInt(document.getElementById('fYear')?.value||document.getElementById('mYear')?.value||now_.getFullYear());
   const updated={...pt};
   if(bd.rass!==undefined) updated['RASS']=bd.rass;
   if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
