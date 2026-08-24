@@ -576,7 +576,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <button onclick="closeApache4()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
     </div>
     <div style="font-size:11px;color:#6b7280;background:#f9fafb;padding:8px;border-radius:8px;margin-bottom:12px">
-      ⚠️ ประเมินจากค่าที่แย่ที่สุดใน 24 ชั่วโมงแรกหลัง Admit ICU
+      ⚠️ ประเมินจากค่าที่แย่ที่สุดใน <b>24 ชั่วโมงแรก</b>หลัง Admit ICU<br>
+      📌 ถ้าไม่ได้เจาะ Lab ตัวนั้น = ถือว่าปกติ = <b>0 คะแนน</b><br>
+      📊 คะแนนสูงสุด <b>286</b> | ยิ่งสูง = ความรุนแรงมาก = Mortality สูง
     </div>
     <div id="apache4Items"></div>
     <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="apache4Result">
@@ -815,7 +817,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>#</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
               <th>อายุ</th><th>U/D</th><th>Dx แรกรับ</th><th>แพทย์</th><th>ประเภท</th>
-              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
+              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Bedsore</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="ptTbl"><tr><td colspan="17" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
@@ -3883,6 +3885,7 @@ function renderTbl(){
       <td>${dc?`<span class="${dcC}" style="font-size:10.5px">${dc}</span>`:'-'}</td>
       <td style="font-size:10.5px;white-space:nowrap">${p['ผู้บันทึก D/C']||'-'}</td>
       <td style="text-align:center;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</td>
+      <td style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
