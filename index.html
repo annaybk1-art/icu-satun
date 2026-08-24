@@ -4357,6 +4357,8 @@ async function savePatient(){
 
   const baseReq={'ชื่อ-สกุล':'ชื่อ-สกุล','HN':'HN','อายุ':'อายุ','สิทธิ':'สิทธิ์','Admit (Date)':'วันที่ Admit','Admit (Time)':'เวลา Admit','เตียง':'เตียง','การรับ':'ประเภทการรับ','ผู้บันทึก Admit':'ผู้บันทึก Admit','Unplanned ICU':'Unplanned ICU','Re-admit ICU':'Re-admit ICU','ประเภทผู้ป่วย':'ประเภทผู้ป่วย','Falling':'Falling score','ผ่าตัด':'ผ่าตัด','Diagnosis แรกรับ':'Diagnosis แรกรับ (Dx)','U/D':'โรคประจำตัว (U/D)'};
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
+  // บังคับ Apache IV เฉพาะตอนเพิ่มใหม่
+  if(!editPtId && !data['Apache IV Score']) missing.push('Apache IV Score (Tab การประเมิน)');
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
   if(data['สถานะ']==='จำหน่ายแล้ว'){
     const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','Ward/Hospital':'Ward/Hospital','CPR':'CPR','Palliative':'Palliative'};
