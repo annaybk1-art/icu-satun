@@ -568,6 +568,28 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   </div>
 </div>
 
+<!-- NEWS2 Assessment Modal -->
+<div id="news2Modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-weight:700;font-size:15px;color:#1565c0">📊 แบบประเมิน NEWS2</div>
+      <button onclick="closeNews2Assess()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
+    </div>
+    <div id="news2Items"></div>
+    <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="news2Result">
+      <div style="font-size:16px;font-weight:700">คะแนนรวม: <span id="news2Total">0</span>/20</div>
+      <div id="news2Interpret" style="font-size:12px;margin-top:4px"></div>
+    </div>
+    <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+      <input type="text" id="news2Assessor" placeholder="ชื่อผู้ประเมิน..." style="padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
+      <div style="display:flex;gap:8px">
+        <input type="date" id="news2Date" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
+        <button onclick="saveNews2Assess()" class="btn btn-primary" style="flex:1;background:#1565c0">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ICDSC Assessment Modal -->
 <div id="icdscModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
@@ -2913,6 +2935,8 @@ function showRNFormForBed(bedId){
   if(!bd._loaded){
     bd.sos=bd.sos||pt['SOS Score']||'';
     bd.rass=bd.rass||pt['RASS']||'';
+    bd.news2Score=bd.news2Score!==undefined?bd.news2Score:(pt['NEWS2 Score']||'');
+    bd.news2Date=bd.news2Date||pt['NEWS2 Date']||'';
     bd.vent_start=bd.vent_start||(pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'')||'';
     bd.vent_stop=bd.vent_stop||(pt['Ventilator (End)']?di(pt['Ventilator (End)']):'')||'';
     bd.aline_start=bd.aline_start||(pt['A-Line (Start)']?di(pt['A-Line (Start)']):'')||'';
@@ -2992,6 +3016,18 @@ function showRNFormForBed(bedId){
       }).join('')}
     </div>
     <div class="fsec" style="margin-bottom:12px">
+      <div class="fsec-title" style="font-size:12px">📊 NEWS2 Score</div>
+      <button type="button" onclick="openNews2Assess('${bedId}')" 
+        class="btn btn-outline btn-sm" style="width:100%;background:#e3f2fd;border-color:#1565c0;color:#1565c0;margin-bottom:6px">
+        📋 ประเมิน NEWS2 (7 พารามิเตอร์)
+      </button>
+      <div style="font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
+        คะแนน: <b>${bd.news2Score!==undefined&&bd.news2Score!==''?bd.news2Score:'-'}</b>
+        ${bd.news2Score>=7?'<span style="color:#c62828;font-weight:700"> 🔴 High</span>':bd.news2Score>=5?'<span style="color:#e65100;font-weight:700"> 🟠 Medium</span>':bd.news2Score>=1?'<span style="color:#f9a825;font-weight:700"> 🟡 Low</span>':''}
+        ${bd.news2Date?`<span style="color:#6b7280;font-size:10px"> (${bd.news2Date})</span>`:''}
+      </div>
+    </div>
+    <div class="fsec" style="margin-bottom:12px">
       <div class="fsec-title" style="font-size:12px">🧠 ICDSC Score</div>
       <button type="button" onclick="openIcdscAssess('${bedId}')" 
         class="btn btn-outline btn-sm" style="width:100%;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;margin-bottom:6px">
@@ -3036,6 +3072,9 @@ async function saveRNData(close=true){
   const now_=new Date();const m=parseInt(document.getElementById('fMonth')?.value||document.getElementById('mMonth')?.value||now_.getMonth()+1);
   const y=parseInt(document.getElementById('fYear')?.value||document.getElementById('mYear')?.value||now_.getFullYear());
   const updated={...pt};
+  if(bd.news2Score!==undefined) updated['NEWS2 Score']=bd.news2Score;
+  if(bd.news2Date!==undefined) updated['NEWS2 Date']=bd.news2Date;
+  if(bd.news2Assessor!==undefined) updated['NEWS2 Assessor']=bd.news2Assessor;
   if(bd.rass!==undefined) updated['RASS']=bd.rass;
   if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
   if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
@@ -3061,6 +3100,84 @@ function openRNMode_fromIcdsc(){
 }
 
 // ── End RN System ─────────────────────────────────────────
+
+// ── NEWS2 Assessment ─────────────────────────────────────
+const NEWS2_PARAMS=[
+  {name:'อัตราการหายใจ (RR)',unit:'ครั้ง/นาที',
+    opts:[{label:'≤8',score:3},{label:'9-11',score:1},{label:'12-20',score:0},{label:'21-24',score:2},{label:'≥25',score:3}]},
+  {name:'SpO₂ (Scale 1)',unit:'%',
+    opts:[{label:'≤91',score:3},{label:'92-93',score:2},{label:'94-95',score:1},{label:'≥96',score:0}]},
+  {name:'SpO₂ (Scale 2 — ผู้ป่วย COPD)',unit:'%',
+    opts:[{label:'≤83',score:3},{label:'84-85',score:2},{label:'86-87',score:1},{label:'88-92 หรือ ≥93 บน O₂',score:0},{label:'93-94 บน O₂',score:1},{label:'95-96 บน O₂',score:2},{label:'≥97 บน O₂',score:3}]},
+  {name:'ออกซิเจน',unit:'',
+    opts:[{label:'Room air',score:0},{label:'On O₂',score:2}]},
+  {name:'ความดันโลหิต Systolic',unit:'mmHg',
+    opts:[{label:'≤90',score:3},{label:'91-100',score:2},{label:'101-110',score:1},{label:'111-219',score:0},{label:'≥220',score:3}]},
+  {name:'ชีพจร (HR)',unit:'ครั้ง/นาที',
+    opts:[{label:'≤40',score:3},{label:'41-50',score:1},{label:'51-90',score:0},{label:'91-110',score:1},{label:'111-130',score:2},{label:'≥131',score:3}]},
+  {name:'ระดับความรู้สึกตัว',unit:'',
+    opts:[{label:'Alert (A)',score:0},{label:'Confusion/Voice/Pain/Unresponsive',score:3}]},
+  {name:'อุณหภูมิ',unit:'°C',
+    opts:[{label:'≤35.0',score:3},{label:'35.1-36.0',score:1},{label:'36.1-38.0',score:0},{label:'38.1-39.0',score:1},{label:'≥39.1',score:2}]},
+];
+
+let _news2BedId='';
+
+function openNews2Assess(bedId){
+  _news2BedId=bedId;
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('news2Date').value=today;
+  const assessorEl=document.getElementById('news2Assessor');
+  if(assessorEl) assessorEl.value=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||currentUser?.fullname||'';
+  document.getElementById('news2Items').innerHTML=NEWS2_PARAMS.map((param,i)=>`
+    <div style="padding:10px;border-bottom:1px solid #f3f4f6">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">${i+1}. ${param.name} ${param.unit?`<span style="color:#6b7280;font-size:10px">(${param.unit})</span>`:''}}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${param.opts.map(opt=>`
+          <label style="display:flex;align-items:center;gap:3px;font-size:11px;cursor:pointer;background:#f9fafb;padding:4px 8px;border-radius:6px;border:1px solid var(--g200)">
+            <input type="radio" name="news2_${i}" value="${opt.score}" onchange="calcNews2()">
+            ${opt.label} <span style="color:#6b7280">(${opt.score})</span>
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+  calcNews2();
+  document.getElementById('news2Modal').style.display='flex';
+}
+
+function calcNews2(){
+  let total=0;
+  NEWS2_PARAMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="news2_${i}"]:checked`)?.value;
+    if(v!==undefined) total+=parseInt(v);
+  });
+  document.getElementById('news2Total').textContent=total;
+  const res=document.getElementById('news2Result');
+  const interp=document.getElementById('news2Interpret');
+  if(total>=7){res.style.background='#ffebee';interp.textContent='🔴 High — แจ้งแพทย์ทันที';}
+  else if(total>=5){res.style.background='#fff3e0';interp.textContent='🟠 Medium — เฝ้าระวังใกล้ชิด';}
+  else if(total>=1){res.style.background='#fffde7';interp.textContent='🟡 Low — Monitor ต่อเนื่อง';}
+  else{res.style.background='#e8f5e9';interp.textContent='🟢 Normal';}
+}
+
+function saveNews2Assess(){
+  let total=0;
+  NEWS2_PARAMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="news2_${i}"]:checked`)?.value;
+    if(v!==undefined) total+=parseInt(v);
+  });
+  const date=document.getElementById('news2Date').value;
+  const assessor=document.getElementById('news2Assessor')?.value||'';
+  icSet(_news2BedId,'news2Score',total);
+  icSet(_news2BedId,'news2Date',date);
+  icSet(_news2BedId,'news2Assessor',assessor);
+  closeNews2Assess();
+  toast(`✅ NEWS2 = ${total} คะแนน`);
+  showRNFormForBed(_news2BedId);
+}
+
+function closeNews2Assess(){document.getElementById('news2Modal').style.display='none';}
+
+// ── End NEWS2 ─────────────────────────────────────────────
 
 const ICDSC_ITEMS=[
   {q:'การเปลี่ยนแปลงระดับรู้สึกตัว',desc:'Agitation [RASS 1-4] = 1, ตื่นตัวปกติ [RASS 0] = 0, หลับลึก [RASS -4/-5] = ไม่สามารถประเมิน'},
