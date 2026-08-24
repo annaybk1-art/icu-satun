@@ -1894,7 +1894,7 @@ function dcMatch(val, type){
 }
 const TOTAL_BEDS=14;
 const OPTS_LABELS={causeOfDeath:'💀 สาเหตุการเสียชีวิต',referReason:'🚑 เหตุผลที่ต้อง Refer',beds:'🛏️ เตียง ICU',doctors:'👨‍⚕️ แพทย์เจ้าของไข้',ventilatorMode:'🌬️ การหายใจ',ventilator:'🫁 ชนิด Ventilator',rights:'💳 สิทธิ์การรักษา',patientType:'🏷️ ประเภทผู้ป่วย',drugAllergy:'💊 แพ้ยา',surgeryType:'🔪 ชนิดการผ่าตัด',diagnosis:'🔬 Diagnosis (Dx)',recorderAdmit:'📝 ผู้บันทึก Admit',recorderDC:'📝 ผู้บันทึก D/C',incharge:'👩‍⚕️ รายชื่อ In Charge',udOptions:'📋 U/D (โรคประจำตัว)',specimenType:'🧪 ชนิดสิ่งส่งตรวจ',pathogenType:'🦠 ชนิดของเชื้อที่พบ',haOptions:'💊 ยา High Alert Drug'};
-const MODAL_TABS=[{id:'tab-admit',label:'📋 ข้อมูลรับ'},{id:'tab-ic',label:'🫁 IC / Ventilator'},{id:'tab-assess',label:'📊 การประเมิน'},{id:'tab-infection',label:'🦠 การติดเชื้อ'},{id:'tab-dc',label:'🚪 ข้อมูล D/C'},{id:'tab-extra',label:'📎 ข้อมูลเพิ่มเติม'}];
+const MODAL_TABS=[{id:'tab-admit',label:'📋 ข้อมูลรับ'},{id:'tab-ic',label:'🫁 IC / Ventilator'},{id:'tab-assess',label:'📊 การประเมิน'},{id:'tab-infection',label:'🦠 การติดเชื้อ'},{id:'tab-dc',label:'🚪 ข้อมูล D/C'}];
 
 let currentUser=null,_opts={},_pts=[],_filtPts=[],_curPg=1;
 
@@ -4049,7 +4049,6 @@ function buildForm(p){
       <div class="fsec"><div class="fsec-title">การประเมินความเสี่ยง</div><div class="fgrid">
         ${fg('SOS Score',`<input type="number" name="SOS Score" value="${p['SOS Score']||''}" min="0" max="16">`,'','',true)}
         ${fg('Falling score',inp('Falling','number',p['Falling']),'','',true)}
-        ${fg('APACHE II score',inp('APACHE II','number',p['APACHE II']))}
         ${fg('Pain score',inp('Pain score','number',p['Pain score']))}
       </div></div>
       <div class="fsec"><div class="fsec-title">Apache IV Score</div>
