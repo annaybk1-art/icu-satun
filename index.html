@@ -568,6 +568,28 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   </div>
 </div>
 
+<!-- Apache IV Assessment Modal -->
+<div id="apache4Modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:white;border-radius:12px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-weight:700;font-size:15px;color:#c62828">🏥 Apache IV Score</div>
+      <button onclick="closeApache4()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
+    </div>
+    <div style="font-size:11px;color:#6b7280;background:#f9fafb;padding:8px;border-radius:8px;margin-bottom:12px">
+      ⚠️ ประเมินจากค่าที่แย่ที่สุดใน 24 ชั่วโมงแรกหลัง Admit ICU
+    </div>
+    <div id="apache4Items"></div>
+    <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="apache4Result">
+      <div style="font-size:16px;font-weight:700">คะแนน: <span id="apache4Total">0</span></div>
+      <div id="apache4Mortality" style="font-size:12px;color:#c62828;margin-top:4px"></div>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button onclick="closeApache4()" class="btn btn-outline" style="flex:1">ยกเลิก</button>
+      <button onclick="saveApache4()" class="btn btn-primary" style="flex:1;background:#c62828">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <!-- NEWS2 Assessment Modal -->
 <div id="news2Modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
@@ -793,7 +815,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>#</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
               <th>อายุ</th><th>U/D</th><th>Dx แรกรับ</th><th>แพทย์</th><th>ประเภท</th>
-              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
+              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
             </tr></thead>
             <tbody id="ptTbl"><tr><td colspan="17" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
@@ -834,6 +856,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>เตียง</th><th>Admit</th><th>เพศ</th><th>อายุ</th><th>แผนก</th>
               <th>Dx</th><th>U/D</th>
+              <th class="bc-Apache">Apache IV</th>
               <th class="bc-SOS">SOS</th>
               <th class="bc-ประเภท">ประเภท</th>
               <th class="bc-ยา HD">💊 ยา HD</th>
@@ -2973,27 +2996,18 @@ function showRNFormForBed(bedId){
         style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
     </div>
     
-    <!-- RASS -->
     <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">🧠 RASS Score</div>
-      <select id="rnRass_${bedId}" onchange="icSet('${bedId}','rass',this.value)" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
-        <option value="">-- เลือก RASS --</option>
-        ${[
-          ['+4','ต่อสู้ ก้าวร้าวรุนแรง เป็นอันตรายทันที'],
-          ['+3','กระวนกระวายมาก ดึงท่อหรือสายต่างๆ'],
-          ['+2','กระวนกระวาย เคลื่อนไหวไม่มีเป้าหมาย'],
-          ['+1','กระสับกระส่าย วิตกกังวล ไม่ก้าวร้าว'],
-          ['0','ตื่นตัวและสงบ'],
-          ['-1','ง่วงซึม ปลุกด้วยเสียงได้ >10 วิ'],
-          ['-2','ง่วงซึมเล็กน้อย สบตาได้ ≤10 วิ'],
-          ['-3','ง่วงซึมปานกลาง ขยับเมื่อเรียก ไม่สบตา'],
-          ['-4','ง่วงซึมลึก ไม่ตอบสนองเสียง'],
-          ['-5','ไม่ตื่น ไม่ตอบสนองทุกอย่าง'],
-        ].map(([v,l])=>`<option value="${v}" ${(bd.rass||'')=== v?'selected':''}>${v}: ${l}</option>`).join('')}
-      </select>
-      ${bd.rass?`<div style="margin-top:4px;font-size:11px;color:${parseInt(bd.rass)>=1?'#c62828':parseInt(bd.rass)<=-3?'#1565c0':'#2e7d32'};font-weight:700">RASS = ${bd.rass}</div>`:''}
+      <div class="fsec-title" style="font-size:12px">📊 NEWS2 Score</div>
+      <button type="button" onclick="openNews2Assess('${bedId}')" 
+        class="btn btn-outline btn-sm" style="width:100%;background:#e3f2fd;border-color:#1565c0;color:#1565c0;margin-bottom:6px">
+        📋 ประเมิน NEWS2 (7 พารามิเตอร์)
+      </button>
+      <div style="font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
+        คะแนน: <b>${bd.news2Score!==undefined&&bd.news2Score!==''?bd.news2Score:'-'}</b>
+        ${bd.news2Score>=7?'<span style="color:#c62828;font-weight:700"> 🔴 High</span>':bd.news2Score>=5?'<span style="color:#e65100;font-weight:700"> 🟠 Medium</span>':bd.news2Score>=1?'<span style="color:#f9a825;font-weight:700"> 🟡 Low</span>':''}
+        ${bd.news2Date?`<span style="color:#6b7280;font-size:10px"> (${bd.news2Date})</span>`:''}
+      </div>
     </div>
-
     <!-- SOS Score -->
     <div class="fsec" style="margin-bottom:12px">
       <div class="fsec-title" style="font-size:12px">📊 SOS Score (ล่าสุด)</div>
@@ -3015,18 +3029,27 @@ function showRNFormForBed(bedId){
         </div>`;
       }).join('')}
     </div>
+    <!-- RASS -->
     <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">📊 NEWS2 Score</div>
-      <button type="button" onclick="openNews2Assess('${bedId}')" 
-        class="btn btn-outline btn-sm" style="width:100%;background:#e3f2fd;border-color:#1565c0;color:#1565c0;margin-bottom:6px">
-        📋 ประเมิน NEWS2 (7 พารามิเตอร์)
-      </button>
-      <div style="font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
-        คะแนน: <b>${bd.news2Score!==undefined&&bd.news2Score!==''?bd.news2Score:'-'}</b>
-        ${bd.news2Score>=7?'<span style="color:#c62828;font-weight:700"> 🔴 High</span>':bd.news2Score>=5?'<span style="color:#e65100;font-weight:700"> 🟠 Medium</span>':bd.news2Score>=1?'<span style="color:#f9a825;font-weight:700"> 🟡 Low</span>':''}
-        ${bd.news2Date?`<span style="color:#6b7280;font-size:10px"> (${bd.news2Date})</span>`:''}
-      </div>
+      <div class="fsec-title" style="font-size:12px">🧠 RASS Score</div>
+      <select id="rnRass_${bedId}" onchange="icSet('${bedId}','rass',this.value)" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+        <option value="">-- เลือก RASS --</option>
+        ${[
+          ['+4','ต่อสู้ ก้าวร้าวรุนแรง เป็นอันตรายทันที'],
+          ['+3','กระวนกระวายมาก ดึงท่อหรือสายต่างๆ'],
+          ['+2','กระวนกระวาย เคลื่อนไหวไม่มีเป้าหมาย'],
+          ['+1','กระสับกระส่าย วิตกกังวล ไม่ก้าวร้าว'],
+          ['0','ตื่นตัวและสงบ'],
+          ['-1','ง่วงซึม ปลุกด้วยเสียงได้ >10 วิ'],
+          ['-2','ง่วงซึมเล็กน้อย สบตาได้ ≤10 วิ'],
+          ['-3','ง่วงซึมปานกลาง ขยับเมื่อเรียก ไม่สบตา'],
+          ['-4','ง่วงซึมลึก ไม่ตอบสนองเสียง'],
+          ['-5','ไม่ตื่น ไม่ตอบสนองทุกอย่าง'],
+        ].map(([v,l])=>`<option value="${v}" ${(bd.rass||'')=== v?'selected':''}>${v}: ${l}</option>`).join('')}
+      </select>
+      ${bd.rass?`<div style="margin-top:4px;font-size:11px;color:${parseInt(bd.rass)>=1?'#c62828':parseInt(bd.rass)<=-3?'#1565c0':'#2e7d32'};font-weight:700">RASS = ${bd.rass}</div>`:''}
     </div>
+
     <div class="fsec" style="margin-bottom:12px">
       <div class="fsec-title" style="font-size:12px">🧠 ICDSC Score</div>
       <button type="button" onclick="openIcdscAssess('${bedId}')" 
@@ -3100,6 +3123,82 @@ function openRNMode_fromIcdsc(){
 }
 
 // ── End RN System ─────────────────────────────────────────
+
+// ── Apache IV Assessment ──────────────────────────────────
+const APACHE4_PARAMS=[
+  {name:'อายุ (ปี)',opts:[{label:'<45',s:0},{label:'45-54',s:2},{label:'55-64',s:3},{label:'65-74',s:5},{label:'≥75',s:6}]},
+  {name:'อุณหภูมิ (°C)',opts:[{label:'<30 หรือ ≥41',s:4},{label:'30-33.9',s:3},{label:'34-35.9',s:2},{label:'36-38.4',s:0},{label:'38.5-40.9',s:1}]},
+  {name:'MAP (mmHg)',opts:[{label:'<50',s:4},{label:'50-69',s:3},{label:'70-109',s:0},{label:'110-129',s:2},{label:'130-159',s:3},{label:'≥160',s:4}]},
+  {name:'Heart Rate (ครั้ง/นาที)',opts:[{label:'<40 หรือ ≥180',s:4},{label:'40-54',s:3},{label:'55-69',s:2},{label:'70-109',s:0},{label:'110-139',s:2},{label:'140-179',s:3}]},
+  {name:'Respiratory Rate (ครั้ง/นาที)',opts:[{label:'<6',s:4},{label:'6-9',s:3},{label:'10-11',s:1},{label:'12-24',s:0},{label:'25-34',s:1},{label:'35-49',s:3},{label:'≥50',s:4}]},
+  {name:'PaO₂/FiO₂ ratio',opts:[{label:'<100',s:4},{label:'100-199',s:3},{label:'200-349',s:2},{label:'≥350',s:0}]},
+  {name:'pH arterial',opts:[{label:'<7.15',s:4},{label:'7.15-7.24',s:3},{label:'7.25-7.32',s:2},{label:'7.33-7.49',s:0},{label:'≥7.50',s:2}]},
+  {name:'Sodium (mEq/L)',opts:[{label:'<110',s:4},{label:'110-119',s:3},{label:'120-129',s:2},{label:'130-149',s:0},{label:'150-154',s:1},{label:'155-159',s:2},{label:'≥160',s:3}]},
+  {name:'Creatinine (mg/dL)',opts:[{label:'<0.5',s:2},{label:'0.5-1.4',s:0},{label:'1.5-1.9',s:2},{label:'2.0-3.4',s:3},{label:'≥3.5',s:4}]},
+  {name:'Hematocrit (%)',opts:[{label:'<20',s:4},{label:'20-29.9',s:2},{label:'30-45.9',s:0},{label:'46-49.9',s:1},{label:'≥50',s:2}]},
+  {name:'WBC (x1000/mm³)',opts:[{label:'<1',s:4},{label:'1-2.9',s:2},{label:'3-11.9',s:0},{label:'12-19.9',s:1},{label:'≥20',s:2}]},
+  {name:'Urine output (L/24h)',opts:[{label:'<0.5',s:4},{label:'0.5-0.9',s:3},{label:'1.0-1.9',s:1},{label:'2.0-3.9',s:0},{label:'≥4',s:1}]},
+  {name:'BUN (mg/dL)',opts:[{label:'<5',s:2},{label:'5-9',s:0},{label:'10-19',s:1},{label:'20-29',s:2},{label:'30-39',s:3},{label:'≥40',s:4}]},
+  {name:'Albumin (g/dL)',opts:[{label:'<2.0',s:4},{label:'2.0-2.4',s:3},{label:'2.5-2.9',s:1},{label:'≥3.0',s:0}]},
+  {name:'Bilirubin (mg/dL)',opts:[{label:'<1.0',s:0},{label:'1.0-2.9',s:1},{label:'3.0-4.9',s:2},{label:'5.0-7.9',s:3},{label:'≥8.0',s:4}]},
+  {name:'Glucose (mg/dL)',opts:[{label:'<40',s:4},{label:'40-59',s:3},{label:'60-199',s:0},{label:'200-349',s:2},{label:'≥350',s:3}]},
+  {name:'GCS',opts:[{label:'3-5',s:4},{label:'6-8',s:3},{label:'9-10',s:2},{label:'11-13',s:1},{label:'14-15',s:0}]},
+];
+
+let _apache4PtId='';
+
+function openApache4Assess(ptId){
+  _apache4PtId=ptId;
+  document.getElementById('apache4Items').innerHTML=APACHE4_PARAMS.map((param,i)=>`
+    <div style="padding:8px;border-bottom:1px solid #f3f4f6">
+      <div style="font-size:12px;font-weight:600;margin-bottom:6px">${param.name}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${param.opts.map(opt=>`
+          <label style="display:flex;align-items:center;gap:3px;font-size:11px;cursor:pointer;background:#f9fafb;padding:4px 8px;border-radius:6px;border:1px solid var(--g200)">
+            <input type="radio" name="apache4_${i}" value="${opt.s}" onchange="calcApache4()">
+            ${opt.label} <span style="color:#c62828;font-size:10px">(${opt.s})</span>
+          </label>`).join('')}
+      </div>
+    </div>`).join('');
+  calcApache4();
+  document.getElementById('apache4Modal').style.display='flex';
+}
+
+function calcApache4(){
+  let total=0;
+  APACHE4_PARAMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="apache4_${i}"]:checked`)?.value;
+    if(v!==undefined) total+=parseInt(v);
+  });
+  document.getElementById('apache4Total').textContent=total;
+  // Predicted Mortality (approximate)
+  const mortality=Math.round(100/(1+Math.exp(-(-3.5+0.146*total))));
+  document.getElementById('apache4Mortality').textContent=`Predicted Mortality: ~${mortality}%`;
+  const res=document.getElementById('apache4Result');
+  res.style.background=total>=30?'#ffebee':total>=20?'#fff3e0':'#e8f5e9';
+}
+
+function saveApache4(){
+  let total=0;
+  APACHE4_PARAMS.forEach((_,i)=>{
+    const v=document.querySelector(`input[name="apache4_${i}"]:checked`)?.value;
+    if(v!==undefined) total+=parseInt(v);
+  });
+  const mortality=Math.round(100/(1+Math.exp(-(-3.5+0.146*total))));
+  // บันทึกลงฟอร์ม
+  const scoreEl=document.querySelector('input[name="Apache IV Score"]');
+  const mortEl=document.querySelector('input[name="Apache IV Mortality"]');
+  if(scoreEl) scoreEl.value=total;
+  if(mortEl) mortEl.value=mortality;
+  closeApache4();
+  toast(`✅ Apache IV = ${total} คะแนน (Mortality ~${mortality}%)`);
+  // re-render tab
+  document.querySelector('.tab-content')?.dispatchEvent(new Event('update'));
+}
+
+function closeApache4(){document.getElementById('apache4Modal').style.display='none';}
+
+// ── End Apache IV ─────────────────────────────────────────
 
 // ── NEWS2 Assessment ─────────────────────────────────────
 const NEWS2_PARAMS=[
@@ -3720,6 +3819,7 @@ function renderTbl(){
       <td style="text-align:center">${(()=>{if(!p['Admit (Date)'])return '-';const dc=p['D/C (Date)']||new Date().toISOString().split('T')[0];return daysBetween(p['Admit (Date)'],dc);})()}</td>
       <td>${dc?`<span class="${dcC}" style="font-size:10.5px">${dc}</span>`:'-'}</td>
       <td style="font-size:10.5px;white-space:nowrap">${p['ผู้บันทึก D/C']||'-'}</td>
+      <td style="text-align:center;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
@@ -3951,7 +4051,19 @@ function buildForm(p){
         ${fg('Falling score',inp('Falling','number',p['Falling']),'','',true)}
         ${fg('APACHE II score',inp('APACHE II','number',p['APACHE II']))}
         ${fg('Pain score',inp('Pain score','number',p['Pain score']))}
-      </div></div>`,
+      </div></div>
+      <div class="fsec"><div class="fsec-title">Apache IV Score</div>
+        <button type="button" onclick="openApache4Assess('${p['id']||''}')" 
+          class="btn btn-outline" style="width:100%;background:#fce4ec;border-color:#c62828;color:#c62828;margin-bottom:8px">
+          📋 ประเมิน Apache IV (คำนวณอัตโนมัติ)
+        </button>
+        <div style="font-size:12px;background:#f9fafb;padding:8px;border-radius:8px;border:1px solid var(--g200)">
+          คะแนน Apache IV: <b>${p['Apache IV Score']||'-'}</b>
+          ${p['Apache IV Score']?`<span style="color:#6b7280;font-size:10px"> | Pred. Mortality: ${p['Apache IV Mortality']||'-'}%</span>`:''}
+        </div>
+        <input type="hidden" name="Apache IV Score" value="${p['Apache IV Score']||''}">
+        <input type="hidden" name="Apache IV Mortality" value="${p['Apache IV Mortality']||''}">
+      </div>`,
     'tab-infection':`
       <div class="fsec"><div class="fsec-title">ข้อมูลการติดเชื้อ (HAI)</div><div class="fgrid">
         ${fg('VAP',sel('VAP',['ใช่','ไม่ใช่'],p['VAP']))}
@@ -5478,6 +5590,7 @@ function renderBedAdmitTable(pts){
       <td style="font-size:11px;font-weight:600">${normalizePatType(p['ประเภทผู้ป่วย']||'-')}</td>
       <td style="font-size:10px;max-width:150px;white-space:normal">${p['Diagnosis แรกรับ']||'-'}</td>
       <td style="font-size:10px;max-width:100px;white-space:normal">${p['U/D']||'-'}</td>
+      <td class="bc-Apache" style="text-align:center;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</td>
       <td class="bc-SOS" style="text-align:center">-</td>
       <td class="bc-ประเภท" style="text-align:center">-</td>
       <td class="bc-ยา HD" style="font-size:10px;max-width:120px;white-space:normal">${p['ยา HD']?`<span style="color:#c62828">${p['ยา HD']}</span>`:'-'}</td>
