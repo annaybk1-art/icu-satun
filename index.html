@@ -3094,10 +3094,10 @@ async function saveRNData(close=true){
   // บันทึก assessor
   if(assessor) icSet(bedId,'rnAssessor',assessor);
 
-  // ดึงเดือน/ปีจาก Admit Date ของผู้ป่วย
-  const admitDate=pt['Admit (Date)']?new Date(pt['Admit (Date)']):new Date();
-  const m=admitDate.getMonth()+1;
-  const y=admitDate.getFullYear();
+  // ใช้เดือน/ปีปัจจุบันเสมอ
+  const now_=new Date();
+  const m=now_.getMonth()+1;
+  const y=now_.getFullYear();
   const updated={...pt};
   if(bd.news2Score!==undefined) updated['NEWS2 Score']=bd.news2Score;
   if(bd.news2Date!==undefined) updated['NEWS2 Date']=bd.news2Date;
