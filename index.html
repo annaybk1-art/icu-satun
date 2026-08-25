@@ -3561,8 +3561,9 @@ function icCopyMsg(){
 }
 
 async function saveInChargeToPatients(){
-  const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
-  const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
+  const now_=new Date();
+  const m=parseInt(document.getElementById('fMonth')?.value||now_.getMonth()+1);
+  const y=parseInt(document.getElementById('fYear')?.value||now_.getFullYear());
   const updates=[];
 
   for(const pt of _icAdmittedPts){
