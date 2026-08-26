@@ -2868,31 +2868,29 @@ function openRNMode(){
   // โหลดเตียง
   const m=new Date().getMonth()+1;
   const y=new Date().getFullYear();
-  const pts=_icAdmittedPts&&_icAdmittedPts.length?Promise.resolve(_icAdmittedPts):
-    fetchMonthPts(now_.getMonth()+1,now_.getFullYear()).then(p=>{
-      const admitted=p.filter(x=>x['สถานะ']==='กำลัง admit');
-      _icAdmittedPts=admitted;
-      // init _icBedData
-      admitted.forEach(pt=>{
-        const bedId=(pt['เตียง']||'').trim();
-        if(!_icBedData[bedId]) _icBedData[bedId]={
-          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
-          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
-          meEvents:tryParseJSON(pt['Medication Error'])||[],
-          icdscLatest:pt['ICDSC Score']||'',
-          icdscDate:pt['ICDSC Date']||'',
-          icdscMax:pt['ICDSC Max']||'',
-          icdscMaxDate:pt['ICDSC Max Date']||'',
-          rass:pt['RASS']||'',
-          news2Score:pt['NEWS2 Score']||'',
-          news2Date:pt['NEWS2 Date']||'',
-          sos:pt['SOS Score']||'',
-        };
-      });
-      return admitted;
+  const now_=new Date();
+  document.getElementById('rnBedList').innerHTML='<div style="color:#9ca3af;font-size:12px">กำลังโหลด...</div>';
+  document.getElementById('rnStartBtn').disabled=true;
+  document.getElementById('rnModal').style.display='flex';
+  fetchMonthPts(rnM,rnY).then(p=>{
+    const admitted=p.filter(x=>x['สถานะ']==='กำลัง admit');
+    _icAdmittedPts=admitted;
+    admitted.forEach(pt=>{
+      const bedId=(pt['เตียง']||'').trim();
+      if(!_icBedData[bedId]) _icBedData[bedId]={
+        piEvents:tryParseJSON(pt['Pressure Injury'])||[],
+        ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
+        meEvents:tryParseJSON(pt['Medication Error'])||[],
+        icdscLatest:pt['ICDSC Score']||'',
+        icdscDate:pt['ICDSC Date']||'',
+        icdscMax:pt['ICDSC Max']||'',
+        icdscMaxDate:pt['ICDSC Max Date']||'',
+        rass:pt['RASS']||'',
+        news2Score:pt['NEWS2 Score']||'',
+        news2Date:pt['NEWS2 Date']||'',
+        sos:pt['SOS Score']||'',
+      };
     });
-  pts.then(admitted=>{
-    if(!_icAdmittedPts||!_icAdmittedPts.length) _icAdmittedPts=admitted;
     const beds=admitted.map(p=>p['เตียง']).filter(Boolean);
     renderRNBedList(beds);
   }).catch(e=>{
@@ -3117,8 +3115,8 @@ async function saveRNData(close=true){
 
   // ใช้เดือน/ปีปัจจุบันเสมอ
   const now_=new Date();
-  const m=now_.getMonth()+1;
-  const y=now_.getFullYear();
+  const rnM=now_.getMonth()+1;
+  const rnY=now_.getFullYear();
   const updated={...pt};
   if(bd.news2Score!==undefined) updated['NEWS2 Score']=bd.news2Score;
   if(bd.news2Date!==undefined) updated['NEWS2 Date']=bd.news2Date;
