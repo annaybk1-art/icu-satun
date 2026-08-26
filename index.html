@@ -2869,7 +2869,28 @@ function openRNMode(){
   const m=new Date().getMonth()+1;
   const y=new Date().getFullYear();
   const pts=_icAdmittedPts&&_icAdmittedPts.length?Promise.resolve(_icAdmittedPts):
-    fetchMonthPts(m,y).then(p=>p.filter(x=>x['สถานะ']==='กำลัง admit'));
+    fetchMonthPts(now_.getMonth()+1,now_.getFullYear()).then(p=>{
+      const admitted=p.filter(x=>x['สถานะ']==='กำลัง admit');
+      _icAdmittedPts=admitted;
+      // init _icBedData
+      admitted.forEach(pt=>{
+        const bedId=(pt['เตียง']||'').trim();
+        if(!_icBedData[bedId]) _icBedData[bedId]={
+          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
+          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
+          meEvents:tryParseJSON(pt['Medication Error'])||[],
+          icdscLatest:pt['ICDSC Score']||'',
+          icdscDate:pt['ICDSC Date']||'',
+          icdscMax:pt['ICDSC Max']||'',
+          icdscMaxDate:pt['ICDSC Max Date']||'',
+          rass:pt['RASS']||'',
+          news2Score:pt['NEWS2 Score']||'',
+          news2Date:pt['NEWS2 Date']||'',
+          sos:pt['SOS Score']||'',
+        };
+      });
+      return admitted;
+    });
   pts.then(admitted=>{
     if(!_icAdmittedPts||!_icAdmittedPts.length) _icAdmittedPts=admitted;
     const beds=admitted.map(p=>p['เตียง']).filter(Boolean);
@@ -3113,7 +3134,9 @@ async function saveRNData(close=true){
   if(assessor) updated['RN Assessor']=assessor;
 
   try{
-    await api('savePatient',{},{id:pt['id'],month:m,year:y,data:updated});
+    const ptId=pt['id']||pt['id ']||'';
+    if(!ptId){toast('⚠️ ไม่พบ id ผู้ป่วย กรุณาเปิด In Charge ก่อนเพื่อโหลดข้อมูล',true);return;}
+    await api('savePatient',{},{id:ptId,month:m,year:y,data:updated});
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
 }
