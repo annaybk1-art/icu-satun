@@ -2491,6 +2491,9 @@ async function doIcLogin(){
     const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
     const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
     _icAdmittedPts=[];
+    // ล้าง cache เพื่อโหลดข้อมูลใหม่พร้อม id
+    const cacheKey=`${y}-${m}`;
+    if(_dashCache[cacheKey]) delete _dashCache[cacheKey];
     try{_icAdmittedPts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}
     _icAdmittedPts=_icAdmittedPts.filter(p=>p['สถานะ']==='กำลัง admit');
 
@@ -3144,7 +3147,7 @@ async function saveRNData(close=true){
   try{
     const ptId=pt['id']||pt['id ']||'';
     if(!ptId){toast('⚠️ ไม่พบ id ผู้ป่วย กรุณาเปิด In Charge ก่อนเพื่อโหลดข้อมูล',true);return;}
-    await api('savePatient',{},{id:ptId,month:m,year:y,data:updated});
+    await api('savePatient',{},{id:ptId,month:rnM,year:rnY,data:updated});
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
 }
@@ -3623,7 +3626,9 @@ async function saveInChargeToPatients(){
       if(bd[k+'_start']!==undefined) updated[s]=bd[k+'_start'];
       if(bd[k+'_stop']!==undefined) updated[e]=bd[k+'_stop'];
     });
-    updates.push({id:pt['id'],month:m,year:y,data:updated});
+    const ptId=pt['id']||pt['id ']||'';
+    if(!ptId) continue; // ข้ามถ้าไม่มี id
+    updates.push({id:ptId,month:m,year:y,data:updated});
   }
 
   if(updates.length===0){toast('ℹ️ ไม่มีผู้ป่วยที่กำลัง Admit');return;}
