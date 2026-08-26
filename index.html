@@ -2865,37 +2865,47 @@ function openRNMode(){
   document.getElementById('rnBedList').innerHTML='<div style="color:#9ca3af;font-size:12px">กำลังโหลด...</div>';
   document.getElementById('rnStartBtn').disabled=true;
   document.getElementById('rnModal').style.display='flex';
-  // โหลดเตียง
-  const m=new Date().getMonth()+1;
-  const y=new Date().getFullYear();
-  const now_=new Date();
-  document.getElementById('rnBedList').innerHTML='<div style="color:#9ca3af;font-size:12px">กำลังโหลด...</div>';
-  document.getElementById('rnStartBtn').disabled=true;
-  document.getElementById('rnModal').style.display='flex';
-  fetchMonthPts(rnM,rnY).then(p=>{
-    const admitted=p.filter(x=>x['สถานะ']==='กำลัง admit');
+  // ใช้ _pts ที่โหลดอยู่แล้ว
+  const allPts=(_pts&&_pts.length)?_pts:[];
+  const admitted=allPts.filter(p=>p['สถานะ']==='กำลัง admit');
+  if(admitted.length){
     _icAdmittedPts=admitted;
     admitted.forEach(pt=>{
       const bedId=(pt['เตียง']||'').trim();
-      if(!_icBedData[bedId]) _icBedData[bedId]={
-        piEvents:tryParseJSON(pt['Pressure Injury'])||[],
-        ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
-        meEvents:tryParseJSON(pt['Medication Error'])||[],
-        icdscLatest:pt['ICDSC Score']||'',
-        icdscDate:pt['ICDSC Date']||'',
-        icdscMax:pt['ICDSC Max']||'',
-        icdscMaxDate:pt['ICDSC Max Date']||'',
-        rass:pt['RASS']||'',
-        news2Score:pt['NEWS2 Score']||'',
-        news2Date:pt['NEWS2 Date']||'',
-        sos:pt['SOS Score']||'',
-      };
+      if(!_icBedData[bedId]||!_icBedData[bedId]._loaded){
+        _icBedData[bedId]={_loaded:true,sos:pt['SOS Score']||'',rass:pt['RASS']||'',
+          news2Score:pt['NEWS2 Score']||'',news2Date:pt['NEWS2 Date']||'',
+          icdscLatest:pt['ICDSC Score']||'',icdscDate:pt['ICDSC Date']||'',
+          icdscMax:pt['ICDSC Max']||'',icdscMaxDate:pt['ICDSC Max Date']||'',
+          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
+          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
+          meEvents:tryParseJSON(pt['Medication Error'])||[],
+          vent_start:pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'' ,
+          vent_stop:pt['Ventilator (End)']?di(pt['Ventilator (End)']):'' ,
+          aline_start:pt['A-Line (Start)']?di(pt['A-Line (Start)']):'' ,
+          aline_stop:pt['A-Line (End)']?di(pt['A-Line (End)']):'' ,
+          cline_start:pt['C-Line (Start)']?di(pt['C-Line (Start)']):'' ,
+          cline_stop:pt['C-Line (End.)']?di(pt['C-Line (End.)']):'' ,
+          iv_start:pt['IV (Start)']?di(pt['IV (Start)']):'' ,
+          iv_stop:pt['IV (End)']?di(pt['IV (End)']):'' ,
+          fc_start:pt['F/C (Start)']?di(pt['F/C (Start)']):'' ,
+          fc_stop:pt['F/C (END)']?di(pt['F/C (END)']):'' ,
+          icd_start:pt['ICD (Start)']?di(pt['ICD (Start)']):'' ,
+          icd_stop:pt['ICD (End)']?di(pt['ICD (End)']):'' ,
+        };
+      }
     });
-    const beds=admitted.map(p=>p['เตียง']).filter(Boolean);
-    renderRNBedList(beds);
-  }).catch(e=>{
-    document.getElementById('rnBedList').innerHTML=`<div style="color:#c62828;font-size:12px">${e.message}</div>`;
-  });
+    renderRNBedList(admitted.map(p=>p['เตียง']).filter(Boolean));
+  } else {
+    const now_=new Date();
+    fetchMonthPts(now_.getMonth()+1,now_.getFullYear()).then(p=>{
+      const adm=p.filter(x=>x['สถานะ']==='กำลัง admit');
+      _icAdmittedPts=adm;
+      renderRNBedList(adm.map(x=>x['เตียง']).filter(Boolean));
+    }).catch(e=>{
+      document.getElementById('rnBedList').innerHTML=`<div style="color:#c62828;font-size:12px">${e.message}</div>`;
+    });
+  }
 }
 
 function renderRNBedList(beds){
