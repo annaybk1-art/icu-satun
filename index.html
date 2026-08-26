@@ -3146,7 +3146,9 @@ async function saveRNData(close=true){
 
   try{
     const ptId=pt['id']||pt['id ']||'';
-    if(!ptId){toast('⚠️ ไม่พบ id ผู้ป่วย กรุณาเปิด In Charge ก่อนเพื่อโหลดข้อมูล',true);return;}
+    // ส่ง HN และ เตียง ใน data เผื่อ id ว่าง
+    if(!updated['HN']) updated['HN']=pt['HN']||'';
+    if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
     await api('savePatient',{},{id:ptId,month:rnM,year:rnY,data:updated});
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
@@ -3627,7 +3629,8 @@ async function saveInChargeToPatients(){
       if(bd[k+'_stop']!==undefined) updated[e]=bd[k+'_stop'];
     });
     const ptId=pt['id']||pt['id ']||'';
-    if(!ptId) continue; // ข้ามถ้าไม่มี id
+    if(!updated['HN']) updated['HN']=pt['HN']||'';
+    if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
     updates.push({id:ptId,month:m,year:y,data:updated});
   }
 
