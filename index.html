@@ -1828,6 +1828,16 @@ function showConfig(){document.getElementById('configPage').style.display='flex'
 function showLogin(){document.getElementById('configPage').style.display='none';document.getElementById('loginPage').style.display='flex';document.getElementById('registerPage').style.display='none';document.getElementById('changePwdPage').style.display='none';document.getElementById('appPage').style.display='none';document.querySelector('.bottom-nav').style.display='none';}
 function showRegister(){document.getElementById('configPage').style.display='none';document.getElementById('loginPage').style.display='none';document.getElementById('registerPage').style.display='flex';document.getElementById('changePwdPage').style.display='none';document.getElementById('appPage').style.display='none';document.getElementById('regErr').style.display='none';document.querySelector('.bottom-nav').style.display='none';}
 
+function flattenData(data){
+  // แปลง data object เป็น flat params สำหรับส่งผ่าน GET
+  const flat={};
+  if(!data) return flat;
+  Object.entries(data).forEach(([k,v])=>{
+    flat['d_'+encodeURIComponent(k)]=typeof v==='object'?JSON.stringify(v):String(v==null?'':v);
+  });
+  return flat;
+}
+
 async function api(action,params={},body=null){
   if(!API_URL) throw new Error('ยังไม่ได้ตั้งค่า API URL');
   const q=new URLSearchParams({action,...params}).toString();
@@ -3149,7 +3159,7 @@ async function saveRNData(close=true){
     // ส่ง HN และ เตียง ใน data เผื่อ id ว่าง
     if(!updated['HN']) updated['HN']=pt['HN']||'';
     if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
-    await api('savePatient',{},{month:rnM,year:rnY,id:ptId,data:updated});
+    await api('savePatient',{month:rnM,year:rnY,id:ptId,...flattenData(updated)},null);
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
 }
@@ -3639,7 +3649,7 @@ async function saveInChargeToPatients(){
   showLoad(`กำลังอัปเดต ${updates.length} เตียง...`);
   try{
     for(const u of updates){
-      await api('savePatient',{},{month:u.month,year:u.year,id:u.id,data:u.data});
+      await api('savePatient',{month:u.month,year:u.year,id:u.id,...flattenData(u.data)},null);
     }
     _pts=await api('getPatients',{month:m,year:y});
     applyFilter(); updateStats(); startNewsBoard();
@@ -4498,7 +4508,7 @@ async function savePatient(){
   const saveBtn=document.getElementById('saveBtn');saveBtn.textContent='⏳...';saveBtn.disabled=true;showLoad('กำลังบันทึก...');
   try{
     if(editPtId){await api('savePatient',{},{month:m,year:yr,id:editPtId,data});await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขผู้ป่วย '+data['ชื่อ-สกุล']});}
-    else{await api('savePatient',{},{month:m,year:yr,data});await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
+    else{await api('savePatient',{month:m,year:yr,...flattenData(data)},null);await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
     closeModal();toast('บันทึกสำเร็จ ✓');
     Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
     await loadPatients(true);loadLog();
