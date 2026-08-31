@@ -1076,19 +1076,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <!-- ── Telegram Admin ── -->
       <div class="dash-card" style="margin-bottom:16px">
         <div class="dash-card-title">🔔 Telegram แจ้งเตือน Admin</div>
-        <div class="fgrid">
-          <div class="fg full" style="grid-column:1/-1">
-            <label>Bot Token (สำหรับแจ้งเตือน Admin)</label>
-            <input type="text" id="adminTelegramToken" placeholder="Bot Token..." style="width:100%;font-family:monospace;font-size:11px">
-          </div>
-          <div class="fg full" style="grid-column:1/-1">
-            <label>Chat ID (Admin)</label>
-            <input type="text" id="adminTelegramChatId" placeholder="Chat ID ของ Admin..." style="width:100%;font-family:monospace">
-          </div>
-        </div>
-        <div style="margin-top:12px">
-          <button class="btn btn-primary" onclick="saveAdminTelegram()">💾 บันทึก</button>
-        </div>
+        <div class="opt-note">Token ถูก hardcode ใน Code.gs แล้ว ระบบแจ้งเตือนทำงานอัตโนมัติครับ</div>
         <div class="opt-note" style="margin-top:8px">แจ้งเตือนเมื่อ: มีสมาชิกใหม่รออนุมัติ / มี Dropdown รออนุมัติ</div>
       </div>
 
@@ -1096,10 +1084,6 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div class="dash-card" style="margin-bottom:16px">
         <div class="dash-card-title">📋 ตั้งค่า In Charge</div>
         <div class="fgrid">
-          <div class="fg full" style="grid-column:1/-1">
-            <label>LINE Notify Token <span style="font-size:10px;color:var(--gray400)">(สมัครได้ที่ notify.line.me)</span></label>
-            <input type="text" id="icLineToken" placeholder="วาง Token ที่นี่..." style="width:100%;font-family:monospace">
-          </div>
           <div class="fg"><label>เวรเช้าเริ่ม</label><input type="time" id="icShiftMorning" value="07:00"></div>
           <div class="fg"><label>เวรบ่ายเริ่ม</label><input type="time" id="icShiftAfternoon" value="15:00"></div>
           <div class="fg"><label>เวรดึกเริ่ม</label><input type="time" id="icShiftNight" value="23:00"></div>
@@ -1107,49 +1091,12 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div style="margin-top:12px">
           <button class="btn btn-primary" onclick="saveInChargeSettings()">💾 บันทึกตั้งค่า In Charge</button>
         </div>
-        <div class="opt-note" style="margin-top:8px">Token จะถูกบันทึกเข้า Google Sheet — ใช้ร่วมกันทั้งทีม ส่งผ่าน Apps Script (ไม่ผ่าน browser โดยตรง)</div>
       </div>
 
-      <!-- ── ตั้งค่า In Charge ── -->
+      <!-- ── ตั้งค่าระบบ In Charge (Telegram) ── -->
       <div class="dash-card" style="margin-bottom:16px">
         <div class="dash-card-title">📋 ตั้งค่าระบบ In Charge (Telegram)</div>
-        <div class="fgrid">
-          <div class="fg full" style="grid-column:1/-1">
-            <label>Telegram Bot Token
-              <a href="https://t.me/BotFather" target="_blank" style="font-size:10px;color:#2e7d32;margin-left:8px">🤖 สร้าง Bot ที่ @BotFather</a>
-            </label>
-            <input type="text" id="icTelegramToken" placeholder="110201543:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw..." style="width:100%;font-family:monospace;font-size:11px">
-          </div>
-          <div class="fg full" style="grid-column:1/-1">
-            <label>Telegram Chat ID (กลุ่มหรือ user ที่รับข้อความ)
-              <a href="https://t.me/userinfobot" target="_blank" style="font-size:10px;color:#2e7d32;margin-left:8px">🔍 หา Chat ID ที่ @userinfobot</a>
-            </label>
-            <input type="text" id="icTelegramChatId" placeholder="-1001234567890 (กลุ่ม) หรือ 123456789 (ส่วนตัว)" style="width:100%;font-family:monospace">
-          </div>
-          <div class="fg">
-            <label>🌅 เวลาเริ่มเวรเช้า</label>
-            <input type="time" id="icShiftMorning" value="07:00">
-          </div>
-          <div class="fg">
-            <label>🌤️ เวลาเริ่มเวรบ่าย</label>
-            <input type="time" id="icShiftAfternoon" value="15:00">
-          </div>
-          <div class="fg">
-            <label>🌙 เวลาเริ่มเวรดึก</label>
-            <input type="time" id="icShiftNight" value="23:00">
-          </div>
-        </div>
-        <div style="margin-top:12px">
-          <button class="btn btn-primary" onclick="saveInChargeSettings()">💾 บันทึกตั้งค่า In Charge</button>
-        </div>
-        <div class="opt-note" style="margin-top:10px;line-height:1.8">
-          <b>วิธีตั้งค่า Telegram Bot:</b><br>
-          1. เปิด Telegram → ค้นหา <b>@BotFather</b> → พิมพ์ /newbot → ตั้งชื่อ Bot → Copy Token มาวางด้านบน<br>
-          2. เพิ่ม Bot เข้ากลุ่ม ICU แล้วส่งข้อความใดก็ได้ในกลุ่ม<br>
-          3. เปิด <b>@userinfobot</b> หรือ https://api.telegram.org/bot[TOKEN]/getUpdates เพื่อหา Chat ID<br>
-          4. Chat ID กลุ่มจะขึ้นต้นด้วย <b>-</b> เช่น -1001234567890
-        </div>
-      </div>
+        <div class="opt-note" style="margin-top:8px">Token ถูก hardcode ใน Code.gs แล้ว ระบบส่ง Telegram ทำงานอัตโนมัติครับ</div>
 
       <!-- ── ตั้งค่าแถบข้อความวิ่ง ── -->
       <div class="dash-card" style="margin-bottom:16px">
@@ -3159,7 +3106,7 @@ async function saveRNData(close=true){
     // ส่ง HN และ เตียง ใน data เผื่อ id ว่าง
     if(!updated['HN']) updated['HN']=pt['HN']||'';
     if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
-    await api('savePatient',{month:rnM,year:rnY,id:ptId,...flattenData(updated)},null);
+    await api('savePatient',{},{id:pt['id'],month:rnM,year:rnY,data:updated});
     if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
   }catch(e){toast('⚠️ '+e.message,true);}
 }
@@ -3649,7 +3596,7 @@ async function saveInChargeToPatients(){
   showLoad(`กำลังอัปเดต ${updates.length} เตียง...`);
   try{
     for(const u of updates){
-      await api('savePatient',{month:u.month,year:u.year,id:u.id,...flattenData(u.data)},null);
+      await api('savePatient',{},{id:u.id,month:u.month,year:u.year,data:u.data});
     }
     _pts=await api('getPatients',{month:m,year:y});
     applyFilter(); updateStats(); startNewsBoard();
@@ -4508,7 +4455,7 @@ async function savePatient(){
   const saveBtn=document.getElementById('saveBtn');saveBtn.textContent='⏳...';saveBtn.disabled=true;showLoad('กำลังบันทึก...');
   try{
     if(editPtId){await api('savePatient',{},{month:m,year:yr,id:editPtId,data});await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขผู้ป่วย '+data['ชื่อ-สกุล']});}
-    else{await api('savePatient',{month:m,year:yr,...flattenData(data)},null);await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
+    else{await api('savePatient',{},{month:m,year:yr,data});await api('writeLog',{},{user:currentUser.fullname,action:'เพิ่มผู้ป่วย '+data['ชื่อ-สกุล']});}
     closeModal();toast('บันทึกสำเร็จ ✓');
     Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
     await loadPatients(true);loadLog();
