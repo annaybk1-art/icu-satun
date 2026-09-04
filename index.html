@@ -1004,22 +1004,24 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     </div>
 
     <!-- MONTHLY -->
-    <div class="sec" id="sec-monthly">
-      <div class="fbar">
-        <label>เดือน:</label><select id="mMonth"></select>
-        <label>ปี:</label><select id="mYear"></select>
-        <button class="btn btn-primary" onclick="loadMonthly()">แสดงข้อมูล</button>
-      </div>
-      <div id="mContent" class="dash-card"></div>
-    </div>
+
 
     <!-- YEARLY -->
     <div class="sec" id="sec-disease">
       <div class="sec-header">
         <div class="sec-title">🏥 ตัวชี้วัดรายโรค</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="diseaseMonth" class="sel-sm"></select>
-          <select id="diseaseYear" class="sel-sm"></select>
+          <select id="diseasePeriod" class="sel-sm" onchange="toggleDiseasePeriod(this.value)">
+            <option value="month">รายเดือน</option>
+            <option value="year">รายปีงบ</option>
+          </select>
+          <div id="diseaseMonthBox" style="display:flex;gap:4px">
+            <select id="diseaseMonth" class="sel-sm"></select>
+            <select id="diseaseYear" class="sel-sm"></select>
+          </div>
+          <div id="diseaseYearBox" style="display:none">
+            <select id="diseaseFiscalYear" class="sel-sm"></select>
+          </div>
           <button class="btn btn-primary btn-sm" onclick="loadDiseaseIndicator()">แสดง</button>
         </div>
       </div>
@@ -1030,12 +1032,30 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div class="sec-header">
         <div class="sec-title">📊 KPI & ตัวชี้วัด ICU</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="kpiMonth" class="sel-sm"></select>
-          <select id="kpiYear" class="sel-sm"></select>
+          <select id="kpiPeriod" class="sel-sm" onchange="toggleKpiPeriod(this.value)">
+            <option value="month">รายเดือน</option>
+            <option value="year">รายปีงบ</option>
+          </select>
+          <div id="kpiMonthBox" style="display:flex;gap:4px">
+            <select id="kpiMonth" class="sel-sm"></select>
+            <select id="kpiYear" class="sel-sm"></select>
+          </div>
+          <div id="kpiYearBox" style="display:none">
+            <select id="kpiFiscalYear" class="sel-sm"></select>
+          </div>
           <button class="btn btn-primary btn-sm" onclick="loadKPI()">แสดง KPI</button>
         </div>
       </div>
       <div id="kpiContent"></div>
+      <div style="margin-top:16px;border-top:2px solid var(--g100);padding-top:16px">
+        <div style="font-size:14px;font-weight:700;color:#1b5e20;margin-bottom:10px">📈 ข้อมูลสถิติ</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+          <select id="mMonth" class="sel-sm"></select>
+          <select id="mYear" class="sel-sm"></select>
+          <button class="btn btn-primary btn-sm" onclick="loadMonthly()">แสดงข้อมูล</button>
+        </div>
+        <div id="mContent" class="dash-card"></div>
+      </div>
     </div>
 
     <div class="sec" id="sec-yearly">
@@ -1928,9 +1948,14 @@ function setupYears(){
     const el=document.getElementById(id);if(!el)return;
     for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cy)o.selected=true;el.appendChild(o);}
   });
+  // Fiscal year dropdowns (ปีงบ)
+  ['kpiFiscalYear','diseaseFiscalYear'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=`ปีงบ ${y+543} (ต.ค.${y+542}-ก.ย.${y+543})`;if(y===cy)o.selected=true;el.appendChild(o);}
+  });
   const yEl=document.getElementById('yYear');
   if(yEl){for(let f=fy-3;f<=fy+1;f++){const o=document.createElement('option');o.value=f;o.textContent='ปีงบ '+f+' (ต.ค.'+(f-1)+'-ก.ย.'+f+')';if(f===fy)o.selected=true;yEl.appendChild(o);}}
-  ['dMonth','icMonth','mMonth','kpiMonth','diseaseMonth'].forEach(id=>{
+  ['dMonth','icMonth','kpiMonth','diseaseMonth','mMonth'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     MONTHS_TH.forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;if(i+1===cm)o.selected=true;el.appendChild(o);});
   });
@@ -2084,7 +2109,7 @@ function showApp(user){
     perms.forEach(p=>{
       if(p==='no_patients') document.getElementById('nav-patients').style.display='none';
       if(p==='no_ic') document.getElementById('nav-ic').style.display='none';
-      if(p==='no_monthly') document.getElementById('nav-monthly').style.display='none';
+      if(p==='no_monthly'){const el=document.getElementById('nav-kpi');if(el)el.style.display='none';}
       if(p==='no_yearly') document.getElementById('nav-yearly').style.display='none';
       if(p==='no_dashboard') document.getElementById('nav-dashboard').style.display='none';
       if(p==='no_bedmap') document.getElementById('nav-bedmap').style.display='none';
@@ -2298,6 +2323,7 @@ function showSec(name,el){
   if(name==='bedmap') loadBedMap();
   if(name==='ic') loadIC();
   if(name==='disease') loadDiseaseIndicator();
+  if(name==='kpi'){loadKPI();loadMonthly();}
   if(name==='yearly') loadYearly();
   if(name==='users') renderUsers();
   if(name==='opts'){ renderOpts(); loadMarqueeFromServer(); loadNewsBoardSettings(); loadInChargeSettings();
@@ -4056,7 +4082,7 @@ function buildForm(p){
         <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
           <span style="font-size:11px;font-weight:600;color:var(--gray600)">ประเภทพิเศษ:</span>
           ${['Stroke','TBI','Trauma','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
-            <input type="radio" name="dxSpecialType" value="${v}" ${(p['dxSpecialType']||'ไม่มี')===v?'checked':''}> ${v}
+            <input type="radio" name="dxSpecialType" value="${v}" ${(p['dxSpecialType']||'')=== v?'checked':''}> ${v}
           </label>`).join('')}
         </div>
       </div>
@@ -6049,12 +6075,32 @@ async function loadIC(){
 // ============================================================
 // MONTHLY / YEARLY
 // ============================================================
+function toggleDiseasePeriod(v){
+  document.getElementById('diseaseMonthBox').style.display=v==='month'?'flex':'none';
+  document.getElementById('diseaseYearBox').style.display=v==='year'?'block':'none';
+}
+function toggleKpiPeriod(v){
+  document.getElementById('kpiMonthBox').style.display=v==='month'?'flex':'none';
+  document.getElementById('kpiYearBox').style.display=v==='year'?'block':'none';
+}
+
+// โหลดข้อมูลทุกเดือนในปีงบ (ต.ค.-ก.ย.)
+async function fetchFiscalYearPts(fiscalYear){
+  // ปีงบ 69 = ต.ค.2568-ก.ย.2569
+  const months=[];
+  for(let m=10;m<=12;m++) months.push({m,y:fiscalYear-1});
+  for(let m=1;m<=9;m++) months.push({m,y:fiscalYear});
+  const results=await Promise.all(months.map(({m,y})=>fetchMonthPts(m,y).catch(()=>[])));
+  return results.flat();
+}
+
 // ── ตัวชี้วัดรายโรค ──────────────────────────────────────
 const DISEASE_LIST=[
   {group:'❤️ โรคหัวใจและหลอดเลือด',items:[
     {key:'STEMI',labels:['STEMI']},
     {key:'NSTEMI',labels:['NSTEMI']},
-    {key:'ACS',labels:['ACS','Acute Coronary']},
+    {key:'Unstable Angina',labels:['Unstable Angina','UA']},
+    {key:'ACS (Total)',labels:['STEMI','NSTEMI','Unstable Angina','UA','ACS'],isTotal:true},
     {key:'Cardiogenic shock',labels:['Cardiogenic shock']},
     {key:'ADHF',labels:['ADHF','Acute decompensated heart failure']},
     {key:'CHF',labels:['CHF','Congestive heart failure']},
@@ -6081,9 +6127,9 @@ const DISEASE_LIST=[
     {key:'Asthma',labels:['Asthma']},
   ]},
   {group:'🧠 โรคระบบประสาท',items:[
-    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH'],specialType:'Stroke'},
+    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH']},
     {key:'Ischemic stroke',labels:['Ischemic stroke','CVA']},
-    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain'],specialType:'TBI'},
+    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain']},
   ]},
   {group:'🩸 โรคไต',items:[
     {key:'CKD',labels:['CKD','Chronic kidney']},
@@ -6106,23 +6152,31 @@ const DISEASE_LIST=[
 ];
 
 async function loadDiseaseIndicator(){
-  const m=parseInt(document.getElementById('diseaseMonth').value);
-  const y=parseInt(document.getElementById('diseaseYear').value);
+  const period=document.getElementById('diseasePeriod')?.value||'month';
   showLoad('กำลังโหลด...');
   let pts=[];
-  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
-  const monthName=MONTHS_TH[m-1]+' '+(y+543);
+  let periodName='';
+  try{
+    if(period==='year'){
+      const fy=parseInt(document.getElementById('diseaseFiscalYear')?.value||new Date().getFullYear());
+      pts=await fetchFiscalYearPts(fy);
+      periodName=`ปีงบ ${fy+543} (ต.ค.${fy+542}-ก.ย.${fy+543})`;
+    } else {
+      const m=parseInt(document.getElementById('diseaseMonth').value);
+      const y=parseInt(document.getElementById('diseaseYear').value);
+      pts=await fetchMonthPts(m,y);
+      periodName=MONTHS_TH[m-1]+' '+(y+543);
+    }
+  }catch(e){toast(e.message,true);}finally{hideLoad();}
 
   const matchDx=(p,disease)=>{
     const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
-    const special=String(p['dxSpecialType']||'').toLowerCase();
-    if(disease.specialType && special.includes(disease.specialType.toLowerCase())) return true;
     return disease.labels.some(l=>dx.includes(l.toLowerCase().trim()));
   };
 
   const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
 
-  let html=`<div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 10px">เดือน ${monthName}</div>`;
+  let html=`<div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 10px">${periodName}</div>`;
 
   DISEASE_LIST.forEach(group=>{
     html+=`<div style="margin-bottom:12px">
@@ -6157,14 +6211,24 @@ async function loadDiseaseIndicator(){
 }
 
 async function loadKPI(){
-  const m=parseInt(document.getElementById('kpiMonth').value);
-  const y=parseInt(document.getElementById('kpiYear').value);
+  const period=document.getElementById('kpiPeriod')?.value||'month';
   showLoad('กำลังโหลด KPI...');
   let pts=[];
-  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
+  let periodName='';
   try{
+    if(period==='year'){
+      const fy=parseInt(document.getElementById('kpiFiscalYear')?.value||new Date().getFullYear());
+      pts=await fetchFiscalYearPts(fy);
+      periodName=`ปีงบ ${fy+543}`;
+    } else {
+      const m=parseInt(document.getElementById('kpiMonth').value);
+      const y=parseInt(document.getElementById('kpiYear').value);
+      pts=await fetchMonthPts(m,y);
+      periodName=MONTHS_TH[m-1]+' '+(y+543);
+    }
+  }catch(e){toast(e.message,true);}finally{hideLoad();}
   const s=getStats(pts);
-  const daysInMonth=new Date(y,m,0).getDate();
+  const daysInMonth=period==='year'?365:30;
   const totalDC=s.discharged||1;
   const totalDays=s.totalDays||1;
   const ventDays=icDays(pts,'Ventilator (Start)','Ventilator (End)');
@@ -6209,7 +6273,7 @@ async function loadKPI(){
   const occupancy=(totalDays/(TOTAL_BEDS*daysInMonth)*100).toFixed(1);
 
   document.getElementById('kpiContent').innerHTML=`
-    <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">เดือน ${monthName}</div>
+    <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${periodName}</div>
 
     ${table('🏥 1. Clinical Outcomes & Mortality','#1565c0',`
       ${kpiRow('💀','ICU Mortality Rate',icuMortality+'%','%','< 15%',parseFloat(icuMortality)<15)}
@@ -6237,9 +6301,7 @@ async function loadKPI(){
       ${kpiRow('😊','Patient/Family Satisfaction','-','%','≥ 80%',false)}
       ${kpiRow('📋','Family Meeting Documentation','-','%','≥ 90%',false)}
       ${kpiRow('🤝','Palliative Care Consultation',s.pallCount,'ราย','-',true)}
-    `)}`;
-  }catch(err){toast('KPI Error: '+err.message,true);console.error(err);}
-}
+    `)}`;}
 
 async function loadMonthly(){
   const m=parseInt(document.getElementById('mMonth').value),y=parseInt(document.getElementById('mYear').value);
