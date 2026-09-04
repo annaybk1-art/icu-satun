@@ -6081,9 +6081,9 @@ const DISEASE_LIST=[
     {key:'Asthma',labels:['Asthma']},
   ]},
   {group:'🧠 โรคระบบประสาท',items:[
-    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH']},
+    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH'],specialType:'Stroke'},
     {key:'Ischemic stroke',labels:['Ischemic stroke','CVA']},
-    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain']},
+    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain'],specialType:'TBI'},
   ]},
   {group:'🩸 โรคไต',items:[
     {key:'CKD',labels:['CKD','Chronic kidney']},
@@ -6113,9 +6113,11 @@ async function loadDiseaseIndicator(){
   try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
   const monthName=MONTHS_TH[m-1]+' '+(y+543);
 
-  const matchDx=(p,labels)=>{
+  const matchDx=(p,disease)=>{
     const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
-    return labels.some(l=>dx.includes(l.toLowerCase().trim()));
+    const special=String(p['dxSpecialType']||'').toLowerCase();
+    if(disease.specialType && special.includes(disease.specialType.toLowerCase())) return true;
+    return disease.labels.some(l=>dx.includes(l.toLowerCase().trim()));
   };
 
   const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
@@ -6135,7 +6137,7 @@ async function loadDiseaseIndicator(){
         <tbody>`;
 
     group.items.forEach(disease=>{
-      const matched=pts.filter(p=>matchDx(p,disease.labels));
+      const matched=pts.filter(p=>matchDx(p,disease));
       const count=matched.length;
       const dead=matched.filter(isDead).length;
       const rate=count>0?(dead/count*100).toFixed(1):'-';
