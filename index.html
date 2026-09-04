@@ -689,6 +689,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     <div class="nav-item" id="nav-kpi" onclick="showSec('kpi',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>KPI & ตัวชี้วัด
     </div>
+    <div class="nav-item" id="nav-disease" onclick="showSec('disease',this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>ตัวชี้วัดรายโรค
+    </div>
     <div class="nav-sec" id="adminNav" style="display:none;cursor:pointer;user-select:none" onclick="toggleAdminMenu()">
       ⚙️ จัดการระบบ <span id="adminMenuArrow" style="margin-left:auto;font-size:10px">▶</span>
     </div>
@@ -1011,6 +1014,18 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     </div>
 
     <!-- YEARLY -->
+    <div class="sec" id="sec-disease">
+      <div class="sec-header">
+        <div class="sec-title">🏥 ตัวชี้วัดรายโรค</div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <select id="diseaseMonth" class="sel-sm"></select>
+          <select id="diseaseYear" class="sel-sm"></select>
+          <button class="btn btn-primary btn-sm" onclick="loadDiseaseIndicator()">แสดง</button>
+        </div>
+      </div>
+      <div id="diseaseContent" style="padding:8px 0"></div>
+    </div>
+
     <div class="sec" id="sec-kpi">
       <div class="sec-header">
         <div class="sec-title">📊 KPI & ตัวชี้วัด ICU</div>
@@ -1687,6 +1702,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   <button class="bn-item" id="bn-kpi" onclick="showSec('kpi',document.getElementById('nav-kpi'));setActiveBN('kpi')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
     <span>KPI</span></button>
+  <button class="bn-item" id="bn-disease" onclick="showSec('disease',document.getElementById('nav-disease'));setActiveBN('disease')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <span>รายโรค</span></button>
 </nav>
 
 <!-- CONFIRM -->
@@ -1803,7 +1821,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ============================================================
 const MONTHS_TH=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 const WARD_OPTS=['ER','อายุรกรรมชาย','อายุรกรรมหญิง','ศัลยกรรมชาย','ศัลยกรรมหญิง','นรีเวชกรรม','OR','Semi-ICU'];
-const DC_WARD=['อายุรกรรมชาย','อายุรกรรมหญิง','ศัลยกรรมชาย','ศัลยกรรมหญิง','Semi-ICU','รพ.หาดใหญ่','กลับบ้าน','รพ.มอ','รพ.ตรัง','รพ.สงขลา','รพ.ละงู','รพ.ควนโดน','รพ.ท่าแพ','รพ.มะนัง','รพ.ควนกาหลง','รพ.ทุ้งหว้า'];
+const DC_WARD=['ไม่มี','อายุรกรรมชาย','อายุรกรรมหญิง','ศัลยกรรมชาย','ศัลยกรรมหญิง','Semi-ICU','รพ.หาดใหญ่','กลับบ้าน','รพ.มอ','รพ.ตรัง','รพ.สงขลา','รพ.ละงู','รพ.ควนโดน','รพ.ท่าแพ','รพ.มะนัง','รพ.ควนกาหลง','รพ.ทุ้งหว้า'];
 const DC_REASON=['Dead','Refer','ย้ายทุเลา','ย้ายต้องการเตียง','ไม่สมัครใจอยู่','palliative','ค้างเดือน'];
 
 // ── Normalize ประเภทผู้ป่วย (ไม่ยึดตัวสะกด) ─────────────────
@@ -1906,13 +1924,13 @@ function setDashMode(mode){
 function setupYears(){
   const now=new Date(),cy=now.getFullYear(),cm=now.getMonth()+1;
   const fy=cm>=10?cy+1:cy;
-  ['fYear','dYear','icYear','mYear','dYearOnly','kpiYear'].forEach(id=>{
+  ['fYear','dYear','icYear','mYear','dYearOnly','kpiYear','diseaseYear'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cy)o.selected=true;el.appendChild(o);}
   });
   const yEl=document.getElementById('yYear');
   if(yEl){for(let f=fy-3;f<=fy+1;f++){const o=document.createElement('option');o.value=f;o.textContent='ปีงบ '+f+' (ต.ค.'+(f-1)+'-ก.ย.'+f+')';if(f===fy)o.selected=true;yEl.appendChild(o);}}
-  ['dMonth','icMonth','mMonth','kpiMonth'].forEach(id=>{
+  ['dMonth','icMonth','mMonth','kpiMonth','diseaseMonth'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     MONTHS_TH.forEach((m,i)=>{const o=document.createElement('option');o.value=i+1;o.textContent=m;if(i+1===cm)o.selected=true;el.appendChild(o);});
   });
@@ -2279,7 +2297,7 @@ function showSec(name,el){
   if(name==='dashboard') loadDash();
   if(name==='bedmap') loadBedMap();
   if(name==='ic') loadIC();
-  if(name==='kpi') loadKPI();
+  if(name==='disease') loadDiseaseIndicator();
   if(name==='yearly') loadYearly();
   if(name==='users') renderUsers();
   if(name==='opts'){ renderOpts(); loadMarqueeFromServer(); loadNewsBoardSettings(); loadInChargeSettings();
@@ -3887,7 +3905,7 @@ function renderTbl(){
       <td style="color:#9ca3af">${s+i+1}</td>
       <td style="text-align:center">${yearSeq}</td>
       <td style="white-space:nowrap">${fmtDate(p['Admit (Date)'])}</td>
-      <td>${p['Admit (Time)']||'-'}</td>
+      <td>${(()=>{const t=p['Admit (Time)'];if(isCarryover){if(!t||t==='0:00'||t==='00:00')return'00:01';return t;}return t||'-';})()}</td>
       <td><span style="background:#e8f5e9;color:#2e7d32;padding:2px 6px;border-radius:5px;font-size:10.5px;font-weight:700">${p['เตียง']||'-'}</span></td>
       <td style="font-weight:500;white-space:nowrap">${p['ชื่อ-สกุล']||'-'}</td>
       <td style="color:#00897b;font-weight:500">${p['HN']||'-'}</td>
@@ -4254,7 +4272,7 @@ function setupAutoCalc(){
   [['Ventilator (Start)','Ventilator (End)','Vent. (day)'],['A-Line (Start)','A-Line (End)','A-Line (day)'],['C-Line (Start)','C-Line (End.)','C-Line (day)'],['F/C (Start)','F/C (END)','F/C (day)'],['ICD (Start)','ICD (End)','ICD (day)']].forEach(([s,e,d])=>{
     const sEl=document.querySelector(`[name="${s}"]`),eEl=document.querySelector(`[name="${e}"]`),dEl=document.querySelector(`[name="${d}"]`);
     if(!sEl||!eEl||!dEl)return;
-    const calc=()=>{if(sEl.value&&eEl.value){const diff=Math.ceil((new Date(eEl.value)-new Date(sEl.value))/(1000*60*60*24));dEl.value=diff>=0?diff:'';}else dEl.value='';};
+    const calc=()=>{if(sEl.value&&eEl.value){const diff=Math.floor((new Date(eEl.value)-new Date(sEl.value))/(1000*60*60*24))+1;dEl.value=Math.max(1,diff);}else if(sEl.value&&!eEl.value){dEl.value='';}else dEl.value='';};
     sEl.addEventListener('change',calc);eEl.addEventListener('change',calc);calc();
   });
   // ── ตรวจปีทุก date input real-time ──────────────────────
@@ -4438,12 +4456,26 @@ async function savePatient(){
   // ─────────────────────────────────────────────────────────
 
   const baseReq={'ชื่อ-สกุล':'ชื่อ-สกุล','HN':'HN','อายุ':'อายุ','สิทธิ':'สิทธิ์','Admit (Date)':'วันที่ Admit','Admit (Time)':'เวลา Admit','เตียง':'เตียง','การรับ':'ประเภทการรับ','ผู้บันทึก Admit':'ผู้บันทึก Admit','Unplanned ICU':'Unplanned ICU','Re-admit ICU':'Re-admit ICU','ประเภทผู้ป่วย':'ประเภทผู้ป่วย','Falling':'Falling score','ผ่าตัด':'ผ่าตัด','Diagnosis แรกรับ':'Diagnosis แรกรับ (Dx)','U/D':'โรคประจำตัว (U/D)'};
+  if(data['การรับ']!=='ยกมา') baseReq['Ward ที่รับ']='Ward ที่รับ';
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
   // บังคับ Apache IV เฉพาะตอนเพิ่มใหม่
   if(!editPtId && !data['Apache IV Score']) missing.push('Apache IV Score (Tab การประเมิน)');
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
+  // ตรวจสอบวันที่ Admit ว่าตรงกับเดือน/ปีที่เลือกไหม
+  if(data['Admit (Date)']){
+    const admitD=new Date(data['Admit (Date)']);
+    const admitM=admitD.getMonth()+1;
+    const admitY=admitD.getFullYear();
+    if(admitM!==m||admitY!==yr){
+      const mName=MONTHS_TH[admitM-1];
+      const curName=MONTHS_TH[m-1];
+      const confirm=window.confirm(`⚠️ วันที่ Admit (${mName} ${admitY+543}) ไม่ตรงกับเดือนที่เลือก (${curName} ${yr+543})\n\nต้องการบันทึกในเดือน${curName} ${yr+543} จริงหรือไม่?`);
+      if(!confirm){hideLoad();return;}
+    }
+  }
   if(data['สถานะ']==='จำหน่ายแล้ว'){
-    const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','Ward/Hospital':'Ward/Hospital','CPR':'CPR','Palliative':'Palliative'};
+    const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','CPR':'CPR','Palliative':'Palliative'};
+    if(data['เหตุผลจำหน่าย']!=='Dead') dcReq['Ward/Hospital']='Ward/Hospital';
     const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);
     // บังคับกรอกสาเหตุการเสียชีวิตเมื่อ Dead
     if(data['เหตุผลจำหน่าย']==='Dead'&&!data['สาเหตุการเสียชีวิต']) mDC.push('สาเหตุการเสียชีวิต');
@@ -6017,6 +6049,111 @@ async function loadIC(){
 // ============================================================
 // MONTHLY / YEARLY
 // ============================================================
+// ── ตัวชี้วัดรายโรค ──────────────────────────────────────
+const DISEASE_LIST=[
+  {group:'❤️ โรคหัวใจและหลอดเลือด',items:[
+    {key:'STEMI',labels:['STEMI']},
+    {key:'NSTEMI',labels:['NSTEMI']},
+    {key:'ACS',labels:['ACS','Acute Coronary']},
+    {key:'Cardiogenic shock',labels:['Cardiogenic shock']},
+    {key:'ADHF',labels:['ADHF','Acute decompensated heart failure']},
+    {key:'CHF',labels:['CHF','Congestive heart failure']},
+    {key:'Total HF',labels:['ADHF','CHF','Heart failure'],isTotal:true},
+    {key:'Pulmonary Embolism',labels:['Pulmonary Embolism','PE']},
+    {key:'HT Emergency',labels:['HT Emergency','Hypertensive emergency']},
+  ]},
+  {group:'🦠 โรคติดเชื้อ',items:[
+    {key:'Sepsis',labels:['Sepsis']},
+    {key:'Septic shock',labels:['Septic shock']},
+    {key:'Total Sepsis',labels:['Sepsis','Septic shock'],isTotal:true},
+    {key:'Dengue hemorrhagic fever',labels:['Dengue','DHF']},
+    {key:'Leptospirosis',labels:['Leptospirosis']},
+    {key:'TB',labels:['TB','Tuberculosis']},
+  ]},
+  {group:'🫁 โรคระบบทางเดินหายใจ',items:[
+    {key:'Pneumonia',labels:['Pneumonia']},
+    {key:'CAP',labels:['CAP','Community-acquired']},
+    {key:'HAP',labels:['HAP','Hospital-acquired pneumonia']},
+    {key:'VAP',labels:['VAP','Ventilator-associated']},
+    {key:'Total Pneumonia',labels:['Pneumonia','CAP','HAP','VAP'],isTotal:true},
+    {key:'ARDS',labels:['ARDS']},
+    {key:'COPD',labels:['COPD']},
+    {key:'Asthma',labels:['Asthma']},
+  ]},
+  {group:'🧠 โรคระบบประสาท',items:[
+    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH']},
+    {key:'Ischemic stroke',labels:['Ischemic stroke','CVA']},
+    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain']},
+  ]},
+  {group:'🩸 โรคไต',items:[
+    {key:'CKD',labels:['CKD','Chronic kidney']},
+    {key:'ESRD',labels:['ESRD','End-stage renal']},
+    {key:'AKI',labels:['AKI','Acute kidney']},
+  ]},
+  {group:'🏥 อื่นๆ',items:[
+    {key:'Blunt Abd. Trauma',labels:['Blunt Abd','Abdominal trauma']},
+    {key:'Chest Trauma',labels:['Chest Trauma','Chest injury']},
+    {key:'Multiple Fx',labels:['Multiple Fx','Multiple fracture']},
+    {key:'Hypovolumic shock',labels:['Hypovolumic','Hypovolemic shock']},
+    {key:'PU perforate',labels:['PU perforate','Peptic ulcer perforation']},
+    {key:'DKA',labels:['DKA','Diabetic ketoacidosis']},
+    {key:'PIH',labels:['PIH','Pregnancy-induced hypertension']},
+    {key:'PPH',labels:['PPH','Postpartum hemorrhage']},
+    {key:'CA',labels:['Cancer','Carcinoma','CA ']},
+    {key:'จิตเวช',labels:['จิตเวช','Psychiatric']},
+    {key:'UP',labels:[' UP','Urinary perforation','Urosepsis']},
+  ]},
+];
+
+async function loadDiseaseIndicator(){
+  const m=parseInt(document.getElementById('diseaseMonth').value);
+  const y=parseInt(document.getElementById('diseaseYear').value);
+  showLoad('กำลังโหลด...');
+  let pts=[];
+  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
+  const monthName=MONTHS_TH[m-1]+' '+(y+543);
+
+  const matchDx=(p,labels)=>{
+    const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
+    return labels.some(l=>dx.includes(l.toLowerCase().trim()));
+  };
+
+  const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
+
+  let html=`<div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 10px">เดือน ${monthName}</div>`;
+
+  DISEASE_LIST.forEach(group=>{
+    html+=`<div style="margin-bottom:12px">
+      <div style="background:#1b5e20;color:white;padding:8px 12px;border-radius:8px 8px 0 0;font-weight:700;font-size:13px">${group.group}</div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;overflow:hidden">
+        <thead><tr style="background:#f9fafb;font-size:11px;color:#6b7280">
+          <th style="padding:6px 10px;text-align:left">โรค</th>
+          <th style="padding:6px 10px;text-align:center">จำนวน (ราย)</th>
+          <th style="padding:6px 10px;text-align:center">เสียชีวิต (ราย)</th>
+          <th style="padding:6px 10px;text-align:center">อัตราตาย (%)</th>
+        </tr></thead>
+        <tbody>`;
+
+    group.items.forEach(disease=>{
+      const matched=pts.filter(p=>matchDx(p,disease.labels));
+      const count=matched.length;
+      const dead=matched.filter(isDead).length;
+      const rate=count>0?(dead/count*100).toFixed(1):'-';
+      const isTotal=disease.isTotal;
+      html+=`<tr style="border-bottom:1px solid #f3f4f6;${isTotal?'background:#f0f7f0;font-weight:600':''}">
+        <td style="padding:8px 10px;font-size:12px">${isTotal?'<b>':''}${disease.key}${isTotal?'</b>':''}</td>
+        <td style="padding:8px 10px;text-align:center;font-weight:700;font-size:13px">${count}</td>
+        <td style="padding:8px 10px;text-align:center;color:#c62828;font-weight:700">${dead}</td>
+        <td style="padding:8px 10px;text-align:center;color:${parseFloat(rate)>30?'#c62828':parseFloat(rate)>15?'#e65100':'#2e7d32'}">${rate==='-'?'-':rate+'%'}</td>
+      </tr>`;
+    });
+
+    html+=`</tbody></table></div>`;
+  });
+
+  document.getElementById('diseaseContent').innerHTML=html;
+}
+
 async function loadKPI(){
   const m=parseInt(document.getElementById('kpiMonth').value);
   const y=parseInt(document.getElementById('kpiYear').value);
