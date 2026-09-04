@@ -815,7 +815,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
         <div id="ptTblWrap" style="overflow-x:auto;max-height:calc(100vh - 300px);overflow-y:auto">
           <table>
             <thead><tr>
-              <th>#</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
+              <th>#</th><th>ลำดับปี</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
               <th>อายุ</th><th>U/D</th><th>Dx แรกรับ</th><th>แพทย์</th><th>ประเภท</th>
               <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Bedsore</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
             </tr></thead>
@@ -3858,8 +3858,22 @@ function getRowClass(p){
 }
 function renderTbl(){
   const s=(_curPg-1)*pgSz,e=Math.min(s+pgSz,_filtPts.length),rows=_filtPts.slice(s,e);
-  if(!rows.length){document.getElementById('ptTbl').innerHTML=`<tr><td colspan="17" class="loading-msg">ไม่พบข้อมูล</td></tr>`;document.getElementById('pgInfo').textContent='ไม่พบข้อมูล';return;}
+  if(!rows.length){document.getElementById('ptTbl').innerHTML=`<tr><td colspan="18" class="loading-msg">ไม่พบข้อมูล</td></tr>`;document.getElementById('pgInfo').textContent='ไม่พบข้อมูล';return;}
   const m=parseInt(document.getElementById('fMonth').value),yr=parseInt(document.getElementById('fYear').value);
+  
+  // คำนวณลำดับปีงบ (ต.ค.-ก.ย.) เริ่ม1ใหม่ทุกต.ค.
+  // ปีงบ 69 = ต.ค.68-ก.ย.69 เริ่มที่ 1 จากกันยายน 2569
+  let yearSeqCounter=0;
+  const allSorted=[..._filtPts].sort((a,b)=>(a['Admit (Date)']||'').localeCompare(b['Admit (Date)']||''));
+  const yearSeqMap={};
+  allSorted.forEach(p=>{
+    const isCarryover=dcMatch(p['เหตุผลจำหน่าย']||'','carryover')||p['การรับ']==='ยกยอด';
+    if(!isCarryover && p['Admit (Date)']){
+      yearSeqCounter++;
+      yearSeqMap[p.id||p['HN']+p['Admit (Date)']]=yearSeqCounter;
+    }
+  });
+
   document.getElementById('ptTbl').innerHTML=rows.map((p,i)=>{
     const st=p['สถานะ']||'กำลัง admit';
     const fl=parseInt(p['Falling'])||0;
@@ -3867,8 +3881,11 @@ function renderTbl(){
     const dc=String(p['เหตุผลจำหน่าย']||'');
     const dcC=dcMatch(dc,'dead')?'f-red':dcMatch(dc,'palliative')?'f-yellow':'';
     const pid=p.id||String(p._row);
+    const isCarryover=dcMatch(dc,'carryover')||p['การรับ']==='ยกยอด';
+    const yearSeq=isCarryover?'<span style="color:#9ca3af;font-size:10px">ค้าง</span>':`<b style="color:#1565c0">${yearSeqMap[p.id||p['HN']+p['Admit (Date)']]||'-'}</b>`;
     return `<tr class="${getRowClass(p)}">
       <td style="color:#9ca3af">${s+i+1}</td>
+      <td style="text-align:center">${yearSeq}</td>
       <td style="white-space:nowrap">${fmtDate(p['Admit (Date)'])}</td>
       <td>${p['Admit (Time)']||'-'}</td>
       <td><span style="background:#e8f5e9;color:#2e7d32;padding:2px 6px;border-radius:5px;font-size:10.5px;font-weight:700">${p['เตียง']||'-'}</span></td>
