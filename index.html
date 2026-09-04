@@ -1708,7 +1708,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 // ============================================================
 // CONFIG & API
 // ============================================================
-const _DEFAULT_URL='https://script.google.com/macros/s/AKfycbyVlCFpFOCsucn9SkBxs-04s1KLfUIfPD-S_MEIZKgJAs0LsQYDSqeNknX9p6Z6GkfVcA/exec';
+const _DEFAULT_URL='https://script.google.com/macros/s/AKfycbx0ksnwhROMwGqex1IO8r-A6HoCqcz9ESF0S70wczeWGv8LE5YEekXNVlMsFMU9T2MWqQ/exec';
 let API_URL = _DEFAULT_URL;
 localStorage.setItem('icu_api_url',_DEFAULT_URL);
 
@@ -3867,7 +3867,7 @@ function renderTbl(){
   const allSorted=[..._filtPts].sort((a,b)=>(a['Admit (Date)']||'').localeCompare(b['Admit (Date)']||''));
   const yearSeqMap={};
   allSorted.forEach(p=>{
-    const isCarryover=dcMatch(p['เหตุผลจำหน่าย']||'','carryover')||p['การรับ']==='ยกยอด';
+    const isCarryover=p['การรับ']==='ยกมา'||p['การรับ']==='ยกยอด'||dcMatch(p['เหตุผลจำหน่าย']||'','carryover');
     if(!isCarryover && p['Admit (Date)']){
       yearSeqCounter++;
       yearSeqMap[p.id||p['HN']+p['Admit (Date)']]=yearSeqCounter;
@@ -3881,7 +3881,7 @@ function renderTbl(){
     const dc=String(p['เหตุผลจำหน่าย']||'');
     const dcC=dcMatch(dc,'dead')?'f-red':dcMatch(dc,'palliative')?'f-yellow':'';
     const pid=p.id||String(p._row);
-    const isCarryover=dcMatch(dc,'carryover')||p['การรับ']==='ยกยอด';
+    const isCarryover=p['การรับ']==='ยกมา'||p['การรับ']==='ยกยอด'||dcMatch(dc,'carryover');
     const yearSeq=isCarryover?'<span style="color:#9ca3af;font-size:10px">ค้าง</span>':`<b style="color:#1565c0">${yearSeqMap[p.id||p['HN']+p['Admit (Date)']]||'-'}</b>`;
     return `<tr class="${getRowClass(p)}">
       <td style="color:#9ca3af">${s+i+1}</td>
