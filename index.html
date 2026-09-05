@@ -6328,7 +6328,15 @@ async function loadDiseaseIndicator(){
 
   const matchDx=(p,disease)=>{
     const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
-    return disease.labels.some(l=>dx.includes(l.toLowerCase().trim()));
+    return disease.labels.some(l=>{
+      const label=l.toLowerCase().trim();
+      // exact word match สำหรับคำสั้นๆ
+      if(label.length<=4){
+        const words=dx.split(/[\s,\/\-\(\)]+/);
+        return words.some(w=>w===label);
+      }
+      return dx.includes(label);
+    });
   };
   const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
 
