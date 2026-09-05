@@ -683,9 +683,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     <div class="nav-item" id="nav-monthly" onclick="showSec('monthly',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>รายเดือน
     </div>
-    <div class="nav-item" id="nav-yearly" onclick="showSec('yearly',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>รายปี
-    </div>
+
     <div class="nav-item" id="nav-kpi" onclick="showSec('kpi',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>KPI & ตัวชี้วัด
     </div>
@@ -1725,9 +1723,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   <button class="bn-item" id="bn-monthly" onclick="showSec('monthly',document.getElementById('nav-monthly'));setActiveBN('monthly')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
     <span>รายเดือน</span></button>
-  <button class="bn-item" id="bn-yearly" onclick="showSec('yearly',document.getElementById('nav-yearly'));setActiveBN('yearly')">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>
-    <span>รายปี</span></button>
+
   <button class="bn-item" id="bn-kpi" onclick="showSec('kpi',document.getElementById('nav-kpi'));setActiveBN('kpi')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
     <span>KPI</span></button>
@@ -6247,12 +6243,14 @@ const DISEASE_LIST=[
 async function loadDiseaseIndicator(){
   const period=document.getElementById('diseasePeriod')?.value||'month';
   showLoad('กำลังโหลด...');
-  let pts=[];
-  let periodName='';
+  let pts=[],periodName='',allRes=[],fiscalMonths=[];
+
   try{
     if(period==='year'){
       const fy=parseInt(document.getElementById('diseaseFiscalYear')?.value||new Date().getFullYear());
-      pts=await fetchFiscalYearPts(fy);
+      fiscalMonths=[{m:10,y:fy-1},{m:11,y:fy-1},{m:12,y:fy-1},{m:1,y:fy},{m:2,y:fy},{m:3,y:fy},{m:4,y:fy},{m:5,y:fy},{m:6,y:fy},{m:7,y:fy},{m:8,y:fy},{m:9,y:fy}];
+      allRes=await Promise.all(fiscalMonths.map(({m,y})=>fetchMonthPts(m,y).catch(()=>[])));
+      pts=allRes.flat();
       periodName=`ปีงบ ${fy+543} (ต.ค.${fy+542}-ก.ย.${fy+543})`;
     } else {
       const m=parseInt(document.getElementById('diseaseMonth').value);
@@ -6266,23 +6264,59 @@ async function loadDiseaseIndicator(){
     const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
     return disease.labels.some(l=>dx.includes(l.toLowerCase().trim()));
   };
-
   const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
 
-  let html=`<div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 10px">${periodName}</div>`;
+  if(period==='year' && fiscalMonths.length){
+    // ตารางรายเดือน คอลัมน์ = โรค
+    const thS='style="background:#1b5e20;color:#fff;padding:6px 5px;white-space:nowrap;font-weight:700;font-size:9px;text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);height:80px"';
+    const thL='style="background:#1b5e20;color:#fff;padding:8px;white-space:nowrap;font-weight:700;font-size:10px;text-align:left"';
+    const allDiseases=DISEASE_LIST.flatMap(g=>g.items);
+    let tbl=`<div style="overflow-x:auto"><table class="sum-tbl" style="font-size:10px"><thead><tr>
+      <th ${thL}>เดือน</th>
+      ${allDiseases.map(d=>`<th ${thS}>${d.key}</th>`).join('')}
+    </tr></thead><tbody>`;
 
+    fiscalMonths.forEach(({m:fm,y:fy2},idx)=>{
+      const mp=allRes[idx];
+      const ml=MONTHS_TH[fm-1]+' '+(fy2+543);
+      tbl+=`<tr><td style="padding:5px 8px;font-weight:600;font-size:10px;white-space:nowrap;border-bottom:1px solid #f3f4f6">${ml}</td>`;
+      allDiseases.forEach(disease=>{
+        const matched=mp.filter(p=>matchDx(p,disease));
+        const count=matched.length;
+        const dead=matched.filter(isDead).length;
+        tbl+=`<td style="padding:4px 5px;text-align:center;font-size:10px;border-bottom:1px solid #f3f4f6">${count>0?`<span style="font-weight:700">${count}</span><br><span style="color:#c62828;font-size:9px">${dead>0?'💀'+dead:''}</span>`:'-'}</td>`;
+      });
+      tbl+='</tr>';
+    });
+
+    // แถวรวม
+    tbl+=`<tr style="background:#e8f5e9;font-weight:700"><td style="padding:5px 8px;font-size:10px">รวมทั้งปี</td>`;
+    allDiseases.forEach(disease=>{
+      const matched=pts.filter(p=>matchDx(p,disease));
+      const dead=matched.filter(isDead).length;
+      tbl+=`<td style="padding:4px 5px;text-align:center;font-size:10px">${matched.length>0?`<b>${matched.length}</b><br><span style="color:#c62828;font-size:9px">${dead>0?'💀'+dead:''}</span>`:'-'}</td>`;
+    });
+    tbl+='</tr></tbody></table></div>';
+
+    document.getElementById('diseaseContent').innerHTML=`
+      <div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 8px">${periodName}</div>
+      <div style="font-size:11px;color:#6b7280;margin-bottom:8px">💀 = จำนวนเสียชีวิต</div>
+      ${tbl}`;
+    return;
+  }
+
+  // รายเดือน — แสดงตารางแบบเดิม
+  let html=`<div style="font-size:13px;color:#6b7280;font-weight:600;padding:4px 0 10px">${periodName}</div>`;
   DISEASE_LIST.forEach(group=>{
     html+=`<div style="margin-bottom:12px">
       <div style="background:#1b5e20;color:white;padding:8px 12px;border-radius:8px 8px 0 0;font-weight:700;font-size:13px">${group.group}</div>
-      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-top:none">
         <thead><tr style="background:#f9fafb;font-size:11px;color:#6b7280">
           <th style="padding:6px 10px;text-align:left">โรค</th>
           <th style="padding:6px 10px;text-align:center">จำนวน (ราย)</th>
           <th style="padding:6px 10px;text-align:center">เสียชีวิต (ราย)</th>
           <th style="padding:6px 10px;text-align:center">อัตราตาย (%)</th>
-        </tr></thead>
-        <tbody>`;
-
+        </tr></thead><tbody>`;
     group.items.forEach(disease=>{
       const matched=pts.filter(p=>matchDx(p,disease));
       const count=matched.length;
@@ -6296,10 +6330,8 @@ async function loadDiseaseIndicator(){
         <td style="padding:8px 10px;text-align:center;color:${parseFloat(rate)>30?'#c62828':parseFloat(rate)>15?'#e65100':'#2e7d32'}">${rate==='-'?'-':rate+'%'}</td>
       </tr>`;
     });
-
     html+=`</tbody></table></div>`;
   });
-
   document.getElementById('diseaseContent').innerHTML=html;
 }
 
