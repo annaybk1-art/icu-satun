@@ -4194,21 +4194,10 @@ function buildForm(p){
         ${fg('ICD End',inp('ICD (End)','date',p['ICD (End)']?di(p['ICD (End)']):''))}
         ${fg('ICD Day',`<input type="number" name="ICD (day)" value="${p['ICD (day)']||''}" readonly style="background:#f0f0f0">`,'','auto')}
       </div></div>
-      <div class="fsec"><div class="fsec-title">🛡️ Patient Safety</div><div class="fgrid">
-        ${fg('Pressure Injury',sel('Pressure Injury',['No','Yes'],p['Pressure Injury']||'No',null,null,'onPressureInjuryChange(this.value)'))}
-        <div id="piDateBox" style="display:${p['Pressure Injury']==='Yes'?'contents':'none'}">
-          ${fg('วันที่เกิด Pressure Injury',inp('Pressure Injury Date','date',p['Pressure Injury Date']?di(p['Pressure Injury Date']):''))}
-        </div>
-        ${fg('Unplanned Extubation',sel('Unplanned Extubation',['No','Yes'],p['Unplanned Extubation']||'No',null,null,'onUnplannedExtubChange(this.value)'))}
-        <div id="uextDateBox" style="display:${p['Unplanned Extubation']==='Yes'?'contents':'none'}">
-          ${fg('วันที่เกิด Unplanned Extubation',inp('Unplanned Extubation Date','date',p['Unplanned Extubation Date']?di(p['Unplanned Extubation Date']):''))}
-        </div>
-        ${fg('Medication Error',sel('Medication Error',['No','Yes'],p['Medication Error']||'No',null,null,'onMedErrorChange(this.value)'))}
-        <div id="meBox" style="display:${p['Medication Error']==='Yes'?'contents':'none'}">
-          ${fg('วันที่เกิด ME',inp('Medication Error Date','date',p['Medication Error Date']?di(p['Medication Error Date']):''))}
-          ${fg('ประเภท ME',sel('Medication Error Type',['Wrong dose','Wrong drug','Wrong time','Wrong patient','Wrong route','อื่นๆ'],p['Medication Error Type']))}
-        </div>
-        ${fg('ICDSC Score',`<input type="number" name="ICDSC Score" value="${p['ICDSC Score']||''}" min="0" max="8" placeholder="0-8"> ${p['ICDSC Score']>=4?'<span style="color:#c62828;font-weight:700">⚠️ Delirium</span>':''}`)}
+      <div class="fsec"><div class="fsec-title">🩺 ICD</div><div class="fgrid">
+        ${fg('ICD Start',inp('ICD (Start)','date',p['ICD (Start)']?di(p['ICD (Start)']):''))}
+        ${fg('ICD End',inp('ICD (End)','date',p['ICD (End)']?di(p['ICD (End)']):''))}
+        ${fg('ICD Day',`<input type="number" name="ICD (day)" value="${p['ICD (day)']||''}" readonly style="background:#f0f0f0">`,'','auto')}
       </div></div>`,
     'tab-assess':`
       <div class="fsec"><div class="fsec-title">การประเมินความเสี่ยง</div><div class="fgrid">
