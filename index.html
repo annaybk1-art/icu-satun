@@ -3907,8 +3907,12 @@ function renderTbl(){
   const m=parseInt(document.getElementById('fMonth').value),yr=parseInt(document.getElementById('fYear').value);
   
   // คำนวณลำดับปีงบ (ต.ค.-ก.ย.) เริ่ม1ใหม่ทุกต.ค.
-  // ปีงบ 69 = ต.ค.68-ก.ย.69 เริ่มที่ 1 จากกันยายน 2569
-  let yearSeqCounter=0;
+  // ปีงบ 69 (ต.ค.68-ก.ย.69): ก่อนเดือนกันยายน 69 มีผู้ป่วยสะสม 652 คนแล้ว
+  const FISCAL_YEAR_OFFSET={69:652}; // ปีงบ พ.ศ.: ยอดสะสมก่อนเริ่มใช้ระบบ
+  const getFiscalYear=(m,y)=>m>=10?(y+543)+1:y+543; // แปลงเป็น พ.ศ. ปีงบ
+  const fy=getFiscalYear(m,yr);
+  const offset=FISCAL_YEAR_OFFSET[fy]||0;
+  let yearSeqCounter=offset;
   const allSorted=[..._filtPts].sort((a,b)=>(a['Admit (Date)']||'').localeCompare(b['Admit (Date)']||''));
   const yearSeqMap={};
   allSorted.forEach(p=>{
@@ -5382,7 +5386,8 @@ function getStats(pts){
   const moveWell=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'movewell')).length,moveBed=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'movebed')).length;
   const palliativeDC=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'palliative')).length,noConsent=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'noconsent')).length;
   const ventCount=pts.filter(p=>p['Ventilator (Name)']).length,alineCount=pts.filter(p=>p['A-Line (Start)']).length,clineCount=pts.filter(p=>p['C-Line (Start)']).length,fcCount=pts.filter(p=>p['F/C (Start)']).length,icdCount=pts.filter(p=>p['ICD (Start)']).length;
-  const vapCount=pts.filter(p=>p['VAP']==='ใช่').length,cautiCount=pts.filter(p=>p['CAUTI']==='ใช่').length,clabsiCount=pts.filter(p=>p['CLABSI']==='ใช่').length,ssiCount=pts.filter(p=>p['SSI']==='ใช่').length,mdrCount=pts.filter(p=>p['MDR']==='ใช่').length;
+  const newPts=pts.filter(p=>p['การรับ']!=='ยกมา'); // ไม่นับผู้ป่วยค้างเดือน
+  const vapCount=newPts.filter(p=>p['VAP']==='ใช่').length,cautiCount=newPts.filter(p=>p['CAUTI']==='ใช่').length,clabsiCount=newPts.filter(p=>p['CLABSI']==='ใช่').length,ssiCount=newPts.filter(p=>p['SSI']==='ใช่').length,mdrCount=newPts.filter(p=>p['MDR']==='ใช่').length;
   const unplannedCount=pts.filter(p=>p['Unplanned ICU']==='ใช่').length,readmitCount=pts.filter(p=>p['Re-admit ICU']==='ใช่').length;
   const cprCount=pts.filter(p=>p['CPR']==='Yes').length,surgCount=pts.filter(p=>p['ผ่าตัด']==='Yes').length,pallCount=pts.filter(p=>p['Palliative']==='Yes').length;
   const typeCount={};
