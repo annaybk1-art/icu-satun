@@ -3942,8 +3942,8 @@ function renderTbl(){
   
   // คำนวณลำดับปีงบ (ต.ค.-ก.ย.) เริ่ม1ใหม่ทุกต.ค.
   // ปีงบ 69 (ต.ค.68-ก.ย.69): ก่อนเดือนกันยายน 69 มีผู้ป่วยสะสม 652 คนแล้ว
-  const FISCAL_YEAR_OFFSET={69:652}; // ปีงบ พ.ศ.: ยอดสะสมก่อนเริ่มใช้ระบบ
-  const getFiscalYear=(m,y)=>m>=10?(y+543)+1:y+543; // แปลงเป็น พ.ศ. ปีงบ
+  const FISCAL_YEAR_OFFSET={69:652}; // ปีงบ พ.ศ. (เลขท้าย 2 หลัก): ยอดสะสมก่อนเริ่มใช้ระบบ
+  const getFiscalYear=(m,y)=>{const be=y+543;return m>=10?((be+1)%100):(be%100);}; // ได้เลขท้าย 2 หลัก พ.ศ.
   const fy=getFiscalYear(m,yr);
   const offset=FISCAL_YEAR_OFFSET[fy]||0;
   let yearSeqCounter=offset;
