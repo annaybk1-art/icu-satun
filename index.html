@@ -4524,7 +4524,6 @@ async function savePatient(){
   if(data['การรับ']!=='ยกมา') baseReq['Ward ที่รับ']='Ward ที่รับ';
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
   // บังคับ Apache IV เฉพาะตอนเพิ่มใหม่
-  if(!editPtId && !data['Apache IV Score']) missing.push('Apache IV Score (Tab การประเมิน)');
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
   // ตรวจสอบวันที่ Admit ว่าตรงกับเดือน/ปีที่เลือกไหม
   if(data['Admit (Date)']){
