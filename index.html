@@ -6282,8 +6282,9 @@ const DISEASE_LIST=[
     {key:'Asthma',labels:['Asthma']},
   ]},
   {group:'🧠 โรคระบบประสาท',items:[
-    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH']},
-    {key:'Ischemic stroke',labels:['Ischemic stroke','CVA']},
+    {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH'],patType:['neuro','surg']},
+    {key:'Ischemic stroke',labels:['Ischemic stroke','CVA'],patType:['med']},
+    {key:'Total Stroke',labels:['Hemorrhagic stroke','ICH','Ischemic stroke','CVA','stroke'],isTotal:true},
     {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain']},
   ]},
   {group:'🩸 โรคไต',items:[
@@ -6328,15 +6329,21 @@ async function loadDiseaseIndicator(){
 
   const matchDx=(p,disease)=>{
     const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
-    return disease.labels.some(l=>{
+    const patType=String(p['ประเภทผู้ป่วย']||'').toLowerCase();
+    const dxMatch=disease.labels.some(l=>{
       const label=l.toLowerCase().trim();
-      // exact word match สำหรับคำสั้นๆ
       if(label.length<=4){
         const words=dx.split(/[\s,\/\-\(\)]+/);
         return words.some(w=>w===label);
       }
       return dx.includes(label);
     });
+    if(!dxMatch) return false;
+    // ถ้ามี patType filter ให้ตรวจด้วย
+    if(disease.patType && disease.patType.length>0){
+      return disease.patType.some(t=>patType.includes(t));
+    }
+    return true;
   };
   const isDead=(p)=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead');
 
