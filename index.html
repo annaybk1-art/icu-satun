@@ -3896,8 +3896,30 @@ function applyFilter(){
     if(st==='male'&&!(name.startsWith('นาย')||name.startsWith('เด็กชาย')||name.startsWith('ด.ช.'))) return false;
     if(st==='female'&&(name.startsWith('นาย')||name.startsWith('เด็กชาย')||name.startsWith('ด.ช.'))) return false;
     if(!q) return true;
-    // ค้นหาทุก field ของผู้ป่วย
-    return Object.values(p).some(v=>String(v||'').toLowerCase().includes(q));
+    const field=document.getElementById('srchField')?.value||'all';
+    const matchWord=(str,q)=>{
+      // ถ้า q สั้น ≤4 ตัว ใช้ exact word match
+      if(q.length<=4){
+        const words=String(str||'').toLowerCase().split(/[\s,\/\-\(\)]+/);
+        return words.some(w=>w===q);
+      }
+      return String(str||'').toLowerCase().includes(q);
+    };
+    const fieldMap={
+      name:['ชื่อ-สกุล'],
+      hn:['HN','AN'],
+      dx:['Diagnosis แรกรับ','Diag สุดท้าย'],
+      doctor:['แพทย์เจ้าของไข้'],
+      ud:['U/D'],
+      bed:['เตียง'],
+      dc:['เหตุผลจำหน่าย','สาเหตุการเสียชีวิต'],
+      infection:['VAP','CAUTI','CLABSI','SSI','MDR'],
+    };
+    if(field==='all') return Object.entries(p).some(([k,v])=>{
+      if(['Diagnosis แรกรับ','Diag สุดท้าย','U/D'].includes(k)) return matchWord(v,q);
+      return String(v||'').toLowerCase().includes(q);
+    });
+    return (fieldMap[field]||[]).some(k=>matchWord(p[k],q));
   });
   _curPg=1;renderTbl();
 }
