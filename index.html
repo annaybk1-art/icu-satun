@@ -6222,9 +6222,49 @@ async function loadKPI(){
   try{
     if(period==='year'){
       const fy=parseInt(document.getElementById('kpiFiscalYear')?.value||new Date().getFullYear());
-      pts=await fetchFiscalYearPts(fy);
-      m=9;y=fy; // ใช้ ก.ย. เป็น reference
+      // โหลดทุกเดือนในปีงบ
+      const fiscalMonths=[{m:10,y:fy-1},{m:11,y:fy-1},{m:12,y:fy-1},{m:1,y:fy},{m:2,y:fy},{m:3,y:fy},{m:4,y:fy},{m:5,y:fy},{m:6,y:fy},{m:7,y:fy},{m:8,y:fy},{m:9,y:fy}];
+      const allRes=await Promise.all(fiscalMonths.map(({m,y})=>fetchMonthPts(m,y).catch(()=>[])));
+      pts=allRes.flat();
+      m=9;y=fy;
       periodLabel=`ปีงบ ${fy+543} (ต.ค.${fy+542}-ก.ย.${fy+543})`;
+
+      const s=getStats(pts);
+      const thS='style="background:#1b5e20;color:#ffffff;padding:8px;white-space:nowrap;font-weight:700;font-size:11px"';
+      let monthly=`<div style="overflow-x:auto;margin-top:12px"><table class="sum-tbl"><thead><tr>
+        <th ${thS}>เดือน</th><th ${thS}>รับใหม่</th><th ${thS}>รับย้าย</th><th ${thS}>รวม</th>
+        <th ${thS}>DC</th><th ${thS}>Dead</th><th ${thS}>อัตราตาย%</th><th ${thS}>LOS เฉลี่ย</th>
+        <th ${thS}>ครองเตียง%</th><th ${thS}>Unplan</th><th ${thS}>Re-admit</th>
+        <th ${thS}>CPR</th><th ${thS}>ผ่าตัด</th><th ${thS}>VAP</th><th ${thS}>CAUTI</th><th ${thS}>MDR</th>
+      </tr></thead><tbody>`;
+      fiscalMonths.forEach(({m:fm,y:fy2},idx)=>{
+        const mp=allRes[idx];const ms=getStats(mp);
+        const ml=MONTHS_TH[fm-1]+' '+(fm>=10?fy2+543:fy2+543);
+        monthly+=`<tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:6px 8px;font-weight:600;font-size:11px;white-space:nowrap">${ml}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${mp.filter(p=>p['การรับ']==='รับใหม่').length}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${mp.filter(p=>p['การรับ']==='รับย้าย').length}</td>
+          <td style="padding:6px 8px;text-align:center;font-weight:700;font-size:11px">${ms.total}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.discharged}</td>
+          <td style="padding:6px 8px;text-align:center;color:#c62828;font-weight:700;font-size:11px">${ms.deadCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.mortalityRate}%</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.avgDaysPerPt}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.occupancyRate}%</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.unplannedCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.readmitCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.cprCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.surgCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.vapCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.cautiCount}</td>
+          <td style="padding:6px 8px;text-align:center;font-size:11px">${ms.mdrCount}</td>
+        </tr>`;
+      });
+      monthly+='</tbody></table></div>';
+      hideLoad();
+      document.getElementById('kpiContent').innerHTML=`
+        <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${periodLabel}</div>
+        ${monthly}`;
+      return;
     } else {
       m=parseInt(document.getElementById('kpiMonth').value);
       y=parseInt(document.getElementById('kpiYear').value);
@@ -6233,7 +6273,7 @@ async function loadKPI(){
     }
   }catch(e){toast(e.message,true);}finally{hideLoad();}
   const s=getStats(pts);
-  const daysInMonth=period==='year'?365:new Date(y,m,0).getDate();
+  const daysInMonth=new Date(y,m,0).getDate();
   const totalDC=s.discharged||1;
   const totalDays=s.totalDays||1;
   const ventDays=icDays(pts,'Ventilator (Start)','Ventilator (End)');
