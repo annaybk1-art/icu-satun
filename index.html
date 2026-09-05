@@ -3885,7 +3885,8 @@ function applyFilter(){
     if(st==='male'&&!(name.startsWith('นาย')||name.startsWith('เด็กชาย')||name.startsWith('ด.ช.'))) return false;
     if(st==='female'&&(name.startsWith('นาย')||name.startsWith('เด็กชาย')||name.startsWith('ด.ช.'))) return false;
     if(!q) return true;
-    return ['HN','AN','ชื่อ-สกุล','Diagnosis แรกรับ','Diag สุดท้าย','ประเภทผู้ป่วย','แพทย์เจ้าของไข้','U/D','เตียง','เหตุผลจำหน่าย'].some(k=>String(p[k]||'').toLowerCase().includes(q));
+    // ค้นหาทุก field ของผู้ป่วย
+    return Object.values(p).some(v=>String(v||'').toLowerCase().includes(q));
   });
   _curPg=1;renderTbl();
 }
@@ -3942,7 +3943,7 @@ function renderTbl(){
       <td style="color:#00897b;font-weight:500">${p['HN']||'-'}</td>
       <td>${p['อายุ']||'-'}</td>
       <td style="font-size:10.5px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${String(p['U/D']||'-').substring(0,20)}</td>
-      <td style="font-size:10.5px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(p['Diagnosis แรกรับ'])}">${String(p['Diagnosis แรกรับ']||'').substring(0,30)||'-'}</td>
+      <td style="font-size:10.5px;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer" title="${esc(p['Diagnosis แรกรับ'])}" onclick="alert('${esc(p['Diagnosis แรกรับ']||'-')}')">${String(p['Diagnosis แรกรับ']||'').substring(0,30)||'-'}</td>
       <td style="font-size:10.5px;white-space:nowrap">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td>${p['ประเภทผู้ป่วย']||'-'}</td>
       <td style="white-space:nowrap">${fmtDate(p['D/C (Date)'])||'-'}</td>
@@ -5395,15 +5396,44 @@ function getStats(pts){
     const t=normalizePatType(p['ประเภทผู้ป่วย']||'');
     if(t) typeCount[t]=(typeCount[t]||0)+1;
   });
-  const dxMap={};pts.forEach(p=>{const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';String(dx).split(',').forEach(d=>{d=d.trim();if(d)dxMap[d]=(dxMap[d]||0)+1;});});
+  // กลุ่มโรคที่รวมกัน
+  const DX_GROUPS=[
+    {name:'Sepsis',labels:['sepsis','septic shock']},
+    {name:'Pneumonia',labels:['pneumonia','cap','hap','vap']},
+    {name:'ACS',labels:['stemi','nstemi','unstable angina','acs']},
+    {name:'Heart Failure',labels:['adhf','chf','heart failure']},
+    {name:'Stroke',labels:['hemorrhagic stroke','ischemic stroke','cva','ich']},
+    {name:'Trauma',labels:['head injury','tbi','blunt abd','chest trauma','multiple fx']},
+  ];
+  const groupDx=(dxRaw)=>{
+    const dx=String(dxRaw||'').toLowerCase();
+    for(const g of DX_GROUPS){
+      if(g.labels.some(l=>dx.includes(l))) return g.name;
+    }
+    return dxRaw;
+  };
+  const dxMap={};pts.forEach(p=>{
+    const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';
+    String(dx).split(',').forEach(d=>{
+      d=d.trim();if(!d)return;
+      const grp=groupDx(d);
+      dxMap[grp]=(dxMap[grp]||0)+1;
+    });
+  });
   const top5Diag=Object.entries(dxMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,count])=>({name,count}));
 
   // 5 อันดับโรคที่เสียชีวิต
-  const dxDeadMap={};pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'dead')).forEach(p=>{const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';String(dx).split(',').forEach(d=>{d=d.trim();if(d)dxDeadMap[d]=(dxDeadMap[d]||0)+1;});});
+  const dxDeadMap={};pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'dead')).forEach(p=>{
+    const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';
+    String(dx).split(',').forEach(d=>{d=d.trim();if(!d)return;const grp=groupDx(d);dxDeadMap[grp]=(dxDeadMap[grp]||0)+1;});
+  });
   const top5Dead=Object.entries(dxDeadMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,count])=>({name,count}));
 
   // 5 อันดับโรคที่ส่งต่อ
-  const dxReferMap={};pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'refer')).forEach(p=>{const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';String(dx).split(',').forEach(d=>{d=d.trim();if(d)dxReferMap[d]=(dxReferMap[d]||0)+1;});});
+  const dxReferMap={};pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'refer')).forEach(p=>{
+    const dx=p['Diag สุดท้าย']||p['Diagnosis แรกรับ']||'';
+    String(dx).split(',').forEach(d=>{d=d.trim();if(!d)return;const grp=groupDx(d);dxReferMap[grp]=(dxReferMap[grp]||0)+1;});
+  });
   const top5Refer=Object.entries(dxReferMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([name,count])=>({name,count}));
 
   // รพ.ที่ส่งต่อบ่อยสุด
