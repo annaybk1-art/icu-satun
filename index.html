@@ -6376,15 +6376,14 @@ async function loadKPI(){
           ${td(ms.readmitCount)}
           ${td(ms.cprCount)}
           ${td(ms.pallCount)}
-          ${td(sepsisMort==='0.0'?'0%':sepsisMort+='%')}
+          ${td(sepsisMort==='-'?'-':sepsisMort==='0.0'?'0%':sepsisMort+'%')}
         </tr>`;
       });
       monthly+='</tbody></table></div>';
-
       hideLoad();
       document.getElementById('kpiContent').innerHTML=`
         <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${periodLabel}</div>
-        <div style="font-size:13px;font-weight:700;color:#1b5e20;margin:8px 0 8px">📊 ตารางสรุปรายเดือน</div>
+        <div style="font-size:13px;font-weight:700;color:#1b5e20;margin:8px 0 8px">📊 ตารางสรุป KPI รายเดือน</div>
         ${monthly}`;
       return;
     } else {
