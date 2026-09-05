@@ -1050,9 +1050,18 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div style="margin-top:16px;border-top:2px solid var(--g100);padding-top:16px">
         <div style="font-size:14px;font-weight:700;color:#1b5e20;margin-bottom:10px">📈 ข้อมูลสถิติ</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
-          <select id="mMonth" class="sel-sm"></select>
-          <select id="mYear" class="sel-sm"></select>
-          <button class="btn btn-primary btn-sm" onclick="loadMonthly()">แสดงข้อมูล</button>
+          <select id="statPeriod" class="sel-sm" onchange="toggleStatPeriod(this.value)">
+            <option value="month">รายเดือน</option>
+            <option value="year">รายปีงบ</option>
+          </select>
+          <div id="statMonthBox" style="display:flex;gap:4px">
+            <select id="mMonth" class="sel-sm"></select>
+            <select id="mYear" class="sel-sm"></select>
+          </div>
+          <div id="statYearBox" style="display:none">
+            <select id="statFiscalYear" class="sel-sm"></select>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="loadStatistics()">แสดงข้อมูล</button>
         </div>
         <div id="mContent" class="dash-card"></div>
       </div>
@@ -1949,7 +1958,7 @@ function setupYears(){
     for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=y;if(y===cy)o.selected=true;el.appendChild(o);}
   });
   // Fiscal year dropdowns (ปีงบ)
-  ['kpiFiscalYear','diseaseFiscalYear'].forEach(id=>{
+  ['kpiFiscalYear','diseaseFiscalYear','statFiscalYear'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     for(let y=cy-3;y<=cy+1;y++){const o=document.createElement('option');o.value=y;o.textContent=`ปีงบ ${y+543} (ต.ค.${y+542}-ก.ย.${y+543})`;if(y===cy)o.selected=true;el.appendChild(o);}
   });
@@ -6075,6 +6084,89 @@ async function loadIC(){
 // ============================================================
 // MONTHLY / YEARLY
 // ============================================================
+function toggleStatPeriod(v){
+  document.getElementById('statMonthBox').style.display=v==='month'?'flex':'none';
+  document.getElementById('statYearBox').style.display=v==='year'?'block':'none';
+}
+
+async function loadStatistics(){
+  const period=document.getElementById('statPeriod')?.value||'month';
+  if(period==='year') await loadStatisticsYearly();
+  else await loadMonthly();
+}
+
+async function loadStatisticsYearly(){
+  const fy=parseInt(document.getElementById('statFiscalYear')?.value||new Date().getFullYear());
+  showLoad('กำลังโหลด...');
+  const fiscalMonths=[{m:10,y:fy-1},{m:11,y:fy-1},{m:12,y:fy-1},{m:1,y:fy},{m:2,y:fy},{m:3,y:fy},{m:4,y:fy},{m:5,y:fy},{m:6,y:fy},{m:7,y:fy},{m:8,y:fy},{m:9,y:fy}];
+  let allRes=[];
+  try{allRes=await Promise.all(fiscalMonths.map(({m,y})=>fetchMonthPts(m,y).catch(()=>[])));}
+  catch(e){toast(e.message,true);}finally{hideLoad();}
+  const thS='style="background:#1b5e20;color:#fff;padding:8px 5px;white-space:nowrap;font-weight:700;font-size:10px;text-align:center"';
+  const thL='style="background:#1b5e20;color:#fff;padding:8px 8px;white-space:nowrap;font-weight:700;font-size:10px;text-align:left"';
+  let tbl=`<div style="overflow-x:auto"><table class="sum-tbl" style="font-size:10px"><thead><tr>
+    <th ${thL}>เดือน</th>
+    <th ${thS}>ยอดผู้ป่วย</th><th ${thS}>ยกมา</th><th ${thS}>ค้างเดือน</th>
+    <th ${thS}>วันนอน</th><th ${thS}>รับใหม่</th><th ${thS}>รับย้าย</th><th ${thS}>รวมรับ</th>
+    <th ${thS}>ทุเลาย้าย</th><th ${thS}>ต้องการเตียงย้าย</th><th ${thS}>รวมย้าย Ward</th>
+    <th ${thS}>กลับบ้าน</th><th ${thS}>Refer</th><th ${thS}>Palliative DC</th>
+    <th ${thS}>ไม่สมัครใจ</th><th ${thS}>Dead</th><th ${thS}>อัตราตาย%</th><th ${thS}>รวม DC</th>
+    <th ${thS}>Med</th><th ${thS}>Surg</th><th ${thS}>Neuro</th><th ${thS}>Ortho</th>
+    <th ${thS}>Obs</th><th ${thS}>Gynea</th>
+    <th ${thS}>เฉลี่ย LOS</th><th ${thS}>ครองเตียง%</th>
+    <th ${thS}>ผ่าตัด</th><th ${thS}>CPR</th><th ${thS}>Palliative</th>
+    <th ${thS}>Unplan</th><th ${thS}>Re-admit</th>
+    <th ${thS}>Vent ราย</th><th ${thS}>Vent วัน</th>
+    <th ${thS}>A-Line ราย</th><th ${thS}>A-Line วัน</th>
+    <th ${thS}>C-Line ราย</th><th ${thS}>C-Line วัน</th>
+    <th ${thS}>F/C ราย</th><th ${thS}>F/C วัน</th>
+    <th ${thS}>IV ราย</th><th ${thS}>IV วัน</th>
+    <th ${thS}>ICD ราย</th><th ${thS}>ICD วัน</th>
+    <th ${thS}>VAP</th><th ${thS}>CAUTI</th><th ${thS}>CLABSI</th>
+    <th ${thS}>SSI</th><th ${thS}>MDR</th>
+  </tr></thead><tbody>`;
+  fiscalMonths.forEach(({m:fm,y:fy2},idx)=>{
+    const mp=allRes[idx];const ms=getStats(mp);
+    const na=mp.filter(p=>p['การรับ']==='รับใหม่').length;
+    const tr2=mp.filter(p=>p['การรับ']==='รับย้าย').length;
+    const ci=mp.filter(p=>p['การรับ']==='ยกมา').length;
+    const co=mp.filter(p=>p['สถานะ']==='ค้างเดือน').length;
+    const total=na+tr2+ci;
+    const mw=ms.moveWell+ms.moveBed;
+    const home=mp.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'home')||String(p['เหตุผลจำหน่าย']||'').includes('กลับบ้าน')).length;
+    const mort=ms.discharged?(ms.deadCount/ms.discharged*100).toFixed(1):0;
+    const ml=MONTHS_TH[fm-1]+' '+(fy2+543);
+    const td=(v)=>`<td style="padding:5px 6px;text-align:center;font-size:10px;border-bottom:1px solid #f3f4f6">${v}</td>`;
+    tbl+=`<tr>
+      <td style="padding:5px 8px;font-weight:600;font-size:10px;white-space:nowrap;border-bottom:1px solid #f3f4f6">${ml}</td>
+      ${td(total)}${td(ci)}${td(co)}${td(ms.totalDays)}
+      ${td(na)}${td(tr2)}${td(total)}
+      ${td(ms.moveWell)}${td(ms.moveBed)}${td(mw)}
+      ${td(home)}${td(ms.referCount)}${td(ms.palliativeDC)}${td(ms.noConsent)}
+      ${td(ms.deadCount)}${td(mort+'%')}${td(ms.discharged)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')).length)}
+      ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
+      ${td(ms.avgDaysPerPt)}${td(ms.occupancyRate+'%')}
+      ${td(ms.surgCount)}${td(ms.cprCount)}${td(ms.pallCount)}
+      ${td(ms.unplannedCount)}${td(ms.readmitCount)}
+      ${td(mp.filter(p=>p['Ventilator (Start)']).length)}${td(icDays(mp,'Ventilator (Start)','Ventilator (End)'))}
+      ${td(mp.filter(p=>p['A-Line (Start)']).length)}${td(icDays(mp,'A-Line (Start)','A-Line (End)'))}
+      ${td(mp.filter(p=>p['C-Line (Start)']).length)}${td(icDays(mp,'C-Line (Start)','C-Line (End.)'))}
+      ${td(mp.filter(p=>p['F/C (Start)']).length)}${td(icDays(mp,'F/C (Start)','F/C (END)'))}
+      ${td(mp.filter(p=>p['IV (Start)']).length)}${td(icDays(mp,'IV (Start)','IV (End)'))}
+      ${td(mp.filter(p=>p['ICD (Start)']).length)}${td(icDays(mp,'ICD (Start)','ICD (End)'))}
+      ${td(ms.vapCount)}${td(ms.cautiCount)}${td(ms.clabsiCount)}${td(ms.ssiCount)}${td(ms.mdrCount)}
+    </tr>`;
+  });
+  tbl+='</tbody></table></div>';
+  document.getElementById('mContent').innerHTML=`
+    <div class="dash-card-title">📊 ข้อมูลสถิติปีงบ ${fy+543}</div>${tbl}`;
+}
+
 function toggleKpiPeriod(v){
   document.getElementById('kpiMonthBox').style.display=v==='month'?'flex':'none';
   document.getElementById('kpiYearBox').style.display=v==='year'?'block':'none';
@@ -6083,10 +6175,6 @@ function toggleKpiPeriod(v){
 function toggleDiseasePeriod(v){
   document.getElementById('diseaseMonthBox').style.display=v==='month'?'flex':'none';
   document.getElementById('diseaseYearBox').style.display=v==='year'?'block':'none';
-}
-function toggleKpiPeriod(v){
-  document.getElementById('kpiMonthBox').style.display=v==='month'?'flex':'none';
-  document.getElementById('kpiYearBox').style.display=v==='year'?'block':'none';
 }
 
 // โหลดข้อมูลทุกเดือนในปีงบ (ต.ค.-ก.ย.)
@@ -6234,89 +6322,61 @@ async function loadKPI(){
       const thL='style="background:#1b5e20;color:#ffffff;padding:8px 8px;white-space:nowrap;font-weight:700;font-size:10px;text-align:left"';
       let monthly=`<div style="overflow-x:auto;margin-top:12px"><table class="sum-tbl" style="font-size:10px"><thead><tr>
         <th ${thL}>เดือน</th>
-        <th ${thS}>ยอดผู้ป่วย</th>
-        <th ${thS}>ยกมา</th>
-        <th ${thS}>ค้างเดือน</th>
-        <th ${thS}>วันนอน</th>
-        <th ${thS}>รับใหม่</th>
-        <th ${thS}>รับย้าย</th>
-        <th ${thS}>รวมรับ</th>
-        <th ${thS}>ทุเลาย้าย</th>
-        <th ${thS}>ต้องการเตียงย้าย</th>
-        <th ${thS}>รวมย้าย Ward</th>
-        <th ${thS}>กลับบ้าน</th>
-        <th ${thS}>Refer</th>
-        <th ${thS}>Palliative DC</th>
-        <th ${thS}>ไม่สมัครใจ</th>
-        <th ${thS}>Dead</th>
-        <th ${thS}>อัตราตาย%</th>
-        <th ${thS}>รวม DC</th>
-        <th ${thS}>Med</th>
-        <th ${thS}>Surg</th>
-        <th ${thS}>Neuro</th>
-        <th ${thS}>Ortho</th>
-        <th ${thS}>Obs</th>
-        <th ${thS}>Gynea</th>
-        <th ${thS}>เฉลี่ย LOS</th>
-        <th ${thS}>ครองเตียง%</th>
-        <th ${thS}>ผ่าตัด</th>
+        <th ${thS}>จำนวนผู้ป่วย</th>
+        <th ${thS}>Mortality rate%</th>
+        <th ${thS}>Readmission%</th>
+        <th ${thS}>LOS เฉลี่ย</th>
+        <th ${thS}>Bed occupancy%</th>
+        <th ${thS}>VAP</th>
+        <th ${thS}>CLABSI</th>
+        <th ${thS}>CAUTI</th>
+        <th ${thS}>Pressure Injury</th>
+        <th ${thS}>Unplanned Extub</th>
+        <th ${thS}>Med Error</th>
+        <th ${thS}>Delirium</th>
+        <th ${thS}>Unplan ICU</th>
+        <th ${thS}>Re-admit ICU</th>
         <th ${thS}>CPR</th>
         <th ${thS}>Palliative</th>
-        <th ${thS}>Unplan</th>
-        <th ${thS}>Re-admit</th>
-        <th ${thS}>Vent ราย</th>
-        <th ${thS}>Vent วัน</th>
-        <th ${thS}>A-Line ราย</th>
-        <th ${thS}>A-Line วัน</th>
-        <th ${thS}>C-Line ราย</th>
-        <th ${thS}>C-Line วัน</th>
-        <th ${thS}>F/C ราย</th>
-        <th ${thS}>F/C วัน</th>
-        <th ${thS}>IV ราย</th>
-        <th ${thS}>IV วัน</th>
-        <th ${thS}>ICD ราย</th>
-        <th ${thS}>ICD วัน</th>
-        <th ${thS}>VAP</th>
-        <th ${thS}>CAUTI</th>
-        <th ${thS}>CLABSI</th>
-        <th ${thS}>SSI</th>
-        <th ${thS}>MDR</th>
+        <th ${thS}>Sepsis Mortality%</th>
       </tr></thead><tbody>`;
       fiscalMonths.forEach(({m:fm,y:fy2},idx)=>{
         const mp=allRes[idx];const ms=getStats(mp);
-        const na=mp.filter(p=>p['การรับ']==='รับใหม่').length;
-        const tr=mp.filter(p=>p['การรับ']==='รับย้าย').length;
-        const ci=mp.filter(p=>p['การรับ']==='ยกมา').length;
-        const co=mp.filter(p=>p['สถานะ']==='ค้างเดือน').length;
-        const total=na+tr+ci;
-        const mw=ms.moveWell+ms.moveBed;
-        const home=mp.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'home')||String(p['เหตุผลจำหน่าย']||'').includes('กลับบ้าน')).length;
-        const mort=ms.discharged?(ms.deadCount/ms.discharged*100).toFixed(1):0;
         const ml=MONTHS_TH[fm-1]+' '+(fy2+543);
-        const td=(v,bold=false)=>`<td style="padding:5px 6px;text-align:center;font-size:10px;${bold?'font-weight:700':''}border-bottom:1px solid #f3f4f6">${v}</td>`;
+        const mort=ms.discharged?(ms.deadCount/ms.discharged*100).toFixed(1):0;
+        const readmit=ms.total>0?(ms.readmitCount/ms.total*100).toFixed(1):0;
+        const ventD=icDays(mp,'Ventilator (Start)','Ventilator (End)')||1;
+        const cvcD=icDays(mp,'C-Line (Start)','C-Line (End.)')||1;
+        const fcD=icDays(mp,'F/C (Start)','F/C (END)')||1;
+        const vapRate=(ms.vapCount/ventD*1000).toFixed(2);
+        const clabsiRate=(ms.clabsiCount/cvcD*1000).toFixed(2);
+        const cautiRate=(ms.cautiCount/fcD*1000).toFixed(2);
+        const sepsisPts=mp.filter(p=>String(p['Diagnosis แรกรับ']||'').toLowerCase().includes('sepsis'));
+        const sepsisMort=sepsisPts.length>0?(sepsisPts.filter(p=>String(p['เหตุผลจำหน่าย']||'').toLowerCase().includes('dead')).length/sepsisPts.length*100).toFixed(1):'-';
+        const piCount=mp.filter(p=>{try{return JSON.parse(p['Pressure Injury']||'[]').length>0;}catch(e){return false;}}).length;
+        const ueCount=mp.filter(p=>{try{return JSON.parse(p['Unplanned Extubation']||'[]').length>0;}catch(e){return false;}}).length;
+        const meCount=mp.filter(p=>{try{return JSON.parse(p['Medication Error']||'[]').length>0;}catch(e){return false;}}).length;
+        const delCount=mp.filter(p=>parseInt(p['ICDSC Score']||0)>=4).length;
+        const td=(v,bold=false,color='')=>`<td style="padding:5px 6px;text-align:center;font-size:10px;${bold?'font-weight:700;':''}${color?'color:'+color+';':''}border-bottom:1px solid #f3f4f6">${v}</td>`;
         monthly+=`<tr>
           <td style="padding:5px 8px;font-weight:600;font-size:10px;white-space:nowrap;border-bottom:1px solid #f3f4f6">${ml}</td>
-          ${td(total,true)}${td(ci)}${td(co)}${td(ms.totalDays)}
-          ${td(na)}${td(tr)}${td(total,true)}
-          ${td(ms.moveWell)}${td(ms.moveBed)}${td(mw,true)}
-          ${td(home)}${td(ms.referCount)}${td(ms.palliativeDC)}${td(ms.noConsent)}
-          ${td(ms.deadCount)}${td(mort+'%')}${td(ms.discharged,true)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')).length)}
-          ${td(mp.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
-          ${td(ms.avgDaysPerPt)}${td(ms.occupancyRate+'%')}
-          ${td(ms.surgCount)}${td(ms.cprCount)}${td(ms.pallCount)}
-          ${td(ms.unplannedCount)}${td(ms.readmitCount)}
-          ${td(mp.filter(p=>p['Ventilator (Start)']).length)}${td(icDays(mp,'Ventilator (Start)','Ventilator (End)'))}
-          ${td(mp.filter(p=>p['A-Line (Start)']).length)}${td(icDays(mp,'A-Line (Start)','A-Line (End)'))}
-          ${td(mp.filter(p=>p['C-Line (Start)']).length)}${td(icDays(mp,'C-Line (Start)','C-Line (End.)'))}
-          ${td(mp.filter(p=>p['F/C (Start)']).length)}${td(icDays(mp,'F/C (Start)','F/C (END)'))}
-          ${td(mp.filter(p=>p['IV (Start)']).length)}${td(icDays(mp,'IV (Start)','IV (End)'))}
-          ${td(mp.filter(p=>p['ICD (Start)']).length)}${td(icDays(mp,'ICD (Start)','ICD (End)'))}
-          ${td(ms.vapCount)}${td(ms.cautiCount)}${td(ms.clabsiCount)}${td(ms.ssiCount)}${td(ms.mdrCount)}
+          ${td(ms.total,true)}
+          ${td(mort+'%',false,parseFloat(mort)>15?'#c62828':'#2e7d32')}
+          ${td(readmit+'%',false,parseFloat(readmit)>5?'#c62828':'#2e7d32')}
+          ${td(ms.avgDaysPerPt)}
+          ${td(ms.occupancyRate+'%',false,parseFloat(ms.occupancyRate)>85?'#c62828':parseFloat(ms.occupancyRate)<70?'#e65100':'#2e7d32')}
+          ${td(vapRate,false,parseFloat(vapRate)>1?'#c62828':'#2e7d32')}
+          ${td(clabsiRate,false,parseFloat(clabsiRate)>1?'#c62828':'#2e7d32')}
+          ${td(cautiRate,false,parseFloat(cautiRate)>1?'#c62828':'#2e7d32')}
+          ${td(piCount,false,piCount>0?'#c62828':'#2e7d32')}
+          ${td(ueCount,false,ueCount>0?'#c62828':'#2e7d32')}
+          ${td(meCount,false,meCount>0?'#c62828':'#2e7d32')}
+          ${td(delCount)}
+          ${td(ms.unplannedCount)}
+          ${td(ms.readmitCount)}
+          ${td(ms.cprCount)}
+          ${td(ms.pallCount)}
+          ${td(sepsisMort==='0.0'?'0%':sepsisMort+='%')}
         </tr>`;
       });
       monthly+='</tbody></table></div>';
