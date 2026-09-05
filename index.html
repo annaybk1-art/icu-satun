@@ -6260,10 +6260,89 @@ async function loadKPI(){
         </tr>`;
       });
       monthly+='</tbody></table></div>';
+      
+      // ข้อมูลสถิติรวมทั้งปี เหมือน loadMonthly
+      const newAdmit=pts.filter(p=>p['การรับ']==='รับใหม่').length;
+      const transferIn=pts.filter(p=>p['การรับ']==='รับย้าย').length;
+      const carryIn=pts.filter(p=>p['การรับ']==='ยกมา').length;
+      const carryOut=pts.filter(p=>p['สถานะ']==='ค้างเดือน').length;
+      const totalAdmit=newAdmit+transferIn+carryIn;
+      const totalDC2=s.discharged;
+      const moveWellTotal=s.moveWell+s.moveBed;
+      const mortalityRate2=totalDC2?(s.deadCount/totalDC2*100).toFixed(1):0;
+      const row2=(label,val,bold=false)=>`<tr>
+        <td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;color:#374151">${label}</td>
+        <td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;text-align:center;font-weight:${bold?'700':'500'};color:${bold?'#2e7d32':'#111'}">${val}</td>
+      </tr>`;
+      const divider2=`<tr><td colspan="2" style="padding:0;background:#e8f5e9;height:3px"></td></tr>`;
+      const sumTable2=`<table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#2e7d32;color:white">
+          <th style="padding:9px 12px;text-align:left">รายการ</th>
+          <th style="padding:9px 12px;text-align:center;width:80px">จำนวน</th>
+        </tr></thead><tbody>
+          ${row2('ยอดผู้ป่วย (คน)',totalAdmit,true)}
+          ${row2('ยกมา',carryIn)}
+          ${row2('ค้างเดือน',carryOut)}
+          ${row2('จน.วันนอน รพ. (วัน)',s.totalDays)}
+          ${row2('รับใหม่',newAdmit)}
+          ${row2('รับย้าย',transferIn)}
+          ${row2('รวมยอดรับผู้ป่วย',totalAdmit,true)}
+          ${divider2}
+          ${row2('ทุเลาย้าย',s.moveWell)}
+          ${row2('ต้องการเตียงย้าย',s.moveBed)}
+          ${row2('รวมผู้ป่วยย้าย Ward',moveWellTotal,true)}
+          ${row2('ทุเลากลับบ้าน',pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'home')||String(p['เหตุผลจำหน่าย']||'').includes('กลับบ้าน')).length)}
+          ${row2('Refer',s.referCount)}
+          ${row2('Palliative D/C',s.palliativeDC)}
+          ${row2('ไม่สมัครใจอยู่',s.noConsent)}
+          ${row2('ผู้ป่วยเสียชีวิต',s.deadCount)}
+          ${row2('อัตราการเสียชีวิต (%)',mortalityRate2+'%')}
+          ${row2('รวมผู้ป่วยจำหน่าย',totalDC2,true)}
+          ${divider2}
+          ${row2('Med',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='MED').length)}
+          ${row2('Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toUpperCase()==='SURG').length)}
+          ${row2('Neuro.Surg',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('neuro')).length)}
+          ${row2('Ortho',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('ortho')).length)}
+          ${row2('Obs',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('obs')).length)}
+          ${row2('Gynea',pts.filter(p=>(p['ประเภทผู้ป่วย']||'').toLowerCase().includes('gyn')).length)}
+          ${divider2}
+          ${row2('เฉลี่ยนอน รพ. คนละ (วัน)',s.avgDaysPerPt)}
+          ${divider2}
+          ${row2('Case ผ่าตัด',s.surgCount)}
+          ${row2('CPR',s.cprCount)}
+          ${row2('Palliative care',s.pallCount)}
+          ${row2('Unplanned ICU',s.unplannedCount)}
+          ${row2('Re-admit ICU',s.readmitCount)}
+          ${divider2}
+          <tr><td colspan="2" style="padding:8px 12px;background:#1b5e20;color:white;font-weight:700;font-size:13px">🩺 Invasive Care (IC)</td></tr>
+          ${row2('Ventilator (ราย)',pts.filter(p=>p['Ventilator (Start)']).length)}
+          ${row2('Ventilator (วัน)',icDays(pts,'Ventilator (Start)','Ventilator (End)'))}
+          ${row2('A-Line (ราย)',pts.filter(p=>p['A-Line (Start)']).length)}
+          ${row2('A-Line (วัน)',icDays(pts,'A-Line (Start)','A-Line (End)'))}
+          ${row2('C-Line (ราย)',pts.filter(p=>p['C-Line (Start)']).length)}
+          ${row2('C-Line (วัน)',icDays(pts,'C-Line (Start)','C-Line (End.)'))}
+          ${row2('F/C (ราย)',pts.filter(p=>p['F/C (Start)']).length)}
+          ${row2('F/C (วัน)',icDays(pts,'F/C (Start)','F/C (END)'))}
+          ${row2('IV (ราย)',pts.filter(p=>p['IV (Start)']).length)}
+          ${row2('IV (วัน)',icDays(pts,'IV (Start)','IV (End)'))}
+          ${row2('ICD (ราย)',pts.filter(p=>p['ICD (Start)']).length)}
+          ${row2('ICD (วัน)',icDays(pts,'ICD (Start)','ICD (End)'))}
+          ${divider2}
+          <tr><td colspan="2" style="padding:8px 12px;background:#b71c1c;color:white;font-weight:700;font-size:13px">🦠 การติดเชื้อ</td></tr>
+          ${row2('VAP',s.vapCount)}
+          ${row2('CAUTI',s.cautiCount)}
+          ${row2('CLABSI',s.clabsiCount)}
+          ${row2('SSI',s.ssiCount)}
+          ${row2('MDR',s.mdrCount)}
+        </tbody></table>`;
+
       hideLoad();
       document.getElementById('kpiContent').innerHTML=`
         <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${periodLabel}</div>
-        ${monthly}`;
+        <div style="font-size:13px;font-weight:700;color:#1b5e20;margin:8px 0">📊 ตารางสรุปรายเดือน</div>
+        ${monthly}
+        <div style="font-size:13px;font-weight:700;color:#1b5e20;margin:16px 0 8px">📈 ข้อมูลสถิติรวมทั้งปี</div>
+        <div style="border-radius:10px;overflow:hidden">${sumTable2}</div>`;
       return;
     } else {
       m=parseInt(document.getElementById('kpiMonth').value);
