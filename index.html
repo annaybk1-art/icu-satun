@@ -1032,17 +1032,8 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div class="sec-header">
         <div class="sec-title">📊 KPI & ตัวชี้วัด ICU</div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <select id="kpiPeriod" class="sel-sm" onchange="toggleKpiPeriod(this.value)">
-            <option value="month">รายเดือน</option>
-            <option value="year">รายปีงบ</option>
-          </select>
-          <div id="kpiMonthBox" style="display:flex;gap:4px">
-            <select id="kpiMonth" class="sel-sm"></select>
-            <select id="kpiYear" class="sel-sm"></select>
-          </div>
-          <div id="kpiYearBox" style="display:none">
-            <select id="kpiFiscalYear" class="sel-sm"></select>
-          </div>
+          <select id="kpiMonth" class="sel-sm"></select>
+          <select id="kpiYear" class="sel-sm"></select>
           <button class="btn btn-primary btn-sm" onclick="loadKPI()">แสดง KPI</button>
         </div>
       </div>
@@ -6211,24 +6202,13 @@ async function loadDiseaseIndicator(){
 }
 
 async function loadKPI(){
-  const period=document.getElementById('kpiPeriod')?.value||'month';
+  const m=parseInt(document.getElementById('kpiMonth').value);
+  const y=parseInt(document.getElementById('kpiYear').value);
   showLoad('กำลังโหลด KPI...');
   let pts=[];
-  let periodName='';
-  try{
-    if(period==='year'){
-      const fy=parseInt(document.getElementById('kpiFiscalYear')?.value||new Date().getFullYear());
-      pts=await fetchFiscalYearPts(fy);
-      periodName=`ปีงบ ${fy+543}`;
-    } else {
-      const m=parseInt(document.getElementById('kpiMonth').value);
-      const y=parseInt(document.getElementById('kpiYear').value);
-      pts=await fetchMonthPts(m,y);
-      periodName=MONTHS_TH[m-1]+' '+(y+543);
-    }
-  }catch(e){toast(e.message,true);}finally{hideLoad();}
+  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}finally{hideLoad();}
   const s=getStats(pts);
-  const daysInMonth=period==='year'?365:30;
+  const daysInMonth=new Date(y,m,0).getDate();
   const totalDC=s.discharged||1;
   const totalDays=s.totalDays||1;
   const ventDays=icDays(pts,'Ventilator (Start)','Ventilator (End)');
@@ -6273,7 +6253,7 @@ async function loadKPI(){
   const occupancy=(totalDays/(TOTAL_BEDS*daysInMonth)*100).toFixed(1);
 
   document.getElementById('kpiContent').innerHTML=`
-    <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${periodName}</div>
+    <div style="padding:10px 0 6px;font-size:13px;color:#6b7280;font-weight:600">${MONTHS_TH[m-1]} ${y+543}</div>
 
     ${table('🏥 1. Clinical Outcomes & Mortality','#1565c0',`
       ${kpiRow('💀','ICU Mortality Rate',icuMortality+'%','%','< 15%',parseFloat(icuMortality)<15)}
