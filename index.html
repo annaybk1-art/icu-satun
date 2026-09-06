@@ -1032,7 +1032,14 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
           <button class="btn btn-primary btn-sm" onclick="loadDiseaseIndicator()">แสดง</button>
         </div>
       </div>
-      <div id="diseaseContent" style="padding:8px 0"></div>
+      <div id="diseaseContent" style="padding:8px 0">
+        <div style="margin-bottom:10px">
+          <input type="text" id="diseaseSearch" placeholder="🔍 ค้นหาโรค เช่น TBI, Stroke, Sepsis..." 
+            oninput="filterDiseaseContent(this.value)"
+            style="width:100%;padding:8px 12px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
+        </div>
+        <div id="diseaseList"></div>
+      </div>
     </div>
 
     <div class="sec" id="sec-kpi">
@@ -3897,6 +3904,23 @@ function applyFilter(){
     if(st==='female'&&(name.startsWith('นาย')||name.startsWith('เด็กชาย')||name.startsWith('ด.ช.'))) return false;
     if(!q) return true;
     const field=document.getElementById('srchField')?.value||'all';
+
+    // ค้นหาตามกลุ่มโรค
+    const groupSearch={
+      'tbi':['MHI','SHI','Moderate HI','EDH','SDH','DAI','Skull fracture','Traumatic SAH','Head injury','TBI'],
+      'stroke':['Hemorrhagic stroke','Ischemic stroke','SAH','TIA','CVA','ICH','Stroke'],
+      'sepsis':['Sepsis','Septic shock'],
+      'pneumonia':['Pneumonia','CAP','HAP','VAP'],
+      'จิตเวช':['Schizophrenia','Bipolar','Psychosis','MDD','Depression','Anxiety','PTSD','OCD','จิตเวช','Psychiatric'],
+      'trauma':['Chest trauma','Blunt Abd','Spinal injury','Pelvic fracture','Multiple Fx','Polytrauma'],
+      'acs':['STEMI','NSTEMI','Unstable Angina','ACS'],
+      'hf':['ADHF','CHF','Heart failure'],
+    };
+    const grpMatch=Object.entries(groupSearch).find(([k])=>k===q||q===k);
+    if(grpMatch){
+      const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
+      return grpMatch[1].some(l=>dx.includes(l.toLowerCase()));
+    }
     const matchWord=(str,q)=>{
       // ถ้า q สั้น ≤4 ตัว ใช้ exact word match
       if(q.length<=4){
@@ -4118,12 +4142,6 @@ function buildForm(p){
       </div></div>
       <div class="fsec"><div class="fsec-title">Dx <span class="req">*</span> <span style="font-size:10px;color:var(--gray400);font-weight:400">เลือกได้หลายตัว (อัปเดตได้ทุกเวร)</span></div>
         ${multiSel('Diagnosis แรกรับ',o('diagnosis'),p['Diagnosis แรกรับ'],'diagnosis')}
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <span style="font-size:11px;font-weight:600;color:var(--gray600)">ประเภทพิเศษ:</span>
-          ${['Stroke','TBI','Trauma','ไม่มี'].map(v=>`<label style="display:flex;align-items:center;gap:4px;font-size:11.5px;cursor:pointer">
-            <input type="radio" name="dxSpecialType" value="${v}" ${(p['dxSpecialType']||'')=== v?'checked':''}> ${v}
-          </label>`).join('')}
-        </div>
       </div>
       <div class="fsec"><div class="fsec-title">โรคประจำตัว (U/D) <span class="req">*</span> <span style="font-size:10px;color:var(--gray400);font-weight:400">เลือกได้หลายตัว (ถ้าไม่มีให้เลือก "ไม่มี")</span></div>
         ${multiSel('U/D',o('udOptions'),p['U/D'],'udOptions')}
@@ -6258,6 +6276,7 @@ const DISEASE_LIST=[
     {key:'Dengue hemorrhagic fever',labels:['Dengue','DHF']},
     {key:'Leptospirosis',labels:['Leptospirosis']},
     {key:'TB',labels:['TB','Tuberculosis']},
+    {key:'HIV/UP',labels:['HIV','UP','Unprotected']},
   ]},
   {group:'🫁 โรคระบบทางเดินหายใจ',items:[
     {key:'Pneumonia',labels:['Pneumonia']},
@@ -6272,26 +6291,62 @@ const DISEASE_LIST=[
   {group:'🧠 โรคระบบประสาท',items:[
     {key:'Hemorrhagic stroke',labels:['Hemorrhagic stroke','ICH'],patType:['neuro','surg']},
     {key:'Ischemic stroke',labels:['Ischemic stroke','CVA'],patType:['med']},
-    {key:'Total Stroke',labels:['Hemorrhagic stroke','ICH','Ischemic stroke','CVA','stroke'],isTotal:true},
-    {key:'Head injury/TBI',labels:['Head injury','TBI','Traumatic brain']},
+    {key:'SAH (Spontaneous)',labels:['Subarachnoid hemorrhage','SAH'],patType:['neuro','surg']},
+    {key:'TIA',labels:['TIA','Transient ischemic']},
+    {key:'Total Stroke',labels:['Hemorrhagic stroke','ICH','Ischemic stroke','CVA','SAH','TIA','stroke'],isTotal:true},
+    {key:'MHI (Mild)',labels:['MHI','Mild head injury']},
+    {key:'Moderate HI',labels:['Moderate head injury','MoHI','Moderate HI']},
+    {key:'SHI (Severe)',labels:['SHI','Severe head injury']},
+    {key:'EDH',labels:['EDH','Epidural hematoma']},
+    {key:'SDH',labels:['SDH','Subdural hematoma']},
+    {key:'ICH (Trauma)',labels:['Traumatic ICH','tICH']},
+    {key:'DAI',labels:['DAI','Diffuse axonal']},
+    {key:'Skull fracture',labels:['Skull fracture']},
+    {key:'Traumatic SAH',labels:['Traumatic SAH','tSAH']},
+    {key:'Total TBI',labels:['MHI','Mild head injury','Moderate head injury','MoHI','Moderate HI','SHI','Severe head injury','EDH','SDH','Traumatic ICH','tICH','DAI','Skull fracture','Traumatic SAH','TBI','Head injury'],isTotal:true},
   ]},
   {group:'🩸 โรคไต',items:[
     {key:'CKD',labels:['CKD','Chronic kidney']},
     {key:'ESRD',labels:['ESRD','End-stage renal']},
     {key:'AKI',labels:['AKI','Acute kidney']},
   ]},
-  {group:'🏥 อื่นๆ',items:[
-    {key:'Blunt Abd. Trauma',labels:['Blunt Abd','Abdominal trauma']},
-    {key:'Chest Trauma',labels:['Chest Trauma','Chest injury']},
+  {group:'🚑 Trauma',items:[
+    {key:'Chest Trauma',labels:['Chest trauma','Chest injury']},
+    {key:'Blunt Abd. Trauma',labels:['Blunt Abd','Abdominal trauma','Blunt abdominal']},
+    {key:'Spinal injury',labels:['Spinal injury','Spinal cord','SCI']},
+    {key:'Pelvic fracture',labels:['Pelvic fracture','Pelvic injury']},
     {key:'Multiple Fx',labels:['Multiple Fx','Multiple fracture']},
-    {key:'Hypovolumic shock',labels:['Hypovolumic','Hypovolemic shock']},
-    {key:'PU perforate',labels:['PU perforate','Peptic ulcer perforation']},
+    {key:'Polytrauma',labels:['Polytrauma','Multiple injuries','Multiple trauma']},
+    {key:'Total Trauma',labels:['Chest trauma','Chest injury','Blunt Abd','Abdominal trauma','Spinal injury','Spinal cord','SCI','Pelvic fracture','Multiple Fx','Multiple fracture','Polytrauma','Multiple injuries','Multiple trauma'],isTotal:true},
+  ]},
+  {group:'🧪 ต่อมไร้ท่อ & เมตาบอลิก',items:[
     {key:'DKA',labels:['DKA','Diabetic ketoacidosis']},
+    {key:'HHS',labels:['HHS','Hyperosmolar']},
+    {key:'Thyroid storm',labels:['Thyroid storm','Thyrotoxic crisis']},
+    {key:'Adrenal crisis',labels:['Adrenal crisis','Addisonian crisis']},
+  ]},
+  {group:'🫀 GI',items:[
+    {key:'Upper GI bleeding',labels:['Upper GI bleeding','UGIB','UGI bleeding']},
+    {key:'Lower GI bleeding',labels:['Lower GI bleeding','LGIB','LGI bleeding']},
+    {key:'PU/DU perforate',labels:['PU perforate','DU perforate','Peptic ulcer perforation','Duodenal ulcer']},
+    {key:'Bowel obstruction',labels:['Bowel obstruction','Intestinal obstruction','SBO']},
+    {key:'Mesenteric ischemia',labels:['Mesenteric ischemia','Mesenteric infarction']},
+  ]},
+  {group:'🏥 อื่นๆ',items:[
+    {key:'Hypovolumic shock',labels:['Hypovolumic','Hypovolemic shock']},
     {key:'PIH',labels:['PIH','Pregnancy-induced hypertension']},
     {key:'PPH',labels:['PPH','Postpartum hemorrhage']},
     {key:'CA',labels:['Cancer','Carcinoma','CA ']},
-    {key:'จิตเวช',labels:['จิตเวช','Psychiatric']},
-    {key:'UP',labels:[' UP','Urinary perforation','Urosepsis']},
+  ]},
+  {group:'🧠 จิตเวช',items:[
+    {key:'Schizophrenia',labels:['Schizophrenia','Schizoaffective']},
+    {key:'Bipolar disorder',labels:['Bipolar','Bipolar disorder']},
+    {key:'MDD',labels:['MDD','Major depressive','Depression']},
+    {key:'Acute psychosis',labels:['Acute psychosis','Psychosis']},
+    {key:'Anxiety disorder',labels:['Anxiety','Anxiety disorder']},
+    {key:'PTSD',labels:['PTSD','Post-traumatic']},
+    {key:'OCD',labels:['OCD','Obsessive']},
+    {key:'จิตเวช (รวม)',labels:['จิตเวช','Psychiatric','Schizophrenia','Bipolar','Psychosis','MDD','Depression','Anxiety','Schizoaffective','Mental disorder','OCD','PTSD'],isTotal:true},
   ]},
 ];
 
@@ -6327,7 +6382,6 @@ async function loadDiseaseIndicator(){
       return dx.includes(label);
     });
     if(!dxMatch) return false;
-    // ถ้ามี patType filter ให้ตรวจด้วย
     if(disease.patType && disease.patType.length>0){
       return disease.patType.some(t=>patType.includes(t));
     }
