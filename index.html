@@ -818,6 +818,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
               <option value="bed">เตียง</option>
               <option value="dc">เหตุผลจำหน่าย</option>
               <option value="infection">การติดเชื้อ</option>
+              <option value="cpr">CPR</option>
+              <option value="bedsore">Bedsore</option>
+              <option value="recorder_dc">ผู้บันทึก D/C</option>
             </select>
             <input type="text" id="srch" placeholder="ค้นหา..." oninput="applyFilter()">
           </div>
@@ -827,9 +830,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>#</th><th>ลำดับปี</th><th>Admit</th><th>เวลา</th><th>เตียง</th><th>ชื่อ-สกุล</th><th>HN</th>
               <th>อายุ</th><th>U/D</th><th>Dx แรกรับ</th><th>แพทย์</th><th>ประเภท</th>
-              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Bedsore</th><th>Falling</th><th>สถานะ</th><th>จัดการ</th>
+              <th>D/C</th><th>วันนอน</th><th>เหตุผล DC</th><th>ผู้บันทึก D/C</th><th>Apache IV</th><th>Bedsore</th><th>Falling</th><th>CPR</th><th>สถานะ</th><th>จัดการ</th>
             </tr></thead>
-            <tbody id="ptTbl"><tr><td colspan="17" class="loading-msg">กำลังโหลด...</td></tr></tbody>
+            <tbody id="ptTbl"><tr><td colspan="18" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
         </div>
         <div class="pager">
@@ -868,8 +871,8 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             <thead><tr>
               <th>เตียง</th><th>Admit</th><th>เพศ</th><th>อายุ</th><th>แผนก</th>
               <th>Dx</th><th>U/D</th>
-              <th class="bc-Apache">Apache IV</th>
-              <th class="bc-SOS">SOS</th>
+              <th class="bc-Apache">Apache แรกรับ</th>
+              <th class="bc-SOS">NEWS</th>
               <th class="bc-ประเภท">ประเภท</th>
               <th class="bc-ยา HD">💊 ยา HD</th>
               <th class="bc-การหายใจ">🌬️ การหายใจ</th>
@@ -882,8 +885,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
               <th class="bc-PI">🩹 Bedsore</th>
               <th class="bc-หมอ">👨‍⚕️ แพทย์</th>
               <th class="bc-พยาบาล">👩‍⚕️ พยาบาล</th>
+              <th>จัดการ</th>
             </tr></thead>
-            <tbody id="bedAdmitBody"><tr><td colspan="15" class="loading-msg">กำลังโหลด...</td></tr></tbody>
+            <tbody id="bedAdmitBody"><tr><td colspan="16" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -941,11 +945,6 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
             </div>
             <button onclick="top5Go(1)" style="background:none;border:none;cursor:pointer;color:var(--gray400);font-size:16px;padding:2px 6px">›</button>
           </div>
-        </div>
-        <!-- Trend Chart -->
-        <div class="dash-card" data-ed-id="trend-card" style="display:flex;flex-direction:column">
-          <div class="dash-card-title" data-ed-id="trend-title" style="flex-shrink:0">📈 ยอดผู้ป่วยรายวัน (Census)</div>
-          <div class="chart-container" style="flex:1"><canvas id="trendChart"></canvas></div>
         </div>
       </div><!-- end top-row -->
       <div class="kpi-grid" id="dashKpi" data-ed-id="dashKpi-section"></div>
@@ -1685,6 +1684,18 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   </div>
 </div>
 
+<!-- BED-BOARD QUICK EDIT MODAL: เฉพาะฟิลด์ที่แสดงในตารางแผนผังเตียง -->
+<div class="overlay" id="bedEditModal">
+  <div class="modal" style="max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
+    <div class="modal-hd"><h2 id="bedEditTitle">แก้ไขข้อมูล (เตียง)</h2><button class="modal-x" onclick="closeBedEditModal()">✕</button></div>
+    <div class="modal-bd" id="bedEditBd" style="overflow-y:auto;padding:14px"></div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeBedEditModal()">ยกเลิก</button>
+      <button class="btn btn-primary" id="bedEditSaveBtn" onclick="saveBedEdit()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <!-- USER MODAL -->
 <div class="overlay" id="userModal">
   <div class="modal" style="max-width:480px">
@@ -1765,7 +1776,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 // ============================================================
 // CONFIG & API
 // ============================================================
-const _DEFAULT_URL='https://script.google.com/macros/s/AKfycbx0ksnwhROMwGqex1IO8r-A6HoCqcz9ESF0S70wczeWGv8LE5YEekXNVlMsFMU9T2MWqQ/exec';
+const _DEFAULT_URL='https://script.google.com/macros/s/AKfycbzU6id5z9gD8yoZvQ9XkFfvnZekOSLmd6YSa4TdCbyirnjuMODn7Ngq2a0U3MxH3564VA/exec';
 let API_URL = _DEFAULT_URL;
 localStorage.setItem('icu_api_url',_DEFAULT_URL);
 
@@ -3915,11 +3926,18 @@ function applyFilter(){
       'trauma':['Chest trauma','Blunt Abd','Spinal injury','Pelvic fracture','Multiple Fx','Polytrauma'],
       'acs':['STEMI','NSTEMI','Unstable Angina','ACS'],
       'hf':['ADHF','CHF','Heart failure'],
+      'ไต':['CKD','ESRD','AKI','Chronic kidney','End-stage renal','Acute kidney'],
+      'gi':['Upper GI','Lower GI','PU perforate','DU perforate','Bowel obstruction','Mesenteric ischemia'],
     };
     const grpMatch=Object.entries(groupSearch).find(([k])=>k===q||q===k);
     if(grpMatch){
       const dx=String(p['Diagnosis แรกรับ']||'').toLowerCase();
       return grpMatch[1].some(l=>dx.includes(l.toLowerCase()));
+    }
+    // ค้นหาด่วน: พิมพ์ "cpr" หรือ "bedsore/กดทับ" เจอผู้ป่วยที่มีค่านั้นทันที (ไม่ต้องเลือกช่องค้นหา)
+    if(q==='cpr') return p['CPR']==='Yes';
+    if(q==='bedsore'||q==='กดทับ'){
+      try{return (JSON.parse(p['Pressure Injury']||'[]')||[]).length>0;}catch(e){return false;}
     }
     const matchWord=(str,q)=>{
       // ถ้า q สั้น ≤4 ตัว ใช้ exact word match
@@ -3938,6 +3956,9 @@ function applyFilter(){
       bed:['เตียง'],
       dc:['เหตุผลจำหน่าย','สาเหตุการเสียชีวิต'],
       infection:['VAP','CAUTI','CLABSI','SSI','MDR'],
+      cpr:['CPR'],
+      bedsore:['Pressure Injury'],
+      recorder_dc:['ผู้บันทึก D/C'],
     };
     if(field==='all') return Object.entries(p).some(([k,v])=>{
       if(['Diagnosis แรกรับ','Diag สุดท้าย','U/D'].includes(k)) return matchWord(v,q);
@@ -3961,7 +3982,7 @@ function getRowClass(p){
 }
 function renderTbl(){
   const s=(_curPg-1)*pgSz,e=Math.min(s+pgSz,_filtPts.length),rows=_filtPts.slice(s,e);
-  if(!rows.length){document.getElementById('ptTbl').innerHTML=`<tr><td colspan="18" class="loading-msg">ไม่พบข้อมูล</td></tr>`;document.getElementById('pgInfo').textContent='ไม่พบข้อมูล';return;}
+  if(!rows.length){document.getElementById('ptTbl').innerHTML=`<tr><td colspan="19" class="loading-msg">ไม่พบข้อมูล</td></tr>`;document.getElementById('pgInfo').textContent='ไม่พบข้อมูล';return;}
   const m=parseInt(document.getElementById('fMonth').value),yr=parseInt(document.getElementById('fYear').value);
   
   // คำนวณลำดับปีงบ (ต.ค.-ก.ย.) เริ่ม1ใหม่ทุกต.ค.
@@ -4010,6 +4031,7 @@ function renderTbl(){
       <td style="text-align:center;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</td>
       <td style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td>${fl?`<span class="${flC}">${fl}</span>`:'-'}</td>
+      <td style="text-align:center">${p['CPR']==='Yes'?'<span style="color:#c62828;font-weight:700">CPR</span>':'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
         <button class="btn btn-outline btn-sm" onclick="openEdit('${esc(pid)}',${m},${yr})">✏️</button>
@@ -4579,6 +4601,9 @@ async function savePatient(){
     closeModal();toast('บันทึกสำเร็จ ✓');
     Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
     await loadPatients(true);loadLog();
+    // ถ้ากำลังดูหน้าแผนผังเตียงอยู่ ให้รีเฟรชด้วย (เผื่อกดแก้ไขมาจากหน้านี้)
+    const bedSec=document.getElementById('sec-bedmap');
+    if(bedSec && bedSec.offsetParent!==null) loadBedMap();
   }catch(e){toast('บันทึกไม่สำเร็จ: '+e.message,true);}finally{hideLoad();saveBtn.textContent='💾 บันทึก';saveBtn.disabled=false;}
 }
 
@@ -5421,15 +5446,19 @@ async function fetchMonthPts(m,y){
 }
 
 function getStats(pts){
-  const total=pts.length,admitted=pts.filter(p=>p['สถานะ']!=='จำหน่ายแล้ว').length,discharged=pts.filter(p=>p['สถานะ']==='จำหน่ายแล้ว'&&!dcMatch(p['เหตุผลจำหน่าย'],'carryover')).length;
+  const carryIn=pts.filter(p=>p['การรับ']==='ยกมา').length;
+  const total=pts.length; // ยอดผู้ป่วยทั้งหมด รวมยกมา
+  const totalAdmit=pts.filter(p=>p['การรับ']!=='ยกมา').length; // ยอดรับ ไม่รวมยกมา
   const deadCount=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'dead')).length,referCount=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'refer')).length;
   const moveWell=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'movewell')).length,moveBed=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'movebed')).length;
   const palliativeDC=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'palliative')).length,noConsent=pts.filter(p=>dcMatch(p['เหตุผลจำหน่าย'],'noconsent')).length;
   const ventCount=pts.filter(p=>p['Ventilator (Name)']).length,alineCount=pts.filter(p=>p['A-Line (Start)']).length,clineCount=pts.filter(p=>p['C-Line (Start)']).length,fcCount=pts.filter(p=>p['F/C (Start)']).length,icdCount=pts.filter(p=>p['ICD (Start)']).length;
+  const admitted=pts.filter(p=>p['สถานะ']!=='จำหน่ายแล้ว').length,discharged=pts.filter(p=>p['สถานะ']==='จำหน่ายแล้ว'&&!dcMatch(p['เหตุผลจำหน่าย'],'carryover')).length;
   const newPts=pts.filter(p=>p['การรับ']!=='ยกมา'); // ไม่นับผู้ป่วยค้างเดือน
   const vapCount=newPts.filter(p=>p['VAP']==='ใช่').length,cautiCount=newPts.filter(p=>p['CAUTI']==='ใช่').length,clabsiCount=newPts.filter(p=>p['CLABSI']==='ใช่').length,ssiCount=newPts.filter(p=>p['SSI']==='ใช่').length,mdrCount=newPts.filter(p=>p['MDR']==='ใช่').length;
-  const unplannedCount=pts.filter(p=>p['Unplanned ICU']==='ใช่').length,readmitCount=pts.filter(p=>p['Re-admit ICU']==='ใช่').length;
-  const cprCount=pts.filter(p=>p['CPR']==='Yes').length,surgCount=pts.filter(p=>p['ผ่าตัด']==='Yes').length,pallCount=pts.filter(p=>p['Palliative']==='Yes').length;
+  const readmitCount=pts.filter(p=>p['Re-admit ICU']==='ใช่').length;
+  const unplannedCount=pts.filter(p=>p['Unplanned ICU']==='ใช่').length,surgCount=pts.filter(p=>p['ผ่าตัด']==='Yes').length,pallCount=pts.filter(p=>p['Palliative']==='Yes').length;
+  const cprCount=pts.filter(p=>p['CPR']==='Yes').length;
   const typeCount={};
   pts.forEach(p=>{
     const t=normalizePatType(p['ประเภทผู้ป่วย']||'');
@@ -5441,13 +5470,18 @@ function getStats(pts){
     {name:'Pneumonia',labels:['pneumonia','cap','hap','vap']},
     {name:'ACS',labels:['stemi','nstemi','unstable angina','acs']},
     {name:'Heart Failure',labels:['adhf','chf','heart failure']},
-    {name:'Stroke',labels:['hemorrhagic stroke','ischemic stroke','cva','ich']},
-    {name:'Trauma',labels:['head injury','tbi','blunt abd','chest trauma','multiple fx']},
+    {name:'Stroke',labels:['hemorrhagic stroke','ischemic stroke','cva','tia','sah']},
+    {name:'TBI',labels:['head injury','tbi','mhi','shi','edh','sdh','dai','skull fracture']},
+    {name:'Trauma',labels:['blunt abd','chest trauma','multiple fx','spinal injury','pelvic fracture','polytrauma']},
   ];
   const groupDx=(dxRaw)=>{
     const dx=String(dxRaw||'').toLowerCase();
+    const words=dx.split(/[\s,\/\-\(\)\+\.]+/);
     for(const g of DX_GROUPS){
-      if(g.labels.some(l=>dx.includes(l))) return g.name;
+      if(g.labels.some(l=>{
+        if(l==='stemi') return words.includes('stemi') && !words.includes('nstemi');
+        return words.includes(l) || (l.length>5 && dx.includes(l));
+      })) return g.name;
     }
     return dxRaw;
   };
@@ -5484,7 +5518,7 @@ function getStats(pts){
   const occupancyRate=totalDays?(totalDays/(TOTAL_BEDS*30)*100).toFixed(1):0;
   const mortalityRate=discharged?(deadCount/discharged*100).toFixed(1):0;
   const turnoverRate=TOTAL_BEDS?(totalDays/TOTAL_BEDS).toFixed(2):0;
-  return{total,admitted,discharged,deadCount,referCount,moveWell,moveBed,palliativeDC,noConsent,ventCount,alineCount,clineCount,fcCount,icdCount,vapCount,cautiCount,clabsiCount,ssiCount,mdrCount,unplannedCount,readmitCount,cprCount,surgCount,pallCount,typeCount,top5Diag,top5Dead,top5Refer,top5ReferHosp,avgDaysPerPt,occupancyRate,mortalityRate,totalDays,turnoverRate};
+  return{total,totalAdmit,carryIn,admitted,discharged,deadCount,referCount,moveWell,moveBed,palliativeDC,noConsent,ventCount,alineCount,clineCount,fcCount,icdCount,vapCount,cautiCount,clabsiCount,ssiCount,mdrCount,unplannedCount,readmitCount,cprCount,surgCount,pallCount,typeCount,top5Diag,top5Dead,top5Refer,top5ReferHosp,avgDaysPerPt,occupancyRate,mortalityRate,totalDays,turnoverRate};
 }
 
 // ============================================================
@@ -5674,6 +5708,9 @@ async function loadBedMap(){
   let pts=[];
   try{ pts=await fetchMonthPts(m,y); }catch(e){ toast(e.message,true); }
   finally{ hideLoad(); }
+  // เชื่อมกับ _pts (ตัวแปรกลางที่ใช้ในหน้ารายชื่อ) เพื่อให้ปุ่ม "แก้ไข" บนหน้าแผนผังเตียง
+  // เปิด modal แก้ไขผู้ป่วยรายคนได้ถูกต้อง (openEdit ค้นหาผู้ป่วยจาก _pts)
+  _pts=pts;
   // กรองเฉพาะผู้ป่วยที่กำลัง Admit อยู่
   const admittedPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
   renderBedMap(admittedPts);
@@ -5746,7 +5783,7 @@ function renderBedAdmitTable(pts){
   const body=document.getElementById('bedAdmitBody');
   if(!body) return;
   if(!admitted.length){
-    body.innerHTML='<tr><td colspan="15" class="loading-msg">ไม่มีผู้ป่วยที่กำลัง Admit</td></tr>';
+    body.innerHTML='<tr><td colspan="16" class="loading-msg">ไม่มีผู้ป่วยที่กำลัง Admit</td></tr>';
     return;
   }
   // merge ข้อมูลจาก _icBedData (ถ้ามี)
@@ -5798,6 +5835,9 @@ function renderBedAdmitTable(pts){
   body.innerHTML=mergedPts.map(p=>{
     const breath=p['การหายใจ']||(p['Ventilator (Name)']?p['Ventilator (Name)']:'');
     const breathActive=breath&&!p['Ventilator (End)'];
+    const nowD=new Date();
+    const bm=nowD.getMonth()+1,by=nowD.getFullYear();
+    const pid=p.id||String(p._row);
     return `<tr>
       <td style="font-weight:700">${p['เตียง']||'-'}</td>
       <td style="white-space:nowrap">${fmtD(p['Admit (Date)'])}</td>
@@ -5820,8 +5860,93 @@ function renderBedAdmitTable(pts){
       <td class="bc-PI" style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td class="bc-หมอ" style="font-size:10px">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td class="bc-พยาบาล" style="font-size:10px">${p['nurseInCharge']||'-'}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openBedEdit('${esc(pid)}',${bm},${by})">✏️ แก้ไข</button></td>
     </tr>`;
   }).join('');
+}
+
+// ============================================================
+// BED-BOARD QUICK EDIT — แก้ไขเฉพาะฟิลด์ที่แสดงในตารางแผนผังเตียง
+// (ต่างจาก openEdit ที่เปิดฟอร์มเต็มทุกฟิลด์)
+// ============================================================
+let _bedEditPid=null,_bedEditM=null,_bedEditY=null;
+
+function openBedEdit(pid,m,y){
+  const p=_pts.find(x=>(x.id||String(x._row))===pid);
+  if(!p){toast('ไม่พบข้อมูลผู้ป่วยรายนี้ ลองรีเฟรชหน้าแผนผังเตียงอีกครั้ง',true);return;}
+  _bedEditPid=pid;_bedEditM=m;_bedEditY=y;
+  document.getElementById('bedEditTitle').textContent=`แก้ไขข้อมูล — เตียง ${p['เตียง']||'-'} (${p['ชื่อ-สกุล']||'-'})`;
+
+  const v=(k)=>esc(p[k]||'');
+  const fld=(lbl,html)=>`<div style="margin-bottom:10px"><label style="display:block;font-size:12px;font-weight:700;color:var(--gray600);margin-bottom:3px">${lbl}</label>${html}</div>`;
+  const txt=(id,val)=>`<input type="text" id="${id}" value="${val}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
+  const num=(id,val)=>`<input type="number" id="${id}" value="${val}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
+  const ta=(id,val)=>`<textarea id="${id}" rows="2" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;resize:vertical">${val}</textarea>`;
+  const dt=(id,val)=>`<input type="date" id="${id}" value="${di(val)}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
+  const dtPair=(lbl,sId,sVal,eId,eVal)=>fld(lbl,`<div style="display:flex;gap:6px"><div style="flex:1"><div style="font-size:10px;color:var(--gray400);margin-bottom:2px">เริ่ม</div>${dt(sId,sVal)}</div><div style="flex:1"><div style="font-size:10px;color:var(--gray400);margin-bottom:2px">สิ้นสุด</div>${dt(eId,eVal)}</div></div>`);
+
+  document.getElementById('bedEditBd').innerHTML=`
+    ${fld('Diagnosis แรกรับ (Dx)',ta('be_dx',v('Diagnosis แรกรับ')))}
+    <div style="display:flex;gap:8px;align-items:flex-end">
+      <div style="flex:1">${fld('Apache แรกรับ <span style="font-weight:400;color:var(--gray400)">(กรอกครั้งเดียวตอนแรกรับ ดูได้จากหน้ารายชื่อ)</span>',`<div style="padding:8px;background:var(--g50);border-radius:8px;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</div>`)}</div>
+      <div style="flex:1">${fld('NEWS',txt('be_sos',v('SOS Score')))}</div>
+    </div>
+    <div style="font-size:10px;color:var(--gray400);margin:-6px 0 10px">* Apache แรกรับ ไม่ต้องกรอกซ้ำ ใช้ค่าที่ประเมินตอนรับผู้ป่วยครั้งแรกเท่านั้น</div>
+    ${fld('ประเภทผู้ป่วย ICU',txt('be_pattype',v('ประเภทผู้ป่วย ICU')))}
+    ${fld('💊 ยา HD',ta('be_ha',v('ยา HD')))}
+    ${fld('🌬️ การหายใจ',txt('be_breath',v('การหายใจ')))}
+    ${dtPair('💉 A-Line','be_aline_s',p['A-Line (Start)'],'be_aline_e',p['A-Line (End)'])}
+    ${dtPair('🔗 C-Line','be_cline_s',p['C-Line (Start)'],'be_cline_e',p['C-Line (End.)'])}
+    ${dtPair('🩸 IV','be_iv_s',p['IV (Start)'],'be_iv_e',p['IV (End)'])}
+    ${dtPair('🪠 F/C','be_fc_s',p['F/C (Start)'],'be_fc_e',p['F/C (END)'])}
+    ${dtPair('🩺 ICD','be_icd_s',p['ICD (Start)'],'be_icd_e',p['ICD (End)'])}
+    ${fld('🧠 ICDSC Score <span style="font-weight:400;color:var(--gray400)">(เช็คเวรบ่าย)</span>',num('be_icdsc',v('ICDSC Score')))}
+    <div style="display:flex;gap:8px">
+      <div style="flex:1">${fld('👨‍⚕️ แพทย์เจ้าของไข้ <span style="font-weight:400;color:var(--gray400)">(ทวนสอบ)</span>',txt('be_doctor',v('แพทย์เจ้าของไข้')))}</div>
+      <div style="flex:1">${fld('👩‍⚕️ พยาบาล In Charge',txt('be_nurse',v('nurseInCharge')))}</div>
+    </div>
+    <div style="font-size:11px;color:var(--gray400);margin-top:4px">* ฟิลด์อื่นๆ (เช่น Bedsore แบบละเอียด, ข้อมูล D/C, U/D) แก้ไขได้จากหน้า "รายชื่อ" → ปุ่มแก้ไขแบบเต็มฟอร์ม</div>
+  `;
+  document.getElementById('bedEditModal').classList.add('open');
+}
+
+function closeBedEditModal(){document.getElementById('bedEditModal').classList.remove('open');}
+
+async function saveBedEdit(){
+  if(!_bedEditPid)return;
+  const g=(id)=>document.getElementById(id)?.value||'';
+  const data={
+    'Diagnosis แรกรับ': g('be_dx'),
+    'SOS Score': g('be_sos'),
+    'ประเภทผู้ป่วย ICU': g('be_pattype'),
+    'ยา HD': g('be_ha'),
+    'การหายใจ': g('be_breath'),
+    'A-Line (Start)': g('be_aline_s'),
+    'A-Line (End)': g('be_aline_e'),
+    'C-Line (Start)': g('be_cline_s'),
+    'C-Line (End.)': g('be_cline_e'),
+    'IV (Start)': g('be_iv_s'),
+    'IV (End)': g('be_iv_e'),
+    'F/C (Start)': g('be_fc_s'),
+    'F/C (END)': g('be_fc_e'),
+    'ICD (Start)': g('be_icd_s'),
+    'ICD (End)': g('be_icd_e'),
+    'ICDSC Score': g('be_icdsc'),
+    'แพทย์เจ้าของไข้': g('be_doctor'),
+    'nurseInCharge': g('be_nurse'),
+  };
+  const btn=document.getElementById('bedEditSaveBtn');
+  btn.disabled=true;btn.textContent='กำลังบันทึก...';
+  showLoad('กำลังบันทึก...');
+  try{
+    await api('savePatient',{},{id:_bedEditPid,month:_bedEditM,year:_bedEditY,data});
+    await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขข้อมูลเตียงจากแผนผังเตียง'});
+    closeBedEditModal();
+    toast('บันทึกสำเร็จ ✓');
+    Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
+    await loadBedMap();
+  }catch(e){toast('บันทึกไม่สำเร็จ: '+e.message,true);}
+  finally{hideLoad();btn.disabled=false;btn.textContent='💾 บันทึก';}
 }
 
 let _trendMode='day';
@@ -5845,23 +5970,24 @@ function renderTrendChart(pts, selMonth, selYear){
   const y=selYear||parseInt(document.getElementById('dYear')?.value)||new Date().getFullYear();
   const daysInMonth=new Date(y,m,0).getDate();
 
+  // Pre-process admit/dc dates
+  const ptDates=pts.map(p=>{
+    const a=new Date(String(p['Admit (Date)']||'').trim());
+    const dc=new Date(String(p['DC (Date)']||p['D/C (Date)']||'').trim());
+    return {
+      admitT:isNaN(a)?Infinity:a.setHours(0,0,0,0),
+      dcT:isNaN(dc)?Infinity:dc.setHours(23,59,59,0),
+      active:p['สถานะ']==='กำลัง admit'
+    };
+  });
+
   for(let day=1;day<=daysInMonth;day++){
-    const d=new Date(y,m-1,day); d.setHours(23,59,59,0);
-    const dStart=new Date(y,m-1,day); dStart.setHours(0,0,0,0);
+    const dT=new Date(y,m-1,day,23,59,59,0).getTime();
     const label=`${day}`;
-    const count=pts.filter(p=>{
-      const admitStr=String(p['Admit (Date)']||'').trim();
-      if(!admitStr) return false;
-      const admitD=new Date(admitStr); admitD.setHours(0,0,0,0);
-      if(isNaN(admitD)||admitD>d) return false;
-      // ถ้ายัง admit อยู่ → นับ
-      if(p['สถานะ']==='กำลัง admit') return admitD<=d;
-      // ถ้า DC แล้ว → เช็ควันที่ DC
-      const dcStr=String(p['DC (Date)']||'').trim();
-      if(!dcStr) return admitD<=d;
-      const dcD=new Date(dcStr); dcD.setHours(0,0,0,0);
-      if(isNaN(dcD)) return admitD<=d;
-      return admitD<=d && dcD>=dStart;
+    const count=ptDates.filter(p=>{
+      if(p.admitT===Infinity||p.admitT>dT) return false;
+      if(p.active) return true;
+      return p.dcT>=new Date(y,m-1,day,0,0,0,0).getTime();
     }).length;
     labels.push(label);
     admitData.push(count);
@@ -6294,21 +6420,21 @@ const DISEASE_LIST=[
     {key:'SAH (Spontaneous)',labels:['Subarachnoid hemorrhage','SAH'],patType:['neuro','surg']},
     {key:'TIA',labels:['TIA','Transient ischemic']},
     {key:'Total Stroke',labels:['Hemorrhagic stroke','ICH','Ischemic stroke','CVA','SAH','TIA','stroke'],isTotal:true},
-    {key:'MHI (Mild)',labels:['MHI','Mild head injury']},
-    {key:'Moderate HI',labels:['Moderate head injury','MoHI','Moderate HI']},
-    {key:'SHI (Severe)',labels:['SHI','Severe head injury']},
+    {key:'Head injury',labels:['Head injury','MHI','Mild head injury','Moderate head injury','MoHI','Moderate HI','SHI','Severe head injury','TBI','Traumatic brain']},
     {key:'EDH',labels:['EDH','Epidural hematoma']},
     {key:'SDH',labels:['SDH','Subdural hematoma']},
     {key:'ICH (Trauma)',labels:['Traumatic ICH','tICH']},
     {key:'DAI',labels:['DAI','Diffuse axonal']},
     {key:'Skull fracture',labels:['Skull fracture']},
     {key:'Traumatic SAH',labels:['Traumatic SAH','tSAH']},
-    {key:'Total TBI',labels:['MHI','Mild head injury','Moderate head injury','MoHI','Moderate HI','SHI','Severe head injury','EDH','SDH','Traumatic ICH','tICH','DAI','Skull fracture','Traumatic SAH','TBI','Head injury'],isTotal:true},
+    {key:'Total TBI',labels:['Head injury','MHI','Mild head injury','Moderate head injury','MoHI','SHI','Severe head injury','EDH','SDH','Traumatic ICH','tICH','DAI','Skull fracture','Traumatic SAH','TBI','Traumatic brain'],isTotal:true},
   ]},
-  {group:'🩸 โรคไต',items:[
+  {group:'🫘 Renal Disease',items:[
     {key:'CKD',labels:['CKD','Chronic kidney']},
-    {key:'ESRD',labels:['ESRD','End-stage renal']},
-    {key:'AKI',labels:['AKI','Acute kidney']},
+    {key:'ESRD/CKD5',labels:['ESRD','End-stage renal','CKD5']},
+    {key:'AKI on CKD',labels:['AKI on CKD','AKI on top CKD']},
+    {key:'Total CKD',labels:['CKD','Chronic kidney','ESRD','End-stage renal','CKD5','AKI on CKD'],isTotal:true},
+    {key:'AKI',labels:['AKI','Acute kidney injury']},
   ]},
   {group:'🚑 Trauma',items:[
     {key:'Chest Trauma',labels:['Chest trauma','Chest injury']},
@@ -6375,11 +6501,15 @@ async function loadDiseaseIndicator(){
     const patType=String(p['ประเภทผู้ป่วย']||'').toLowerCase();
     const dxMatch=disease.labels.some(l=>{
       const label=l.toLowerCase().trim();
-      if(label.length<=4){
-        const words=dx.split(/[\s,\/\-\(\)]+/);
-        return words.some(w=>w===label);
+      const words=dx.split(/[\s,\/\-\(\)\+\.]+/);
+      // ต้องเป็น word เดียวกันเป๊ะๆ
+      if(words.some(w=>w===label)) return true;
+      // กรณีพิเศษ STEMI ต้องไม่ใช่ NSTEMI
+      if(label==='stemi'){
+        return words.some(w=>w==='stemi' && !dx.includes('nstemi'));
       }
-      return dx.includes(label);
+      if(label.length>4) return dx.includes(label);
+      return false;
     });
     if(!dxMatch) return false;
     if(disease.patType && disease.patType.length>0){
@@ -6565,7 +6695,10 @@ async function loadKPI(){
       pts=await fetchMonthPts(m,y);
       periodLabel=`${MONTHS_TH[m-1]} ${y+543}`;
     }
-  }catch(e){toast(e.message,true);}finally{hideLoad();}
+  }catch(e){toast(e.message,true);hideLoad();return;}
+  hideLoad();
+  if(!m||!y||!pts){toast('m='+m+' y='+y+' pts='+pts.length,true);return;}
+  toast('โหลดได้ '+pts.length+' ราย');
   const s=getStats(pts);
   const daysInMonth=new Date(y,m,0).getDate();
   const totalDC=s.discharged||1;
@@ -6670,13 +6803,13 @@ async function loadMonthly(){
       <th style="padding:9px 12px;text-align:center;width:80px">จำนวน</th>
     </tr></thead>
     <tbody>
-      ${row('ยอดผู้ป่วย (คน)',totalAdmit,true)}
+      ${row('ยอดผู้ป่วย (คน)',s.total,true)}
       ${row('ยกมา',carryIn)}
       ${row('ค้างเดือน',carryOut)}
       ${row('จน.วันนอน รพ. (วัน)',s.totalDays)}
       ${row('รับใหม่',newAdmit)}
       ${row('รับย้าย',transferIn)}
-      ${row('รวมยอดรับผู้ป่วย',totalAdmit,true)}
+      ${row('รวมยอดรับผู้ป่วย',newAdmit+transferIn,true)}
       ${divider}
       ${row('ทุเลาย้าย',s.moveWell)}
       ${row('ต้องการเตียงย้าย',s.moveBed)}
