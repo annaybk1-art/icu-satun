@@ -468,6 +468,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     <div style="text-align:center;margin-top:6px">
       <span style="font-size:12px;color:#1565c0;cursor:pointer;text-decoration:underline" onclick="showChangePwd()">🔑 เปลี่ยนรหัสผ่าน</span>
     </div>
+    <div class="app-ver" style="text-align:center;margin-top:14px;font-size:10px;color:#9ca3af"></div>
   </div>
 </div>
 
@@ -716,6 +717,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       <div class="log-title">📋 กิจกรรมล่าสุด</div>
       <div class="log-scroll" id="logList"><div class="log-row" style="color:#9ca3af">รอเข้าสู่ระบบ...</div></div>
     </div>
+    <div class="app-ver" style="text-align:center;padding:8px 0 10px;font-size:10px;color:#9ca3af"></div>
   </div>
 
   <div class="main">
@@ -1866,6 +1868,54 @@ async function api(action,params={},body=null){
 }
 function showLoad(msg='กำลังโหลด...'){document.getElementById('loadMsg').textContent=msg;document.getElementById('loadOverlay').classList.add('open');}
 function hideLoad(){document.getElementById('loadOverlay').classList.remove('open');}
+
+// ============================================================
+// UPDATE NOTICE — แจ้งเตือนให้ปิดโปรแกรมแล้วเปิดใหม่เมื่อมีการอัปเดตระบบ
+// ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
+// รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
+// ============================================================
+const APP_VERSION='2026-10-17.01';
+let _updateDismissedAt=0,_lastUpdateCheck=0;
+
+async function checkAppUpdate(force=false){
+  if(!force && Date.now()-_lastUpdateCheck<2*60*1000) return; // กันเช็คถี่เกินไป
+  _lastUpdateCheck=Date.now();
+  try{
+    const r=await api('getVersion');
+    const sv=String((r&&r.version)||'');
+    // เตือนเฉพาะเมื่อเซิร์ฟเวอร์ "ใหม่กว่า" เครื่องนี้ (กันเตือนผิดตอนอัปโหลด HTML ก่อน deploy Code.gs)
+    if(sv && sv>APP_VERSION) showUpdateBanner(r.message);
+    else hideUpdateBanner();
+  }catch(e){ /* เงียบไว้: Code.gs เก่าที่ยังไม่มี getVersion หรือเน็ตหลุด */ }
+}
+function showUpdateBanner(msg){
+  if(Date.now()-_updateDismissedAt<10*60*1000) return; // กด "เตือนภายหลัง" แล้ว เว้น 10 นาทีค่อยเตือนใหม่
+  let b=document.getElementById('updateBanner');
+  if(!b){
+    b=document.createElement('div');b.id='updateBanner';
+    b.style.cssText='position:fixed;top:0;left:0;right:0;z-index:100000;background:#e65100;color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 14px 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;box-shadow:0 2px 10px rgba(0,0,0,.35);font-size:13px;font-weight:600';
+    const txt=document.createElement('span');txt.id='updateBannerText';txt.style.cssText='flex:1;min-width:200px';
+    const btnStyle='border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit';
+    const b1=document.createElement('button');b1.textContent='โหลดใหม่ตอนนี้';b1.style.cssText=btnStyle+';background:#fff;color:#e65100';b1.onclick=reloadForUpdate;
+    const b2=document.createElement('button');b2.textContent='เตือนภายหลัง';b2.style.cssText=btnStyle+';background:rgba(255,255,255,.2);color:#fff';b2.onclick=dismissUpdateBanner;
+    b.append(txt,b1,b2);
+    document.body.appendChild(b);
+  }
+  document.getElementById('updateBannerText').textContent='🔔 มีการอัปเดตระบบ — กรุณาปิดโปรแกรมแล้วเปิดใหม่'+(msg?' ('+msg+')':'');
+  b.style.display='flex';
+}
+function hideUpdateBanner(){const b=document.getElementById('updateBanner');if(b)b.style.display='none';}
+function dismissUpdateBanner(){_updateDismissedAt=Date.now();hideUpdateBanner();}
+function reloadForUpdate(){
+  if(document.querySelector('.overlay.open') && !confirm('มีหน้าต่างกรอกข้อมูลที่ยังเปิดอยู่ ข้อมูลที่ยังไม่บันทึกจะหายไป\nต้องการโหลดใหม่ตอนนี้หรือไม่?')) return;
+  try{const u=new URL(location.href);u.searchParams.set('_v',Date.now());location.replace(u.toString());}
+  catch(e){location.reload();}
+}
+function showAppVersion(){document.querySelectorAll('.app-ver').forEach(e=>{e.textContent='เวอร์ชัน '+APP_VERSION;});}
+showAppVersion();
+window.addEventListener('load',()=>{showAppVersion();setTimeout(()=>checkAppUpdate(true),4000);});
+setInterval(()=>checkAppUpdate(true),10*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAppUpdate();});
 
 // ============================================================
 // CONSTANTS
