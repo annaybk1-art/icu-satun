@@ -1928,7 +1928,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.13';
+const APP_VERSION='2026-10-17.15';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -4482,14 +4482,14 @@ function buildForm(p){
         ${multiSel('U/D',o('udOptions'),p['U/D'],'udOptions')}
       </div>
       <div class="fsec"><div class="fsec-title">Consult / การผ่าตัด & แพ้ยา</div><div class="fgrid">
-        <div class="fg full"><label>Consult <span class="auto-badge">เลือกได้หลายแผนก</span></label>
+        ${fg('มีแผนกที่ Consult ใช่หรือไม่',`<select name="มีแผนกที่ Consult" style="width:100%" onchange="onConsultToggle()"><option value="">-- เลือก --</option><option value="Yes"${p['มีแผนกที่ Consult']==='Yes'?' selected':''}>Yes</option><option value="No"${p['มีแผนกที่ Consult']==='No'?' selected':''}>No</option></select>`,'','',true)}
+        <div class="fg full" id="consultWrap" style="display:none"><label>แผนกที่ Consult และแพทย์ที่ Consult <span class="req"> *</span> <span class="auto-badge">เพิ่มได้หลายแผนก</span></label>
           <div id="consultBox"></div>
           <input type="hidden" name="แผนกที่ Consult" value="${esc(p['แผนกที่ Consult']||'')}">
           <input type="hidden" name="แพทย์ที่ Consult" value="${esc(p['แพทย์ที่ Consult']||'')}">
         </div>
         ${fg('ผ่าตัด',`<select name="ผ่าตัด" style="width:100%" onchange="onSurgeryChange()"><option value="">-- เลือก --</option><option value="Yes"${p['ผ่าตัด']==='Yes'?' selected':''}>Yes</option><option value="No"${p['ผ่าตัด']==='No'?' selected':''}>No</option></select>`,'','',true)}
-        <div class="fg" id="surgCountBox" style="display:none"><label>จำนวนครั้งที่ผ่าตัด<span class="req"> *</span></label><input type="number" name="จำนวนครั้งผ่าตัด" min="1" max="10" value="${esc(p['จำนวนครั้งผ่าตัด']||'')}" oninput="onSurgeryCountChange()"></div>
-        <div class="fg full" id="surgTypesBox" style="display:none"><label>ชนิดการผ่าตัด<span class="req"> *</span></label><div id="surgTypesList"></div><input type="hidden" name="ชนิดการผ่าตัด" value="${esc(p['ชนิดการผ่าตัด']||'')}"></div>
+        <div class="fg full" id="surgTypesBox" style="display:none"><label>ชนิดการผ่าตัด<span class="req"> *</span></label><div id="surgTypesList"></div><button type="button" class="btn btn-outline btn-sm" id="surgAddBtn" onclick="surgAddRow()">➕ เพิ่มครั้งที่ผ่าตัด</button><input type="hidden" name="ชนิดการผ่าตัด" value="${esc(p['ชนิดการผ่าตัด']||'')}"></div>
         ${fg('แพ้ยา',sel('แพ้ยา',o('drugAllergy'),p['แพ้ยา'],'drugAllergy'))}
       </div></div>`,
     'tab-dc':`
@@ -4599,7 +4599,7 @@ function buildForm(p){
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
     'ICD (Start)','ICD (End)','ICD (day)','DL for HD (Start)','DL for HD (End)','DL for HD (day)','Falling','APACHE II','Pain score',
     'VAP','CAUTI','CLABSI','SSI','MDR','ชนิดของเชื้อที่พบ','ชนิดสิ่งส่งตรวจ',
-    'CPR','Palliative','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
+    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
     'การหายใจ','dxSpecialType','nurseInCharge','IV (Start)','IV (End)','IV (day)','หมายเหตุ',
     'Pressure Injury','Pressure Injury Date','Unplanned Extubation','Unplanned Extubation Date',
     'Medication Error','Medication Error Date','Medication Error Type','ICDSC Score',
@@ -4631,15 +4631,14 @@ function buildForm(p){
 //              "จำนวนครั้งผ่าตัด" และ "ชนิดการผ่าตัด" (ทุกครั้งต่อกันด้วย ", " — คอลัมน์เดิม สถิติเดิมนับได้เหมือนเดิม)
 // ============================================================
 const CONSULT_MAX=6,SURG_MAX=10;
-let _surgDirty=false;
+let _surgDirty=false,_consultDirty=false;
 const _ha=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 const _ht=v=>String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const _mf=n=>document.querySelector('#modalBd [name="'+n+'"]');
 
-function consultHasMap(dept){return (o('consultDoctors')||[]).some(x=>String(x).indexOf(dept+'|')===0);}
 function consultDoctorsFor(dept){
   const m=(o('consultDoctors')||[]).filter(x=>String(x).indexOf(dept+'|')===0).map(x=>String(x).slice(dept.length+1));
-  return m.length?m:(o('doctors')||[]);       // แผนกที่ยังไม่ได้ผูกแพทย์ → แสดงแพทย์ทั้งหมด
+  return m.length?m:(o('doctors')||[]);       // แผนกที่ยังไม่ได้ผูกแพทย์ → แสดงแพทย์ทั้งหมด (ไม่มีข้อความแจ้ง)
 }
 function consultDeptOptions(sel){
   const list=(o('consultDept')||[]).slice();
@@ -4649,93 +4648,88 @@ function consultDeptOptions(sel){
 function consultDocOptions(dept,sel){
   const list=consultDoctorsFor(dept).slice();
   if(sel&&list.indexOf(sel)<0) list.unshift(sel);
-  return '<option value="">-- ไม่ระบุแพทย์ --</option>'+list.map(d=>`<option value="${_ha(d)}"${d===sel?' selected':''}>${_ht(d)}</option>`).join('');
+  return '<option value="">-- เลือกแพทย์ --</option>'+list.map(d=>`<option value="${_ha(d)}"${d===sel?' selected':''}>${_ht(d)}</option>`).join('');
 }
-function consultRowHtml(d,p){
-  const hint=d&&!consultHasMap(d)?'ยังไม่ได้ผูกแพทย์กับแผนกนี้ — แสดงแพทย์ทั้งหมด':'';
-  return `<div class="cs-row" style="display:flex;gap:6px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px">
-    <div style="flex:1;min-width:150px;display:flex;gap:4px"><select class="cs-dept" onchange="consultDeptChange(this)" style="flex:1;min-width:0">${consultDeptOptions(d)}</select>
-      <button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;padding:0 9px;min-width:32px" title="เพิ่มแผนกใหม่ (รออนุมัติ)" onclick="consultAddDept(this)">＋</button></div>
-    <div style="flex:1;min-width:170px"><select class="cs-doc" onchange="consultSync()" style="width:100%">${consultDocOptions(d,p)}</select>
-      <div class="cs-hint" style="font-size:10px;color:var(--gray400);margin-top:2px">${hint}</div></div>
-    <button type="button" class="btn btn-danger btn-sm" style="flex-shrink:0" title="ลบแถวนี้" onclick="consultRemove(this)">🗑️</button></div>`;
+function consultRowHtml(d,p,canDelete){
+  return `<div class="cs-row" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px">
+    <div style="flex:1;min-width:150px"><select class="cs-dept" onchange="consultDeptChange(this)" style="width:100%">${consultDeptOptions(d)}</select></div>
+    <div style="flex:1;min-width:170px"><select class="cs-doc" onchange="consultTouched()" style="width:100%">${consultDocOptions(d,p)}</select></div>
+    ${canDelete?'<button type="button" class="btn btn-danger btn-sm" style="flex-shrink:0" title="ลบแถวนี้" onclick="consultRemove(this)">🗑️</button>':''}</div>`;
 }
 function consultReadRows(){
   return Array.from(document.querySelectorAll('#consultBox .cs-row')).map(r=>({d:r.querySelector('.cs-dept').value,p:r.querySelector('.cs-doc').value}));
 }
 function consultRender(rows){
   const box=document.getElementById('consultBox');if(!box)return;
-  box.innerHTML='<div id="consultRows">'+rows.map(r=>consultRowHtml(r.d,r.p)).join('')+'</div><button type="button" class="btn btn-outline btn-sm" id="consultAddBtn" onclick="consultAdd()">➕ เพิ่ม Consult</button>';
+  if(!rows.length)rows=[{d:'',p:''}];
+  box.innerHTML='<div id="consultRows">'+rows.map(r=>consultRowHtml(r.d,r.p,rows.length>1)).join('')+'</div><button type="button" class="btn btn-outline btn-sm" id="consultAddBtn" onclick="consultAdd()"'+(rows.length>=CONSULT_MAX?' style="display:none"':'')+'>➕ เพิ่ม Consult</button>';
   consultSync();
 }
 function consultSync(){
-  const all=consultReadRows(),rows=all.filter(r=>r.d);
+  const rows=consultReadRows().filter(r=>r.d);
   const hd=_mf('แผนกที่ Consult'),hp=_mf('แพทย์ที่ Consult');
   if(hd)hd.value=rows.map(r=>r.d).join(', ');
   if(hp)hp.value=rows.map(r=>r.p||'-').join(', ');
-  const b=document.getElementById('consultAddBtn');if(b)b.style.display=all.length>=CONSULT_MAX?'none':'';
 }
-function consultAdd(){const rows=consultReadRows();if(rows.length>=CONSULT_MAX)return;rows.push({d:'',p:''});consultRender(rows);}
-function consultRemove(btn){btn.closest('.cs-row').remove();consultSync();}
+function consultTouched(){_consultDirty=true;consultSync();}
+function consultAdd(){_consultDirty=true;const rows=consultReadRows();if(rows.length>=CONSULT_MAX)return;rows.push({d:'',p:''});consultRender(rows);}
+function consultRemove(btn){
+  _consultDirty=true;
+  const rows=consultReadRows(),idx=Array.from(document.querySelectorAll('#consultBox .cs-row')).indexOf(btn.closest('.cs-row'));
+  if(idx>=0)rows.splice(idx,1);
+  consultRender(rows);
+}
 function consultDeptChange(sel){
+  _consultDirty=true;
   const row=sel.closest('.cs-row'),d=sel.value,docSel=row.querySelector('.cs-doc'),cur=docSel.value;
   docSel.innerHTML=consultDocOptions(d,cur&&consultDoctorsFor(d).indexOf(cur)>=0?cur:'');
-  row.querySelector('.cs-hint').textContent=d&&!consultHasMap(d)?'ยังไม่ได้ผูกแพทย์กับแผนกนี้ — แสดงแพทย์ทั้งหมด':'';
   consultSync();
 }
-async function consultAddDept(btn){
-  const v=await showInlinePrompt('เพิ่มแผนกที่ Consult ใหม่:');
-  if(!v||!v.trim())return;
-  const t=v.trim().replace(/[|,]/g,'/');
-  if(!_opts.consultDept)_opts.consultDept=(o('consultDept')||[]).slice();
-  if(_opts.consultDept.indexOf(t)>=0){toast('มีรายการนี้อยู่แล้ว');}
-  else{
-    _opts.consultDept.push(t);
-    try{await api('submitPendingOpt',{},{optKey:'consultDept',value:t,submittedBy:currentUser?.fullname||''});toast('เพิ่ม "'+t+'" แล้ว — ใช้ได้ทันที (รอ Admin อนุมัติ) ✓');}
-    catch(e){toast('เพิ่มลงฟอร์มแล้ว แต่ส่งคำขออนุมัติไม่สำเร็จ: '+e.message,true);}
-  }
-  const rows=consultReadRows(),idx=Array.from(document.querySelectorAll('#consultBox .cs-row')).indexOf(btn.closest('.cs-row'));
-  if(idx>=0){rows[idx].d=t;rows[idx].p='';}
-  consultRender(rows);
+// มีแผนกที่ Consult ใช่หรือไม่ → Yes: แสดงช่องแผนก/แพทย์ | No: ซ่อนและล้างค่า
+function onConsultToggle(){
+  _consultDirty=true;
+  const sel=_mf('มีแผนกที่ Consult'),yes=sel&&sel.value==='Yes';
+  document.getElementById('consultWrap').style.display=yes?'':'none';
+  if(yes){const rows=consultReadRows();consultRender(rows.length?rows:[{d:'',p:''}]);}
+  else{const box=document.getElementById('consultBox');if(box)box.innerHTML='';const hd=_mf('แผนกที่ Consult'),hp=_mf('แพทย์ที่ Consult');if(hd)hd.value='';if(hp)hp.value='';}
 }
 function consultParse(depts,docs){
   const d=String(depts||'').split(', ').map(x=>x.trim()).filter(Boolean),p=String(docs||'').split(', ').map(x=>x.trim());
   return d.map((x,i)=>({d:x,p:(p[i]&&p[i]!=='-')?p[i]:''}));
 }
 
-// ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes → ระบุจำนวนครั้ง → ชนิดการผ่าตัดขึ้นตามจำนวนครั้ง ──
+// ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes → เลือกชนิดการผ่าตัดครั้งที่ 1 แล้วกด "เพิ่มครั้งที่ผ่าตัด" เพื่อเพิ่มครั้งถัดไป ──
 function surgTypeOptions(sel){
   const list=(o('surgeryType')||[]).filter(v=>v!=='ไม่ได้ผ่าตัด');
   if(sel&&list.indexOf(sel)<0) list.unshift(sel);
   return '<option value="">-- เลือกชนิดการผ่าตัด --</option>'+list.map(v=>`<option value="${_ha(v)}"${v===sel?' selected':''}>${_ht(v)}</option>`).join('');
 }
-function surgRowHtml(i,val){
-  return `<div class="sg-row" style="display:flex;gap:4px;align-items:center;margin-bottom:6px"><span style="flex-shrink:0;font-size:12px;font-weight:700;color:var(--gray600);min-width:70px">ครั้งที่ ${i}</span><select class="sg-type" onchange="surgTypeChange()" style="flex:1;min-width:0">${surgTypeOptions(val)}</select><button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;padding:0 9px;min-width:32px" title="เพิ่มชนิดการผ่าตัดใหม่ (รออนุมัติ)" onclick="surgAddType(this)">＋</button></div>`;
+function surgRowHtml(i,val,canDelete){
+  return `<div class="sg-row" style="display:flex;gap:4px;align-items:center;margin-bottom:6px"><span style="flex-shrink:0;font-size:12px;font-weight:700;color:var(--gray600);min-width:70px">ครั้งที่ ${i}</span><select class="sg-type" onchange="surgTypeChange()" style="flex:1;min-width:0">${surgTypeOptions(val)}</select><button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;padding:0 9px;min-width:32px" title="เพิ่มชนิดการผ่าตัดใหม่ (รออนุมัติ)" onclick="surgAddType(this)">＋</button>${canDelete?'<button type="button" class="btn btn-danger btn-sm" style="flex-shrink:0" title="ลบครั้งนี้" onclick="surgRemoveRow(this)">🗑️</button>':''}</div>`;
 }
 function surgReadVals(){return Array.from(document.querySelectorAll('#surgTypesList .sg-type')).map(s=>s.value);}
-function surgRender(n,vals){
+function surgRender(vals){
   const l=document.getElementById('surgTypesList');if(!l)return;
-  l.innerHTML=Array.from({length:n},(_,i)=>surgRowHtml(i+1,vals[i]||'')).join('');
+  if(!vals.length)vals=[''];
+  l.innerHTML=vals.map((v,i)=>surgRowHtml(i+1,v,vals.length>1)).join('');
+  const b=document.getElementById('surgAddBtn');if(b)b.style.display=vals.length>=SURG_MAX?'none':'';
   surgSync();
 }
 function surgSync(){const h=_mf('ชนิดการผ่าตัด');if(h)h.value=surgReadVals().filter(Boolean).join(', ');}
 function surgTypeChange(){_surgDirty=true;surgSync();}
+function surgAddRow(){_surgDirty=true;const v=surgReadVals();if(v.length>=SURG_MAX)return;v.push('');surgRender(v);}
+function surgRemoveRow(btn){
+  _surgDirty=true;
+  const rows=Array.from(document.querySelectorAll('#surgTypesList .sg-row')),idx=rows.indexOf(btn.closest('.sg-row'));
+  const v=surgReadVals();if(idx>=0)v.splice(idx,1);
+  surgRender(v);
+}
 function onSurgeryChange(){
   _surgDirty=true;
   const sel=_mf('ผ่าตัด'),yes=sel&&sel.value==='Yes';
-  document.getElementById('surgCountBox').style.display=yes?'':'none';
   document.getElementById('surgTypesBox').style.display=yes?'':'none';
-  const ci=_mf('จำนวนครั้งผ่าตัด');
-  if(yes){if(ci&&!ci.value)ci.value=1;onSurgeryCountChange(false);}
-  else{if(ci)ci.value='';const l=document.getElementById('surgTypesList');if(l)l.innerHTML='';const h=_mf('ชนิดการผ่าตัด');if(h)h.value='';}
-}
-function onSurgeryCountChange(dirty){
-  if(dirty!==false)_surgDirty=true;
-  const ci=_mf('จำนวนครั้งผ่าตัด');if(!ci)return;
-  let n=parseInt(ci.value);
-  if(n>SURG_MAX){n=SURG_MAX;ci.value=n;}
-  if(isNaN(n)||n<1)n=0;
-  surgRender(n,surgReadVals());
+  if(yes){const v=surgReadVals();surgRender(v.length?v:['']);}
+  else{const l=document.getElementById('surgTypesList');if(l)l.innerHTML='';const h=_mf('ชนิดการผ่าตัด');if(h)h.value='';}
 }
 async function surgAddType(btn){
   const v=await showInlinePrompt('เพิ่มชนิดการผ่าตัดใหม่:');
@@ -4751,24 +4745,20 @@ async function surgAddType(btn){
   const vals=surgReadVals(),idx=Array.from(document.querySelectorAll('#surgTypesList .sg-row')).indexOf(btn.closest('.sg-row'));
   if(idx>=0)vals[idx]=t;
   _surgDirty=true;
-  surgRender(vals.length,vals);
+  surgRender(vals);
 }
 function initConsultSurgery(){
-  _surgDirty=false;
-  const h1=_mf('แผนกที่ Consult'),h2=_mf('แพทย์ที่ Consult');
-  if(!h1)return;
-  const rows=consultParse(h1.value,h2.value);
-  if(!rows.length)rows.push({d:'',p:''});
-  consultRender(rows);
-  const sel=_mf('ผ่าตัด'),ci=_mf('จำนวนครั้งผ่าตัด'),hs=_mf('ชนิดการผ่าตัด');
+  _surgDirty=false;_consultDirty=false;
+  const h1=_mf('แผนกที่ Consult'),h2=_mf('แพทย์ที่ Consult'),cq=_mf('มีแผนกที่ Consult');
+  if(!h1||!cq)return;
+  const crow=consultParse(h1.value,h2.value);
+  if(!cq.value&&crow.length)cq.value='Yes';          // ข้อมูลที่บันทึกไว้ก่อนมีคำถามนี้ → ถือว่า Yes
+  if(cq.value==='Yes'){document.getElementById('consultWrap').style.display='';consultRender(crow.length?crow:[{d:'',p:''}]);}
+  const sel=_mf('ผ่าตัด'),hs=_mf('ชนิดการผ่าตัด');
   if(sel&&sel.value==='Yes'){
-    document.getElementById('surgCountBox').style.display='';
     document.getElementById('surgTypesBox').style.display='';
-    const types=String(hs.value||'').split(', ').map(x=>x.trim()).filter(Boolean);
-    let n=parseInt(ci.value);
-    if(isNaN(n)||n<1)n=Math.max(types.length,1);
-    ci.value=Math.min(n,SURG_MAX);
-    surgRender(parseInt(ci.value),types);
+    const types=String(hs.value||'').split(', ').map(x=>x.trim()).filter(Boolean).slice(0,SURG_MAX);
+    surgRender(types.length?types:['']);
     hs.value=types.join(', ');   // ข้อมูลเก่าที่ยังไม่ได้ผ่านการเลือกใหม่ คงค่าเดิมไว้
   }
 }
@@ -5023,13 +5013,23 @@ async function savePatient(){
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
   // บังคับ Apache IV เฉพาะตอนเพิ่มใหม่
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
-  // ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes ต้องระบุจำนวนครั้ง และเลือกชนิดให้ครบ (ตอนเพิ่มใหม่ หรือเมื่อมีการแก้ส่วนนี้) ──
+  // ── Consult: ต้องตอบว่ามีแผนกที่ Consult หรือไม่ (ผู้ป่วยใหม่ หรือเมื่อมีการแก้ส่วนนี้) ถ้า Yes ต้องเลือกแผนกและแพทย์ให้ครบทุกแถว ──
+  if(!editPtId||_consultDirty){
+    if(!data['มีแผนกที่ Consult']){toast('กรุณาเลือก: มีแผนกที่ Consult ใช่หรือไม่',true);return;}
+    if(data['มีแผนกที่ Consult']==='Yes'){
+      const cr=consultReadRows();
+      if(!cr.length||cr.some(r=>!r.d||!r.p)){toast('กรุณาเลือกแผนกและแพทย์ที่ Consult ให้ครบทุกแถว (หรือกด 🗑️ ลบแถวที่ไม่ใช้)',true);return;}
+    }else{data['แผนกที่ Consult']='';data['แพทย์ที่ Consult']='';}
+  }
+  // ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes ต้องเลือกชนิดให้ครบทุกครั้งที่เพิ่มไว้ (ตอนเพิ่มใหม่ หรือเมื่อมีการแก้ส่วนนี้) ──
   if(data['ผ่าตัด']==='Yes'){
-    const nSurg=parseInt(data['จำนวนครั้งผ่าตัด'])||0;
-    if(nSurg<1){toast('กรุณาระบุจำนวนครั้งที่ผ่าตัด',true);return;}
-    const types=(data['ชนิดการผ่าตัด']||'').split(', ').filter(Boolean);
-    if((!editPtId||_surgDirty)&&types.length<nSurg){toast('กรุณาเลือกชนิดการผ่าตัดให้ครบ '+nSurg+' ครั้ง',true);return;}
-  }else if(!editPtId||_surgDirty){data['จำนวนครั้งผ่าตัด']='';data['ชนิดการผ่าตัด']='';}
+    if(!editPtId||_surgDirty){
+      const nRows=document.querySelectorAll('#surgTypesList .sg-row').length;
+      const nDone=(data['ชนิดการผ่าตัด']||'').split(', ').filter(Boolean).length;
+      if(nDone<1){toast('กรุณาเลือกชนิดการผ่าตัด',true);return;}
+      if(nDone<nRows){toast('กรุณาเลือกชนิดการผ่าตัดให้ครบทุกครั้ง (หรือกด 🗑️ ลบครั้งที่ไม่ใช้)',true);return;}
+    }
+  }else if(!editPtId||_surgDirty){data['ชนิดการผ่าตัด']='';}
   // ตรวจสอบวันที่ Admit ว่าตรงกับเดือน/ปีที่เลือกไหม
   if(data['Admit (Date)']){
     const admitD=new Date(data['Admit (Date)']);
