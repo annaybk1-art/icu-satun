@@ -1928,7 +1928,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.15';
+const APP_VERSION='2026-10-17.16';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -4489,7 +4489,7 @@ function buildForm(p){
           <input type="hidden" name="แพทย์ที่ Consult" value="${esc(p['แพทย์ที่ Consult']||'')}">
         </div>
         ${fg('ผ่าตัด',`<select name="ผ่าตัด" style="width:100%" onchange="onSurgeryChange()"><option value="">-- เลือก --</option><option value="Yes"${p['ผ่าตัด']==='Yes'?' selected':''}>Yes</option><option value="No"${p['ผ่าตัด']==='No'?' selected':''}>No</option></select>`,'','',true)}
-        <div class="fg full" id="surgTypesBox" style="display:none"><label>ชนิดการผ่าตัด<span class="req"> *</span></label><div id="surgTypesList"></div><button type="button" class="btn btn-outline btn-sm" id="surgAddBtn" onclick="surgAddRow()">➕ เพิ่มครั้งที่ผ่าตัด</button><input type="hidden" name="ชนิดการผ่าตัด" value="${esc(p['ชนิดการผ่าตัด']||'')}"></div>
+        <div class="fg full" id="surgTypesBox" style="display:none"><label>ชนิดการผ่าตัด และวันที่ผ่าตัด<span class="req"> *</span></label><div id="surgTypesList"></div><button type="button" class="btn btn-outline btn-sm" id="surgAddBtn" onclick="surgAddRow()">➕ เพิ่มครั้งที่ผ่าตัด</button><input type="hidden" name="ชนิดการผ่าตัด" value="${esc(p['ชนิดการผ่าตัด']||'')}"><input type="hidden" name="วันที่ผ่าตัด" value="${esc(p['วันที่ผ่าตัด']||'')}"></div>
         ${fg('แพ้ยา',sel('แพ้ยา',o('drugAllergy'),p['แพ้ยา'],'drugAllergy'))}
       </div></div>`,
     'tab-dc':`
@@ -4599,7 +4599,7 @@ function buildForm(p){
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
     'ICD (Start)','ICD (End)','ICD (day)','DL for HD (Start)','DL for HD (End)','DL for HD (day)','Falling','APACHE II','Pain score',
     'VAP','CAUTI','CLABSI','SSI','MDR','ชนิดของเชื้อที่พบ','ชนิดสิ่งส่งตรวจ',
-    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
+    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
     'การหายใจ','dxSpecialType','nurseInCharge','IV (Start)','IV (End)','IV (day)','หมายเหตุ',
     'Pressure Injury','Pressure Injury Date','Unplanned Extubation','Unplanned Extubation Date',
     'Medication Error','Medication Error Date','Medication Error Type','ICDSC Score',
@@ -4698,38 +4698,49 @@ function consultParse(depts,docs){
   return d.map((x,i)=>({d:x,p:(p[i]&&p[i]!=='-')?p[i]:''}));
 }
 
-// ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes → เลือกชนิดการผ่าตัดครั้งที่ 1 แล้วกด "เพิ่มครั้งที่ผ่าตัด" เพื่อเพิ่มครั้งถัดไป ──
+// ── การผ่าตัดหลายครั้ง: แต่ละครั้งมี "ชนิดการผ่าตัด" + "วันที่ผ่าตัด" (กด เพิ่มครั้งที่ผ่าตัด เพื่อเพิ่มครั้งถัดไป) ──
+//   เก็บในชีต: ชนิดการผ่าตัด = "A, B"  วันที่ผ่าตัด = "2026-10-05, 2026-10-07" (เรียงคู่กัน ค.ศ. วันที่ไม่ทราบ = "-")
 function surgTypeOptions(sel){
   const list=(o('surgeryType')||[]).filter(v=>v!=='ไม่ได้ผ่าตัด');
   if(sel&&list.indexOf(sel)<0) list.unshift(sel);
   return '<option value="">-- เลือกชนิดการผ่าตัด --</option>'+list.map(v=>`<option value="${_ha(v)}"${v===sel?' selected':''}>${_ht(v)}</option>`).join('');
 }
-function surgRowHtml(i,val,canDelete){
-  return `<div class="sg-row" style="display:flex;gap:4px;align-items:center;margin-bottom:6px"><span style="flex-shrink:0;font-size:12px;font-weight:700;color:var(--gray600);min-width:70px">ครั้งที่ ${i}</span><select class="sg-type" onchange="surgTypeChange()" style="flex:1;min-width:0">${surgTypeOptions(val)}</select><button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;padding:0 9px;min-width:32px" title="เพิ่มชนิดการผ่าตัดใหม่ (รออนุมัติ)" onclick="surgAddType(this)">＋</button>${canDelete?'<button type="button" class="btn btn-danger btn-sm" style="flex-shrink:0" title="ลบครั้งนี้" onclick="surgRemoveRow(this)">🗑️</button>':''}</div>`;
+function surgRowHtml(i,t,d,canDelete){
+  return `<div class="sg-row" style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><span style="flex-shrink:0;font-size:12px;font-weight:700;color:var(--gray600);min-width:70px">ครั้งที่ ${i}</span><select class="sg-type" onchange="surgTypeChange()" style="flex:1 1 150px;min-width:0">${surgTypeOptions(t)}</select><button type="button" class="btn btn-outline btn-sm" style="flex-shrink:0;padding:0 9px;min-width:32px" title="เพิ่มชนิดการผ่าตัดใหม่ (รออนุมัติ)" onclick="surgAddType(this)">＋</button><input type="date" class="sg-date" value="${_ha(d||'')}" max="${localToday()}" title="วันที่ผ่าตัด" onchange="surgTypeChange()" style="flex:0 0 160px;min-width:140px">${canDelete?'<button type="button" class="btn btn-danger btn-sm" style="flex-shrink:0" title="ลบครั้งนี้" onclick="surgRemoveRow(this)">🗑️</button>':''}</div>`;
 }
-function surgReadVals(){return Array.from(document.querySelectorAll('#surgTypesList .sg-type')).map(s=>s.value);}
-function surgRender(vals){
+function surgReadRows(){
+  return Array.from(document.querySelectorAll('#surgTypesList .sg-row')).map(r=>({t:r.querySelector('.sg-type').value,d:(r.querySelector('input[type="date"].sg-date')||{}).value||''}));
+}
+function surgRender(rows){
   const l=document.getElementById('surgTypesList');if(!l)return;
-  if(!vals.length)vals=[''];
-  l.innerHTML=vals.map((v,i)=>surgRowHtml(i+1,v,vals.length>1)).join('');
-  const b=document.getElementById('surgAddBtn');if(b)b.style.display=vals.length>=SURG_MAX?'none':'';
+  if(!rows.length)rows=[{t:'',d:''}];
+  l.innerHTML=rows.map((r,i)=>surgRowHtml(i+1,r.t,r.d,rows.length>1)).join('');
+  const b=document.getElementById('surgAddBtn');if(b)b.style.display=rows.length>=SURG_MAX?'none':'';
   surgSync();
 }
-function surgSync(){const h=_mf('ชนิดการผ่าตัด');if(h)h.value=surgReadVals().filter(Boolean).join(', ');}
+function surgSync(){
+  const rows=surgReadRows().filter(r=>r.t);
+  const ht=_mf('ชนิดการผ่าตัด'),hd=_mf('วันที่ผ่าตัด');
+  if(ht)ht.value=rows.map(r=>r.t).join(', ');
+  if(hd)hd.value=rows.map(r=>r.d||'-').join(', ');
+}
 function surgTypeChange(){_surgDirty=true;surgSync();}
-function surgAddRow(){_surgDirty=true;const v=surgReadVals();if(v.length>=SURG_MAX)return;v.push('');surgRender(v);}
+function surgAddRow(){_surgDirty=true;const v=surgReadRows();if(v.length>=SURG_MAX)return;v.push({t:'',d:''});surgRender(v);}
 function surgRemoveRow(btn){
   _surgDirty=true;
   const rows=Array.from(document.querySelectorAll('#surgTypesList .sg-row')),idx=rows.indexOf(btn.closest('.sg-row'));
-  const v=surgReadVals();if(idx>=0)v.splice(idx,1);
+  const v=surgReadRows();if(idx>=0)v.splice(idx,1);
   surgRender(v);
 }
 function onSurgeryChange(){
   _surgDirty=true;
   const sel=_mf('ผ่าตัด'),yes=sel&&sel.value==='Yes';
   document.getElementById('surgTypesBox').style.display=yes?'':'none';
-  if(yes){const v=surgReadVals();surgRender(v.length?v:['']);}
-  else{const l=document.getElementById('surgTypesList');if(l)l.innerHTML='';const h=_mf('ชนิดการผ่าตัด');if(h)h.value='';}
+  if(yes){const v=surgReadRows();surgRender(v.length?v:[{t:'',d:''}]);}
+  else{
+    const l=document.getElementById('surgTypesList');if(l)l.innerHTML='';
+    const ht=_mf('ชนิดการผ่าตัด'),hd=_mf('วันที่ผ่าตัด');if(ht)ht.value='';if(hd)hd.value='';
+  }
 }
 async function surgAddType(btn){
   const v=await showInlinePrompt('เพิ่มชนิดการผ่าตัดใหม่:');
@@ -4742,10 +4753,10 @@ async function surgAddType(btn){
     try{await api('submitPendingOpt',{},{optKey:'surgeryType',value:t,submittedBy:currentUser?.fullname||''});toast('เพิ่ม "'+t+'" แล้ว — ใช้ได้ทันที (รอ Admin อนุมัติ) ✓');}
     catch(e){toast('เพิ่มลงฟอร์มแล้ว แต่ส่งคำขออนุมัติไม่สำเร็จ: '+e.message,true);}
   }
-  const vals=surgReadVals(),idx=Array.from(document.querySelectorAll('#surgTypesList .sg-row')).indexOf(btn.closest('.sg-row'));
-  if(idx>=0)vals[idx]=t;
+  const rows=surgReadRows(),idx=Array.from(document.querySelectorAll('#surgTypesList .sg-row')).indexOf(btn.closest('.sg-row'));
+  if(idx>=0)rows[idx].t=t;
   _surgDirty=true;
-  surgRender(vals);
+  surgRender(rows);
 }
 function initConsultSurgery(){
   _surgDirty=false;_consultDirty=false;
@@ -4754,12 +4765,14 @@ function initConsultSurgery(){
   const crow=consultParse(h1.value,h2.value);
   if(!cq.value&&crow.length)cq.value='Yes';          // ข้อมูลที่บันทึกไว้ก่อนมีคำถามนี้ → ถือว่า Yes
   if(cq.value==='Yes'){document.getElementById('consultWrap').style.display='';consultRender(crow.length?crow:[{d:'',p:''}]);}
-  const sel=_mf('ผ่าตัด'),hs=_mf('ชนิดการผ่าตัด');
+  const sel=_mf('ผ่าตัด'),hs=_mf('ชนิดการผ่าตัด'),hd=_mf('วันที่ผ่าตัด');
   if(sel&&sel.value==='Yes'){
     document.getElementById('surgTypesBox').style.display='';
-    const types=String(hs.value||'').split(', ').map(x=>x.trim()).filter(Boolean).slice(0,SURG_MAX);
-    surgRender(types.length?types:['']);
-    hs.value=types.join(', ');   // ข้อมูลเก่าที่ยังไม่ได้ผ่านการเลือกใหม่ คงค่าเดิมไว้
+    const origT=hs.value,origD=hd?hd.value:'';
+    const types=String(origT||'').split(', ').map(x=>x.trim()).filter(Boolean).slice(0,SURG_MAX);
+    const dates=String(origD||'').split(', ').map(x=>x.trim());
+    surgRender(types.length?types.map((t,i)=>({t,d:(dates[i]&&dates[i]!=='-')?dates[i]:''})):[{t:'',d:''}]);
+    hs.value=origT;if(hd)hd.value=origD;   // ข้อมูลเดิมที่ยังไม่ได้แก้ คงค่าเดิมไว้ ไม่เติม "-" ให้
   }
 }
 
@@ -5021,15 +5034,16 @@ async function savePatient(){
       if(!cr.length||cr.some(r=>!r.d||!r.p)){toast('กรุณาเลือกแผนกและแพทย์ที่ Consult ให้ครบทุกแถว (หรือกด 🗑️ ลบแถวที่ไม่ใช้)',true);return;}
     }else{data['แผนกที่ Consult']='';data['แพทย์ที่ Consult']='';}
   }
-  // ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes ต้องเลือกชนิดให้ครบทุกครั้งที่เพิ่มไว้ (ตอนเพิ่มใหม่ หรือเมื่อมีการแก้ส่วนนี้) ──
+  // ── การผ่าตัดหลายครั้ง: ผ่าตัด=Yes ต้องเลือกชนิดและวันที่ผ่าตัดให้ครบทุกครั้งที่เพิ่มไว้ (ตอนเพิ่มใหม่ หรือเมื่อมีการแก้ส่วนนี้) ──
   if(data['ผ่าตัด']==='Yes'){
     if(!editPtId||_surgDirty){
-      const nRows=document.querySelectorAll('#surgTypesList .sg-row').length;
-      const nDone=(data['ชนิดการผ่าตัด']||'').split(', ').filter(Boolean).length;
-      if(nDone<1){toast('กรุณาเลือกชนิดการผ่าตัด',true);return;}
-      if(nDone<nRows){toast('กรุณาเลือกชนิดการผ่าตัดให้ครบทุกครั้ง (หรือกด 🗑️ ลบครั้งที่ไม่ใช้)',true);return;}
+      const sr=surgReadRows();
+      if(!sr.length||sr.every(r=>!r.t&&!r.d)){toast('กรุณาเลือกชนิดและวันที่ผ่าตัด',true);return;}
+      if(sr.some(r=>!r.t||!r.d)){toast('กรุณาเลือกชนิดและวันที่ผ่าตัดให้ครบทุกครั้ง (หรือกด 🗑️ ลบครั้งที่ไม่ใช้)',true);return;}
+      const todayS=localToday();
+      if(sr.some(r=>r.d>todayS||parseInt(r.d)<1900)){toast('วันที่ผ่าตัดไม่ถูกต้อง (เป็นวันในอนาคต หรือปีผิดปกติ)',true);return;}
     }
-  }else if(!editPtId||_surgDirty){data['ชนิดการผ่าตัด']='';}
+  }else if(!editPtId||_surgDirty){data['ชนิดการผ่าตัด']='';data['วันที่ผ่าตัด']='';}
   // ตรวจสอบวันที่ Admit ว่าตรงกับเดือน/ปีที่เลือกไหม
   if(data['Admit (Date)']){
     const admitD=new Date(data['Admit (Date)']);
