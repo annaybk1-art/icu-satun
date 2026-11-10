@@ -457,6 +457,105 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 @keyframes updShake{0%,50%,100%{transform:rotate(0)}10%,30%{transform:rotate(-14deg)}20%,40%{transform:rotate(14deg)}}
 @keyframes updPop{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.upd-ico,.upd-pill,.upd-box{animation:none}}
+
+/* ── Kardex ── */
+.kx-sheet{font-size:13px;color:#111;line-height:1.45}
+.kx-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:2px solid #1b5e20;padding-bottom:6px;margin-bottom:8px}
+.kx-brand{font-size:11px;color:#555}
+.kx-ttl{font-size:20px;font-weight:800;color:#1b5e20;letter-spacing:1px}
+.kx-bed{font-size:26px;font-weight:800;color:#fff;background:#2e7d32;border-radius:8px;padding:2px 12px;white-space:nowrap}
+.kx-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 18px}
+.kx-sec{margin-top:9px;break-inside:avoid}
+.kx-sec>h4{margin:0 0 4px;font-size:12px;color:#1b5e20;border-bottom:1px solid #a5d6a7;padding-bottom:2px}
+.kx-r{display:flex;gap:6px;min-width:0}.kx-k{flex:0 0 108px;color:#555}.kx-v{flex:1 1 auto;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.kx-tblwrap{overflow-x:auto}
+.kx-empty{color:#aaa;font-weight:400}
+.kx-alert{background:#ffebee;border:1.5px solid #c62828;color:#b71c1c;border-radius:6px;padding:4px 8px;font-weight:700}
+.kx-tag{display:inline-block;border:1px solid #c62828;color:#c62828;border-radius:4px;padding:0 5px;margin:0 3px 2px 0;font-size:11px;font-weight:700}
+.kx-tbl{width:100%;border-collapse:collapse}.kx-tbl th,.kx-tbl td{border:1px solid #bbb;padding:3px 6px;font-size:12px;text-align:left}
+.kx-tbl th{background:#e8f5e9;color:#1b5e20;font-weight:700}.kx-off td{color:#999}
+.kx-boxes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.kx-box{border:1px solid #999;border-radius:4px;min-height:74px;padding:3px 6px;font-size:11px;color:#777}
+.kx-foot{margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#555}
+@media screen and (max-width:620px){.kx-grid,.kx-boxes{grid-template-columns:1fr}.kx-k{flex-basis:96px}.kx-bed{font-size:20px}}
+#kardexPrintRoot{display:none}
+.kx-pre{white-space:pre-wrap}
+.kx-lock{background:#eceff1;border:1px solid #90a4ae;color:#37474f;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:700;margin-bottom:6px}
+.kx-head{align-items:center!important}
+.kx-hl .kx-meta{margin:2px 0 0}.kx-hr{text-align:right}.kx-print{font-size:11px;color:#555;margin-top:3px}
+.kx-idg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;margin:0 0 8px}
+.kx-f{border:1px solid #cfe8d1;border-radius:6px;background:#fbfffb;padding:3px 9px;min-width:0}
+.kx-f i{display:block;font-style:normal;font-size:10.5px;color:#6b7f6b;line-height:1.25}
+.kx-f b{display:block;font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
+.kx-f.nm b{font-size:14.5px}
+.kx-idg .c5{grid-column:span 5}.kx-idg .c4{grid-column:span 4}.kx-idg .c3{grid-column:span 3}.kx-idg .c2{grid-column:span 2}
+@media screen and (max-width:620px){.kx-idg .c5,.kx-idg .c4,.kx-idg .c3,.kx-idg .c2{grid-column:span 12}.kx-idg .hn,.kx-idg .an{grid-column:span 6}}
+.kx-cc-s .kx-in{min-height:40px}
+.kx-pdate{color:#1b5e20;font-weight:700}
+.kx-elist{margin:2px 0 4px}.kx-erow{display:flex;gap:5px;align-items:flex-start;margin-bottom:4px}.kx-erow .kx-pdw{flex:0 0 150px}.kx-erow .kx-es{flex:1;min-width:0}
+.kx-hospw{display:inline-block;width:150px;vertical-align:middle}
+.kx-no{font-size:11.5px;color:#444;font-weight:600;margin-top:1px}
+.kx-proc{margin-bottom:2px}
+.kx-dev .kx-dev-no{min-width:120px;font-size:12px;margin-top:3px}
+.kx-xrow{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:5px}.kx-xrow .kx-x-n{flex:1 1 110px;min-width:90px}.kx-xrow .kx-x-no{flex:0 1 100px}.kx-xrow .dmy-wrap{flex:0 0 150px}.kx-xrow .kx-x-r{flex:1 1 180px;min-width:120px}
+.kx-kw{flex-basis:150px!important}
+.kx-pcard{border:1px solid #cfe8d1;border-radius:6px;padding:5px 6px;margin-bottom:6px;background:#fcfffc}
+.kx-prow1{display:flex;gap:6px;align-items:center;margin-bottom:4px}.kx-prow1 .kx-pt{flex:1;min-width:0}.kx-pdw{flex:0 0 150px}
+.kx-pitem{margin-bottom:5px}.kx-psum{margin-left:16px;font-weight:500;font-size:12.5px}
+.kx-hist{margin-top:8px;border:1px dashed #a5d6a7;border-radius:6px;padding:6px}
+.kx-hist-h{font-size:12px;font-weight:700;color:#1b5e20;margin-bottom:4px}
+.kx-hrow{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin-bottom:4px}.kx-hrow .dmy-wrap{flex:0 0 150px}
+.kx-h-sep{font-size:11.5px;color:#555}
+@media screen and (max-width:620px){.kx-prow1{flex-wrap:wrap}.kx-prow1 .kx-pt{flex:1 1 100%}}
+.kx-dev th,.kx-dev td{vertical-align:top}
+.kx-dev .kx-in{padding:3px 5px;font-size:12px;min-width:150px}
+.kx-al{display:block;font-size:11.5px;line-height:1.35;margin:0 0 2px;color:#666;font-weight:500}
+.kx-al.ok{color:#2e7d32}.kx-al.warn{color:#a85d00;font-weight:600}.kx-al.bad{color:#c62828;font-weight:700}
+.kx-chk{display:block;font-size:11px;color:#555;margin-top:2px;font-weight:500}
+.kx-note{font-size:10.5px;color:#777;margin:3px 0 4px}
+.kx-narr{font-size:13px;line-height:1.75;font-weight:500}.kx-narr p{margin:0 0 5px}.kx-narr b{font-weight:700}
+.kx-narr .kx-alert{display:inline-block;padding:0 6px;line-height:1.5}
+.kx-cc{margin-top:7px;border:1px solid #a5d6a7;border-left:4px solid #2e7d32;border-radius:6px;padding:6px 9px;background:#fafff9}
+.kx-cc-h{font-size:12.5px;font-weight:800;color:#1b5e20;margin-bottom:4px}
+.kx-cc .kx-pre{display:block;font-weight:500;font-size:13px;line-height:1.6}
+.kx-cc .kx-in{font-weight:500;line-height:1.55;min-height:150px}
+textarea.kx-in{overflow:hidden}
+.kx-in{width:100%;box-sizing:border-box;border:1px solid #a5d6a7;border-radius:6px;padding:4px 6px;font:inherit;font-weight:500;background:#fbfffb;resize:vertical}
+.kx-sel{border:1px solid #a5d6a7;border-radius:6px;padding:3px 6px;font:inherit;background:#fbfffb}
+.kx-sec>h4 .kx-n{display:inline-block;min-width:18px;text-align:center;background:#2e7d32;color:#fff;border-radius:9px;font-size:10px;margin-right:5px;padding:0 4px}
+.kx-sys{font-size:10px;color:#9a9a9a;font-weight:400;margin-left:4px}
+.kx-prob{display:flex;gap:4px;margin-bottom:3px}.kx-prob input{flex:1;min-width:0}
+.kx-meta{font-size:11px;color:#777;margin:2px 0 6px}
+.kx-edit-banner{background:#fff8e1;border:1px solid #f9a825;border-radius:6px;padding:4px 8px;font-size:12px;margin-bottom:6px}
+@media print{
+  @page{size:A4;margin:9mm}
+  html,body{background:#fff!important}
+  .kx-sec{break-inside:auto!important}.kx-sec>h4{break-after:avoid}
+  .kx-dev tr,.kx-pitem,.kx-proc,.kx-r{break-inside:avoid}
+  .kx-tbl thead{display:table-header-group}
+  body>*:not(#kardexPrintRoot){display:none!important}
+  #kardexPrintRoot{display:block!important;background:#fff}
+  #kardexPrintRoot .kx-sheet{font-size:11.5px}
+  .kx-bed,.kx-f,.kx-lock,.kx-tbl th,.kx-alert{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* ── หน้า Kardex (การ์ดทุกเตียง) ── */
+.kb-sum{font-size:12.5px;color:var(--gray500);margin:2px 2px 10px}.kb-sum b{color:var(--g800)}.kb-warn-t{color:#b26a00!important}
+.kb-search{border:1px solid var(--g200);border-radius:8px;padding:7px 10px;font:inherit;font-size:13px;min-width:200px}
+.kb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.kb-card{display:flex;flex-direction:column;gap:3px;text-align:left;background:#fff;border:1.5px solid #c8e6c9;border-radius:12px;padding:10px 12px;cursor:pointer;font:inherit;color:inherit;min-height:122px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.kb-card:active{transform:scale(.985)}
+.kb-top{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.kb-bed{background:#2e7d32;color:#fff;border-radius:7px;padding:1px 9px;font-weight:800;font-size:15px}
+.kb-days{font-size:11px;color:var(--gray500);font-weight:600}
+.kb-name{font-weight:800;font-size:14px;line-height:1.3;overflow-wrap:anywhere}
+.kb-sub{font-size:11.5px;color:var(--gray500)}
+.kb-dx{font-size:12px;color:#37474f;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.35}
+.kb-tag{align-self:flex-start;background:#ffebee;color:#b71c1c;border:1px solid #ef9a9a;border-radius:6px;padding:0 6px;font-size:11px;font-weight:700}
+.kb-foot{margin-top:auto;font-size:11px;color:#2e7d32;font-weight:600}.kb-foot.kb-warn{color:#b26a00}
+.kb-free{background:#f6f8f6;border:1.5px dashed #c5d3c5;cursor:default;opacity:.85}.kb-free .kb-bed{background:#9eb59e}.kb-freetxt{margin:auto;color:#8aa08a;font-weight:700}
+.kb-none{grid-column:1/-1;text-align:center;color:var(--gray500);padding:30px}
+@media(max-width:560px){.kb-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.kb-search{min-width:0;flex:1}}
 </style>
 </head>
 <body>
@@ -706,6 +805,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
     </div>
     <div class="nav-item" id="nav-bedmap" onclick="showSec('bedmap',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>แผนผังเตียง
+    </div>
+    <div class="nav-item" id="nav-kardex" onclick="showSec('kardex',this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Kardex
     </div>
     <div class="nav-item" id="nav-ic" onclick="showSec('ic',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>ข้อมูล IC
@@ -1015,6 +1117,19 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
       </div>
     </div>
     <div id="editSidebarOverlay" class="edit-sidebar-overlay" onclick="closeEditMode()"></div>
+
+    <!-- KARDEX (หน้าการ์ดทุกเตียง) -->
+    <div class="sec" id="sec-kardex">
+      <div class="fbar">
+        <div class="tbl-title">📋 Kardex ผู้ป่วยในหอ</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input id="kbSearch" type="search" class="kb-search" placeholder="🔎 ค้นหา เตียง / ชื่อ / HN" oninput="renderKardexBoard()">
+          <button class="btn btn-outline" onclick="loadKardexBoard()">↻ รีเฟรช</button>
+        </div>
+      </div>
+      <div id="kbSummary" class="kb-sum"></div>
+      <div id="kbGrid" class="kb-grid"></div>
+    </div>
 
     <!-- IC -->
     <div class="sec" id="sec-ic">
@@ -1730,6 +1845,25 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   </div>
 </div>
 
+<!-- KARDEX (สรุปผู้ป่วยรายเตียง — อ่านอย่างเดียว พิมพ์ได้) -->
+<div class="overlay" id="kardexModal">
+  <div class="modal" style="max-width:780px;max-height:94vh;overflow:hidden;display:flex;flex-direction:column">
+    <div class="modal-hd"><h2 id="kardexTitle">Kardex</h2><button class="modal-x" onclick="closeKardex()">✕</button></div>
+    <div class="modal-bd" style="overflow-y:auto;padding:14px"><div id="kardexSheet"></div></div>
+    <div class="modal-ft">
+      <span id="kxFtView" style="display:contents">
+        <button class="btn btn-outline" onclick="closeKardex()">ปิด</button>
+        <button class="btn btn-outline" id="kxEditBtn" onclick="kxStartEdit()">✏️ แก้ไข Kardex</button>
+        <button class="btn btn-primary" onclick="printKardex()">🖨️ พิมพ์</button>
+      </span>
+      <span id="kxFtEdit" style="display:none">
+        <button class="btn btn-outline" onclick="kxCancelEdit()">ยกเลิก</button>
+        <button class="btn btn-primary" id="kxSaveBtn" onclick="kxSave()">💾 บันทึก Kardex</button>
+      </span>
+    </div>
+  </div>
+</div>
+
 <!-- USER MODAL -->
 <div class="overlay" id="userModal">
   <div class="modal" style="max-width:480px">
@@ -1778,6 +1912,9 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
   <button class="bn-item" id="bn-bedmap" onclick="showSec('bedmap',document.getElementById('nav-bedmap'));setActiveBN('bedmap')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
     <span>เตียง</span></button>
+  <button class="bn-item" id="bn-kardex" onclick="showSec('kardex',document.getElementById('nav-kardex'));setActiveBN('kardex')">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+    <span>Kardex</span></button>
   <button class="bn-item" id="bn-ic" onclick="showSec('ic',document.getElementById('nav-ic'));setActiveBN('ic')">
     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
     <span>IC</span></button>
@@ -1928,7 +2065,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.16';
+const APP_VERSION='2026-10-17.35';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -2013,7 +2150,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAppUp
 // ค่าที่เก็บในชีตยังเป็นรูปแบบเดิม (yyyy-mm-dd, ค.ศ.) — เปลี่ยนเฉพาะการแสดงผลและการพิมพ์
 // ============================================================
 const DATE_YEAR_BE=true;                       // true = แสดงปี พ.ศ. (เหมือนตารางรายชื่อ) | false = แสดงปี ค.ศ.
-const DATE_CONFIRM_SKIP=new Set(['วันเกิด']);  // ช่องวันที่ที่ไม่ต้องถามยืนยัน (วันเกิดไม่มีทางเป็นวันนี้)
+const DATE_CONFIRM_SKIP=new Set(['วันเกิด','kxDate']);  // ช่องวันที่ที่ไม่ต้องถามยืนยัน (วันเกิดไม่มีทางเป็นวันนี้)
 function DATE_LOCALE(){return DATE_YEAR_BE?'th-TH':'en-GB';}
 function _dp2(n){return String(n).padStart(2,'0');}
 function _dyShow(y){return DATE_YEAR_BE?y+543:y;}
@@ -2205,7 +2342,7 @@ function dcMatch(val, type){
   return false;
 }
 const TOTAL_BEDS=14;
-const OPTS_LABELS={causeOfDeath:'💀 สาเหตุการเสียชีวิต',referReason:'🚑 เหตุผลที่ต้อง Refer',beds:'🛏️ เตียง ICU',doctors:'👨‍⚕️ แพทย์เจ้าของไข้',ventilatorMode:'🌬️ การหายใจ',ventilator:'🫁 ชนิด Ventilator',rights:'💳 สิทธิ์การรักษา',patientType:'🏷️ ประเภทผู้ป่วย',consultDept:'🩺 แผนกที่ Consult',drugAllergy:'💊 แพ้ยา',surgeryType:'🔪 ชนิดการผ่าตัด',diagnosis:'🔬 Diagnosis (Dx)',recorderAdmit:'📝 ผู้บันทึก Admit',recorderDC:'📝 ผู้บันทึก D/C',incharge:'👩‍⚕️ รายชื่อ In Charge',udOptions:'📋 U/D (โรคประจำตัว)',specimenType:'🧪 ชนิดสิ่งส่งตรวจ',pathogenType:'🦠 ชนิดของเชื้อที่พบ',haOptions:'💊 ยา High Alert Drug'};
+const OPTS_LABELS={causeOfDeath:'💀 สาเหตุการเสียชีวิต',referReason:'🚑 เหตุผลที่ต้อง Refer',beds:'🛏️ เตียง ICU',doctors:'👨‍⚕️ แพทย์เจ้าของไข้',ventilatorMode:'🌬️ การหายใจ',ventilator:'🫁 ชนิด Ventilator',rights:'💳 สิทธิ์การรักษา',patientType:'🏷️ ประเภทผู้ป่วย',consultDept:'🩺 แผนกที่ Consult',kardexDeviceRules:'⏰ Kardex: เกณฑ์อุปกรณ์ที่หน่วยกำหนด — รูปแบบ ชื่อ|remind แพทย์(วัน)|ครบกำหนด(วัน)|ทำอะไร (เว้นว่าง = ไม่มีเกณฑ์)',drugAllergy:'💊 แพ้ยา',surgeryType:'🔪 ชนิดการผ่าตัด',diagnosis:'🔬 Diagnosis (Dx)',recorderAdmit:'📝 ผู้บันทึก Admit',recorderDC:'📝 ผู้บันทึก D/C',incharge:'👩‍⚕️ รายชื่อ In Charge',udOptions:'📋 U/D (โรคประจำตัว)',specimenType:'🧪 ชนิดสิ่งส่งตรวจ',pathogenType:'🦠 ชนิดของเชื้อที่พบ',haOptions:'💊 ยา High Alert Drug'};
 const MODAL_TABS=[{id:'tab-admit',label:'📋 ข้อมูลรับ'},{id:'tab-ic',label:'🫁 IC / Ventilator'},{id:'tab-assess',label:'📊 การประเมิน'},{id:'tab-infection',label:'🦠 การติดเชื้อ'},{id:'tab-dc',label:'🚪 ข้อมูล D/C'}];
 
 let currentUser=null,_opts={},_pts=[],_filtPts=[],_curPg=1;
@@ -2281,7 +2418,7 @@ function setupYears(){
 }
 
 async function loadOpts(){try{_opts=await api('getOpts');}catch(e){_opts=defaultOpts();}}
-function defaultOpts(){return{causeOfDeath:['Septic shock','Respiratory failure','Cardiac arrest','MODS','Hemorrhagic shock','Neurological death','อื่นๆ'],referReason:['ขาดแคลนอุปกรณ์','ต้องการผู้เชี่ยวชาญเฉพาะทาง','ผู้ป่วยขอย้าย','ขาดเตียง ICU','อื่นๆ'],ward:['อายุรกรรม','ศัลยกรรม','กุมารเวช','สูตินรีเวช','ห้องผ่าตัด','ER','อื่นๆ'],beds:['ICU1','ICU2','ICU3','ICU4','ICU5','ICU6','ICU7','ICU8','ICU9','ICU10','ICU11','ICU12','ICU13','ICU14'],doctors:['พญ.ชัญญา มุกดารัศมี','พญ.วรรณกานต์ พัฒนโกวิท','พญ.ธมน เนียมรัตน์','พญ.จักรปาณี ตั้งสินมั่นคง','นพ.พิทวัส จินดาอิสรชัยกุล','พญ.กชมน ภู่เจริญ','นพ.ภาณุศักดิ์ หล่อตระกูลกูล','พญ.ชุตินันท์ สุปราณี','พญ.กัญญารัตน์ เลิศวาจาจา','นพ.จักรพงษ์ เทศพิทักษ์','นพ.สรวิชญ์ พุฒินาถ','นพ.วรสิทธิ์ ชัยมงคลานนท์','นพ.ภาณุพงศ์ นาคช่วย','นพ.นพเกียรติ อัครนพหงส์','นพ.เนติกรณ์ ผิวทอง','พญ.มนวดี ไชยกุล','พญ.นพวรรณ ฐิติวรการ','นพ.ภาวัฒน์ ไล่เจริญ','นพ.กรณ์ธรรม อู่ไพบูลย์สิน','นพ.กุลวิทย์ อโนทัยสถาพร','นพ.พงศกร กาญจนา','พญ.นริศรา สัณห์พานิชกิจ','นพ.วุฒิพงศ์ วิไลวรางกุล','นพ.ไพบูลย์ แสงยืยยงพิพัฒน์','พญ.ศศิพิมพ์ วรรณรัตน์','นพ.พุทธพงษ์ โฆษิตศุภกุล','พญ.วนพัชร์ ยิ้มซ้าย','นพ.มนัสนันท์ กนกทิพย์นารา','พญ.ณัฐสุดา พันธ์บุญมี','นพ.นัฐพงศ์ เด็นมะเส','พญ.นุสรา ยุทธสมภพ'],ventilatorMode:['Ventilator','HFNC','Canular','Room air','Bipap','T-piece'],ventilator:['840/2','840/3','840/4','840/5','840/6','840/7','840/8','840/9','840/10','840/11','840/12','840/13','840/14','840/15','840/22','Nihon/1','Nihon/2','Bella/1','Bella/2','Vela','Hamilton','HFNC','Canular'],rights:['กำนันผู้ใหญ่บ้านนอกเขต','UC นอกเขต','ประกันสังคม','จ่ายตรง','พ.ร.บ.ฉุกเฉิน','ผู้สูงอายุนอกเขต','ผู้สูงอายุในเขต','ผู้พิการนอกเขต','ผู้พิการในเขต','พรบ.ผู้ประสบภัยจากรถ','UC ต่างจังหวัด','บุคคลในครอบครัว อสม ในเขต','บุคคลในครอบครัว อสม นอกเขต','ชำระเงิน','ผู้มีรายได้น้อยในเขต','ต่างด้าว','สวัสดิการข้าราชการส่วนท้องถิ่น','ผู้มีรายได้น้อยนอกเขต','ภิกษุ นอกเขต','ใช้สิทธิเบิกหน่วยงานต้นสังกัด','บัตรสุขภาพ ผสส.อสม.ในเขต','ประกันสังคมโรงพยาบาลสตูล','ทหารผ่านศึก'],haOptions:['Adrenaline','Adenosine','Dopamine','Dobutamine','NorE (Norepinephrine)','Amiodarone','Chloral hydrate syrup','Digoxin','Esmolol','Magnesium sulfate','Midazolam','Fentanyl','Morphine','Pethidine','Phenytoin inj (Dilantin)','KCL/K2HPO4','Warfarin tab','Alteplase inj','SK inj (Streptokinase)','Nicardipine','Nitroglycerine','Regular insulin','NPH insulin','Insulin glargine','3% NaCl inj.','10% MgSO4 inj.','Clozapine tablet'],patientType:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER'],consultDept:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER','GI'],consultDoctors:[],drugAllergy:['ไม่มี','Penicillin','Sulfa','NSAIDs','Contrast'],surgeryType:['ไม่ได้ผ่าตัด','Craniotomy','Craniectomy','VP Shunt','EVD Insertion','Laparotomy','Appendectomy','Cholecystectomy','Hernia repair','Fracture fixation','Amputation','Tracheostomy','CABG','Valve replacement','Hysterectomy','C-Section','Splenectomy','Bowel resection','Debridement','Wound closure'],diagnosis:['Sepsis','Septic shock','Pneumonia','ARDS','CHF','CVA','DKA','CKD','Trauma','Post-op','Respiratory failure','Stroke','ICH','TBI','SAH','SDH','Meningitis','Encephalitis','Seizure','NSTEMI','STEMI','AF','PE','DVT','UGIB','LGIB','Pancreatitis','Cirrhosis','AKI','Peritonitis','Burn','Polytrauma','Eclampsia','PPH','Ectopic pregnancy','Hypertensive emergency','Thyroid storm','Hypoglycemia','Rhabdomyolysis','Cardiac arrest','Cardiogenic shock','Hypovolemic shock','Hemorrhagic shock','Anaphylaxis','Obstructive shock','Drowning','Snake bite','Drug overdose','Hanging'],recorderAdmit:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],
+function defaultOpts(){return{causeOfDeath:['Septic shock','Respiratory failure','Cardiac arrest','MODS','Hemorrhagic shock','Neurological death','อื่นๆ'],referReason:['ขาดแคลนอุปกรณ์','ต้องการผู้เชี่ยวชาญเฉพาะทาง','ผู้ป่วยขอย้าย','ขาดเตียง ICU','อื่นๆ'],ward:['อายุรกรรม','ศัลยกรรม','กุมารเวช','สูตินรีเวช','ห้องผ่าตัด','ER','อื่นๆ'],beds:['ICU1','ICU2','ICU3','ICU4','ICU5','ICU6','ICU7','ICU8','ICU9','ICU10','ICU11','ICU12','ICU13','ICU14'],doctors:['พญ.ชัญญา มุกดารัศมี','พญ.วรรณกานต์ พัฒนโกวิท','พญ.ธมน เนียมรัตน์','พญ.จักรปาณี ตั้งสินมั่นคง','นพ.พิทวัส จินดาอิสรชัยกุล','พญ.กชมน ภู่เจริญ','นพ.ภาณุศักดิ์ หล่อตระกูลกูล','พญ.ชุตินันท์ สุปราณี','พญ.กัญญารัตน์ เลิศวาจาจา','นพ.จักรพงษ์ เทศพิทักษ์','นพ.สรวิชญ์ พุฒินาถ','นพ.วรสิทธิ์ ชัยมงคลานนท์','นพ.ภาณุพงศ์ นาคช่วย','นพ.นพเกียรติ อัครนพหงส์','นพ.เนติกรณ์ ผิวทอง','พญ.มนวดี ไชยกุล','พญ.นพวรรณ ฐิติวรการ','นพ.ภาวัฒน์ ไล่เจริญ','นพ.กรณ์ธรรม อู่ไพบูลย์สิน','นพ.กุลวิทย์ อโนทัยสถาพร','นพ.พงศกร กาญจนา','พญ.นริศรา สัณห์พานิชกิจ','นพ.วุฒิพงศ์ วิไลวรางกุล','นพ.ไพบูลย์ แสงยืยยงพิพัฒน์','พญ.ศศิพิมพ์ วรรณรัตน์','นพ.พุทธพงษ์ โฆษิตศุภกุล','พญ.วนพัชร์ ยิ้มซ้าย','นพ.มนัสนันท์ กนกทิพย์นารา','พญ.ณัฐสุดา พันธ์บุญมี','นพ.นัฐพงศ์ เด็นมะเส','พญ.นุสรา ยุทธสมภพ'],ventilatorMode:['Ventilator','HFNC','Canular','Room air','Bipap','T-piece'],ventilator:['840/2','840/3','840/4','840/5','840/6','840/7','840/8','840/9','840/10','840/11','840/12','840/13','840/14','840/15','840/22','Nihon/1','Nihon/2','Bella/1','Bella/2','Vela','Hamilton','HFNC','Canular'],rights:['กำนันผู้ใหญ่บ้านนอกเขต','UC นอกเขต','ประกันสังคม','จ่ายตรง','พ.ร.บ.ฉุกเฉิน','ผู้สูงอายุนอกเขต','ผู้สูงอายุในเขต','ผู้พิการนอกเขต','ผู้พิการในเขต','พรบ.ผู้ประสบภัยจากรถ','UC ต่างจังหวัด','บุคคลในครอบครัว อสม ในเขต','บุคคลในครอบครัว อสม นอกเขต','ชำระเงิน','ผู้มีรายได้น้อยในเขต','ต่างด้าว','สวัสดิการข้าราชการส่วนท้องถิ่น','ผู้มีรายได้น้อยนอกเขต','ภิกษุ นอกเขต','ใช้สิทธิเบิกหน่วยงานต้นสังกัด','บัตรสุขภาพ ผสส.อสม.ในเขต','ประกันสังคมโรงพยาบาลสตูล','ทหารผ่านศึก'],haOptions:['Adrenaline','Adenosine','Dopamine','Dobutamine','NorE (Norepinephrine)','Amiodarone','Chloral hydrate syrup','Digoxin','Esmolol','Magnesium sulfate','Midazolam','Fentanyl','Morphine','Pethidine','Phenytoin inj (Dilantin)','KCL/K2HPO4','Warfarin tab','Alteplase inj','SK inj (Streptokinase)','Nicardipine','Nitroglycerine','Regular insulin','NPH insulin','Insulin glargine','3% NaCl inj.','10% MgSO4 inj.','Clozapine tablet'],patientType:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER'],consultDept:['MED','SURG','Neuro Surg.','Ortho','OB','Gyne','PEDS','Maxillo','ENT','Plastic','Trauma','ER','GI'],consultDoctors:[],kardexDeviceRules:['Ventilator|||','A-Line|||','C-Line|||','IV||4|เปลี่ยนเส้น','F/C|3|14|off','ICD|||','DL for HD|||'],drugAllergy:['ไม่มี','Penicillin','Sulfa','NSAIDs','Contrast'],surgeryType:['ไม่ได้ผ่าตัด','Craniotomy','Craniectomy','VP Shunt','EVD Insertion','Laparotomy','Appendectomy','Cholecystectomy','Hernia repair','Fracture fixation','Amputation','Tracheostomy','CABG','Valve replacement','Hysterectomy','C-Section','Splenectomy','Bowel resection','Debridement','Wound closure'],diagnosis:['Sepsis','Septic shock','Pneumonia','ARDS','CHF','CVA','DKA','CKD','Trauma','Post-op','Respiratory failure','Stroke','ICH','TBI','SAH','SDH','Meningitis','Encephalitis','Seizure','NSTEMI','STEMI','AF','PE','DVT','UGIB','LGIB','Pancreatitis','Cirrhosis','AKI','Peritonitis','Burn','Polytrauma','Eclampsia','PPH','Ectopic pregnancy','Hypertensive emergency','Thyroid storm','Hypoglycemia','Rhabdomyolysis','Cardiac arrest','Cardiogenic shock','Hypovolemic shock','Hemorrhagic shock','Anaphylaxis','Obstructive shock','Drowning','Snake bite','Drug overdose','Hanging'],recorderAdmit:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],
 incharge:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],recorderDC:['พว.รัศมี','พว.สุมณฑา','พว.ฮาบีด๊ะ','พว.เพ็ญทิพย์','พว.อุไรรัตน์','พว.อุรุณโรจน์','พว.ฟาดีละฮ์','พว.รอหนา','พว.สิริลักษณ์','พว.รูวัยดา','พว.สุรัสวดี','พว.อารียา','พว.ราโมนา','พว.อารีนา','พว.ฮูดีญา','พว.นติยา','พว.กิ่งกาญจน์','พว.นาดียา','พว.มุซิรา','พว.พิมพ์มาดา','พว.จันทร์จิรา','พว.จิราลักษณ์','พว.สุรัยยา','พว.นุสรีน','พว.ตัซนีม'],udOptions:['ไม่มี','ปฏิเสธ','HT','IHD','MI','CHF','VHD','AF','VT','SVT','CAD','DLP','CVA','TIA','Stroke','NSTEMI','STEMI','LBBB','MR','MS','DCM','TVD','Old MI','VSD','HFpEF','HFrEF','ICM','Asthma','COPD','Pulmonary tuberculosis','OSA','old TB','Pulmonary fibrosis','DM','Hypothyroid','Hyperthyroid','CKD','ESRD','Obesity','Gout','ภูมิแพ้','Urolithiasis','BPH','Cirrhosis','Chronic Hep B','Chronic Hep C','HCV','PUD','Cholelithiasis','HCC','GERD','Epilepsy','Parkinson','MG','Dementia','Alzheimer','CVST','Anemia','Leukemia','Thrombocytopenia','Lymphoma','HIV','AIDS','SLE','RA','Autoimmune','Pancytopenia','Thalassemia','OA','Rheumatoid arthritis','Osteoporosis','Degenerative spine','MDD','Anxiety','Bipolar','Schizophrenia','Old CVA','Trauma','CA thyroid','ESRD on CAPD','ESRD on AVF','CA cecum','CA lung','CA Breast','CA colon','CA cervix','CA Floor of mouth','CA Sigmoid','CA esophagus','CA Prostate','CA Liver','brain tumor','ITP','AVM','Glaucoma','TB lung','AAA','APS','CBD Stone','Nephrotic syndrome','Thyroid mass'],specimenType:['Sputum Culture','Pus Culture','Hemoculture ขวด 1','Hemoculture ขวด 2','Hemoculture x 2','Pleural fluid Culture','Urine Culture','Stool Culture','BAL Culture','CSF Culture','Wound Culture','Tracheal aspirate Culture'],pathogenType:['A.baum CRAB_PXDR','A.baum CRE_PXDR','A.baum MDR','E.Coli MDR','K.P. CRE_PXDR','K.P. CRAB_PXDR','K.P. MDR','Pseudomonas a. CRAB_PXDR','Pseudomonas a. CRE_PXDR','Pseudomonas a. MDR','Proteus species CRE_PXDR','MRSA','MSSA','VRE','Candida species','Klebsiella pneumoniae','Escherichia coli','Staphylococcus aureus','Streptococcus pneumoniae']};}
 function o(k){return(_opts[k]||defaultOpts()[k]||[]);}
 
@@ -2376,6 +2513,7 @@ function showApp(user){
   // bottom-nav แสดง/ซ่อนตาม CSS responsive ปกติ (ล้าง inline style)
   const bnav = document.querySelector('.bottom-nav');
   if(bnav) bnav.style.display='';
+  ['nav-kardex','bn-kardex'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='';});   // กันค่าค้างจากผู้ใช้คนก่อน
 
   document.getElementById('loginPage').style.display='none';
   document.getElementById('appPage').style.display='block';
@@ -2414,8 +2552,8 @@ function showApp(user){
   if(user.role==='doctor'||user.viewAccess==='dashboard_bedmap'){
     document.getElementById('nav-patients').style.display='none';
     document.getElementById('nav-ic').style.display='none';
-    document.getElementById('nav-monthly').style.display='none';
-    document.getElementById('nav-yearly').style.display='none';
+    ['nav-kardex','bn-kardex'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});   // แพทย์/บัญชีจำกัดสิทธิ์ ไม่เห็น Kardex
+    ['nav-monthly','nav-yearly'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});   // (เมนูเหล่านี้ไม่มีอยู่จริงในหน้าเว็บ — เดิมทำให้ error)
     document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
     document.getElementById('sec-dashboard').classList.add('active');
     document.getElementById('nav-dashboard').classList.add('active');
@@ -2427,8 +2565,9 @@ function showApp(user){
     perms.forEach(p=>{
       if(p==='no_patients') document.getElementById('nav-patients').style.display='none';
       if(p==='no_ic') document.getElementById('nav-ic').style.display='none';
+      if(p==='no_kardex') ['nav-kardex','bn-kardex'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='none';});
       if(p==='no_monthly'){const el=document.getElementById('nav-kpi');if(el)el.style.display='none';}
-      if(p==='no_yearly') document.getElementById('nav-yearly').style.display='none';
+      if(p==='no_yearly'){const e=document.getElementById('nav-yearly');if(e)e.style.display='none';}
       if(p==='no_dashboard') document.getElementById('nav-dashboard').style.display='none';
       if(p==='no_bedmap') document.getElementById('nav-bedmap').style.display='none';
       if(p==='no_opts') document.getElementById('nav-opts').style.display='none';
@@ -2617,6 +2756,7 @@ async function loadLog(){
 // ============================================================
 function showSec(name,el){
   if(currentUser&&currentUser.viewAccess==='dashboard_bedmap'&&name!=='dashboard'&&name!=='bedmap'){toast('🔒 เข้าถึงได้เฉพาะหน้า Dashboard และแผนผังเตียง',true);return;}
+  if(name==='kardex'&&!kxAllowed()){toast('🔒 ไม่มีสิทธิ์เข้าถึง Kardex',true);return;}
   if((name==='opts'||name==='theme')&&currentUser?.role!=='admin'&&currentUser?.viewAccess!=='full'){toast('🔒 ไม่มีสิทธิ์เข้าถึง',true);return;}
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -2638,6 +2778,7 @@ function showSec(name,el){
   if(name==='patients') loadPatients(true);
   if(name==='dashboard') loadDash();
   if(name==='bedmap') loadBedMap();
+  if(name==='kardex') loadKardexBoard();
   if(name==='ic') loadIC();
   if(name==='disease') loadDiseaseIndicator();
   if(name==='kpi'){loadKPI();loadMonthly();}
@@ -2695,12 +2836,30 @@ function updateMonthNavBtns(){
   if(next) next.textContent=`${MONTHS_TH[nm-1]} →`;
 }
 
+// ── ลำดับปี (ปีงบ ต.ค.–ก.ย.) ให้นับต่อเนื่องข้ามเดือน ──
+// ยอดตั้งต้นของปีงบที่เริ่มใช้ระบบกลางปี (เลขท้าย 2 หลัก พ.ศ.): ปีงบ 69 มีผู้ป่วยสะสม 652 คนก่อนเดือนกันยายน — ปีงบนี้คงวิธีเดิมไว้
+const FISCAL_YEAR_OFFSET={69:652};
+let _yearSeqBase=0;                 // จำนวนผู้ป่วยรับใหม่ของเดือนก่อนๆ ในปีงบเดียวกัน (ใช้เป็นเลขตั้งต้นของเดือนที่เปิดอยู่)
+let _fyCountsCache={};              // แคชต่อปีงบ 2 นาที (เดือนก่อนๆ แทบไม่เปลี่ยน)
+const fiscalYY=(m,y)=>{const be=y+543;return m>=10?((be+1)%100):(be%100);};
+async function loadYearSeqBase(m,y,force){
+  _yearSeqBase=0;
+  if(FISCAL_YEAR_OFFSET[fiscalYY(m,y)]!==undefined)return;       // ปีงบที่มียอดตั้งต้นเอง
+  const idx=m>=10?m-10:m+2;                                      // เดือนที่เท่าไรในปีงบ (ต.ค.=0 … ก.ย.=11)
+  if(idx===0)return;                                             // ตุลาคม: เริ่ม 1 ใหม่
+  const fyBE=m>=10?y+544:y+543;
+  try{
+    let c=_fyCountsCache[fyBE];
+    if(force||!c||Date.now()-c.t>120000){c={t:Date.now(),rows:await api('getFyCounts',{fy:fyBE})};_fyCountsCache[fyBE]=c;}
+    _yearSeqBase=c.rows.slice(0,idx).reduce((a,r)=>a+(r.count||0),0);
+  }catch(e){_yearSeqBase=0;}                                     // Code.gs เก่า/ออฟไลน์ → เริ่ม 1 ใหม่เหมือนเดิม ไม่ให้หน้ารายชื่อพัง
+}
 async function loadPatients(forceRefresh=false){
   const m=parseInt(document.getElementById('fMonth').value);
   const y=parseInt(document.getElementById('fYear').value);
   document.getElementById('ptTblTitle').textContent='รายชื่อผู้ป่วย — '+MONTHS_TH[m-1]+' '+y;
   showLoad('กำลังโหลด '+MONTHS_TH[m-1]+'...');
-  try{_pts=await api('getPatients',{month:m,year:y});_curPg=1;applyFilter();updateStats();startNewsBoard();}
+  try{const r=await Promise.all([api('getPatients',{month:m,year:y}),loadYearSeqBase(m,y,forceRefresh)]);_pts=r[0];_curPg=1;applyFilter();updateStats();startNewsBoard();}
   catch(e){toast(e.message,true);}finally{hideLoad();}
 }
 function updateStats(){
@@ -4290,16 +4449,15 @@ function renderTbl(){
   
   // คำนวณลำดับปีงบ (ต.ค.-ก.ย.) เริ่ม1ใหม่ทุกต.ค.
   // ปีงบ 69 (ต.ค.68-ก.ย.69): ก่อนเดือนกันยายน 69 มีผู้ป่วยสะสม 652 คนแล้ว
-  const FISCAL_YEAR_OFFSET={69:652}; // ปีงบ พ.ศ. (เลขท้าย 2 หลัก): ยอดสะสมก่อนเริ่มใช้ระบบ
-  const getFiscalYear=(m,y)=>{const be=y+543;return m>=10?((be+1)%100):(be%100);}; // ได้เลขท้าย 2 หลัก พ.ศ.
-  const fy=getFiscalYear(m,yr);
-  const offset=FISCAL_YEAR_OFFSET[fy]||0;
+  const fy=fiscalYY(m,yr);
+  const offset=FISCAL_YEAR_OFFSET[fy]!==undefined?FISCAL_YEAR_OFFSET[fy]:_yearSeqBase;   // ปีงบ 69 = ยอดตั้งต้นเดิม | ปีงบอื่น = จำนวนผู้ป่วยของเดือนก่อนๆ ในปีงบ
   let yearSeqCounter=offset;
-  const allSorted=[..._filtPts].sort((a,b)=>(a['Admit (Date)']||'').localeCompare(b['Admit (Date)']||''));
+  const allSorted=[..._pts].sort((a,b)=>(a['Admit (Date)']||'').localeCompare(b['Admit (Date)']||''));
   const yearSeqMap={};
+  // นับผู้ป่วยครั้งเดียวตอนรับเข้า: แถว "ยกมา/ยกยอด" (ผู้ป่วยที่ค้างมาจากเดือนก่อน นับไปแล้ว) ไม่นับซ้ำ — ส่วนแถวเดือนเก่าของคนที่ค้างเดือนต้องนับ (เป็นแถวรับเข้าจริง)
+  const isCarriedIn=q=>q['การรับ']==='ยกมา'||q['การรับ']==='ยกยอด';
   allSorted.forEach(p=>{
-    const isCarryover=p['การรับ']==='ยกมา'||p['การรับ']==='ยกยอด'||dcMatch(p['เหตุผลจำหน่าย']||'','carryover');
-    if(!isCarryover && p['Admit (Date)']){
+    if(!isCarriedIn(p) && p['Admit (Date)']){
       yearSeqCounter++;
       yearSeqMap[p.id||p['HN']+p['Admit (Date)']]=yearSeqCounter;
     }
@@ -4313,7 +4471,7 @@ function renderTbl(){
     const dcC=dcMatch(dc,'dead')?'f-red':dcMatch(dc,'palliative')?'f-yellow':'';
     const pid=p.id||String(p._row);
     const isCarryover=p['การรับ']==='ยกมา'||p['การรับ']==='ยกยอด'||dcMatch(dc,'carryover');
-    const yearSeq=isCarryover?'<span style="color:#9ca3af;font-size:10px">ค้าง</span>':`<b style="color:#1565c0">${yearSeqMap[p.id||p['HN']+p['Admit (Date)']]||'-'}</b>`;
+    const yearSeq=isCarriedIn(p)?'<span style="color:#9ca3af;font-size:10px">ค้าง</span>':`<b style="color:#1565c0">${yearSeqMap[p.id||p['HN']+p['Admit (Date)']]||'-'}</b>`;
     return `<tr class="${getRowClass(p)}">
       <td style="color:#9ca3af">${s+i+1}</td>
       <td style="text-align:center">${yearSeq}</td>
@@ -4337,6 +4495,7 @@ function renderTbl(){
       <td style="text-align:center">${p['CPR']==='Yes'?'<span style="color:#c62828;font-weight:700">CPR</span>':'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
+        ${kxAllowed()?`<button class="btn btn-outline btn-sm" title="Kardex" onclick="openKardex('${esc(pid)}',{m:${m},y:${yr}})">📋</button>`:''}
         <button class="btn btn-outline btn-sm" onclick="openEdit('${esc(pid)}',${m},${yr})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDel('${esc(pid)}','${esc(p['ชื่อ-สกุล'])}',${m},${yr})">🗑️</button>
       </span></td>
@@ -4497,7 +4656,7 @@ function buildForm(p){
       <div id="dcRequireNote" class="req-note" style="display:${isDC?'block':'none'}">🔴 กรุณากรอก D/C ให้ครบ</div>
       <div class="fgrid">
         <div class="fg"><label>สถานะ <span class="req">*</span></label>
-          <select name="สถานะ" id="statusSel" onchange="onStatusChange(this.value)">
+          <select name="สถานะ" id="statusSel" onchange="_dcAutoSet=false;onStatusChange(this.value)">
             <option value="กำลัง admit" ${!isDC?'selected':''}>กำลัง admit</option>
             <option value="จำหน่ายแล้ว" ${isDC?'selected':''}>จำหน่ายแล้ว</option>
           </select>
@@ -4599,7 +4758,7 @@ function buildForm(p){
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
     'ICD (Start)','ICD (End)','ICD (day)','DL for HD (Start)','DL for HD (End)','DL for HD (day)','Falling','APACHE II','Pain score',
     'VAP','CAUTI','CLABSI','SSI','MDR','ชนิดของเชื้อที่พบ','ชนิดสิ่งส่งตรวจ',
-    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
+    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','Kardex','Specific Clinical Risk','Common Clinical Risk','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
     'การหายใจ','dxSpecialType','nurseInCharge','IV (Start)','IV (End)','IV (day)','หมายเหตุ',
     'Pressure Injury','Pressure Injury Date','Unplanned Extubation','Unplanned Extubation Date',
     'Medication Error','Medication Error Date','Medication Error Type','ICDSC Score',
@@ -4622,7 +4781,7 @@ function buildForm(p){
   }
 
   document.getElementById('modalBd').innerHTML=MODAL_TABS.map((t,i)=>`<div class="modal-panel${i===0?' active':''}" id="${t.id}">${panels[t.id]||''}</div>`).join('');
-  setTimeout(()=>{setupAutoCalc();initConsultSurgery();if(isDC)onStatusChange('จำหน่ายแล้ว');document.addEventListener('click',function h(e){if(!e.target.closest('.msd-wrap'))document.querySelectorAll('.msd-list.open').forEach(l=>l.classList.remove('open'));});},50);
+  setTimeout(()=>{setupAutoCalc();initConsultSurgery();initDcAutoStatus();if(isDC)onStatusChange('จำหน่ายแล้ว');document.addEventListener('click',function h(e){if(!e.target.closest('.msd-wrap'))document.querySelectorAll('.msd-list.open').forEach(l=>l.classList.remove('open'));});},50);
 }
 
 // ============================================================
@@ -4785,6 +4944,20 @@ function onDCReasonChange(v){
   const referBox=document.getElementById('referReasonBox');
   if(deadBox) deadBox.style.display=v==='Dead'?'block':'none';
   if(referBox) referBox.style.display=v==='Refer'?'block':'none';
+}
+let _dcAutoSet=false;
+// กรอกวันที่ D/C → เปลี่ยนสถานะเป็น "จำหน่ายแล้ว" ให้เอง (จะได้ตรวจ D/C และวันหยุดอุปกรณ์ครบ) ; ล้างวันที่ → คืนเป็น "กำลัง admit" ถ้าระบบเป็นคนเปลี่ยนเอง
+function onDcDateChange(){
+  const d=document.querySelector('#modalBd [name="D/C (Date)"]'),st=document.getElementById('statusSel');
+  if(!d||!st)return;
+  if(d.value){
+    if(st.value!=='จำหน่ายแล้ว'&&!dcMatch((document.querySelector('#modalBd [name="เหตุผลจำหน่าย"]')||{}).value,'carryover')){st.value='จำหน่ายแล้ว';_dcAutoSet=true;onStatusChange('จำหน่ายแล้ว');}
+  }else if(_dcAutoSet){st.value='กำลัง admit';_dcAutoSet=false;onStatusChange('กำลัง admit');}
+}
+function initDcAutoStatus(){
+  _dcAutoSet=false;
+  const d=document.querySelector('#modalBd [name="D/C (Date)"]');
+  if(d)d.addEventListener('change',onDcDateChange);
 }
 function onStatusChange(val){const isDC=val==='จำหน่ายแล้ว';const n=document.getElementById('dcRequireNote');if(n)n.style.display=isDC?'block':'none';}
 
@@ -5024,7 +5197,12 @@ async function savePatient(){
   const baseReq={'ชื่อ-สกุล':'ชื่อ-สกุล','HN':'HN','อายุ':'อายุ','สิทธิ':'สิทธิ์','Admit (Date)':'วันที่ Admit','Admit (Time)':'เวลา Admit','เตียง':'เตียง','การรับ':'ประเภทการรับ','ผู้บันทึก Admit':'ผู้บันทึก Admit','Unplanned ICU':'Unplanned ICU','Re-admit ICU':'Re-admit ICU','ประเภทผู้ป่วย':'ประเภทผู้ป่วย','Falling':'Falling score','ผ่าตัด':'ผ่าตัด','Diagnosis แรกรับ':'Diagnosis แรกรับ (Dx)','U/D':'โรคประจำตัว (U/D)'};
   if(data['การรับ']!=='ยกมา') baseReq['Ward ที่รับ']='Ward ที่รับ';
   const missing=Object.entries(baseReq).filter(([k])=>!data[k]).map(([,v])=>v);
-  // บังคับ Apache IV เฉพาะตอนเพิ่มใหม่
+  // แพทย์เจ้าของไข้ และ SOS Score: บังคับกรอก — ผู้ป่วยใหม่ต้องมีเสมอ ส่วนผู้ป่วยเดิมที่ยังไม่เคยมีค่านี้ (บันทึกก่อนมีการบังคับ)
+  // จะไม่ถูกบล็อกตอนแก้อย่างอื่น (เช่น D/C) แต่ถ้าเดิมมีค่าอยู่แล้วจะลบทิ้งให้ว่างไม่ได้
+  const origP=editPtId?(_pts.find(x=>(x.id||String(x._row))===editPtId)||{}):{};
+  [['แพทย์เจ้าของไข้','แพทย์เจ้าของไข้'],['SOS Score','SOS Score (NEWS)']].forEach(([k,label])=>{
+    if(!data[k]&&(!editPtId||String(origP[k]||'').trim()!==''))missing.push(label);
+  });
   if(missing.length){toast('กรุณากรอก: '+missing.join(', '),true);return;}
   // ── Consult: ต้องตอบว่ามีแผนกที่ Consult หรือไม่ (ผู้ป่วยใหม่ หรือเมื่อมีการแก้ส่วนนี้) ถ้า Yes ต้องเลือกแผนกและแพทย์ให้ครบทุกแถว ──
   if(!editPtId||_consultDirty){
@@ -5056,7 +5234,9 @@ async function savePatient(){
       if(!confirm){hideLoad();return;}
     }
   }
-  if(data['สถานะ']==='จำหน่ายแล้ว'){
+  // ถือว่าจำหน่ายแล้ว ถ้าเลือกสถานะ "จำหน่ายแล้ว" หรือมีวันที่ D/C (ยกเว้นแถวที่ยกยอดเดือน "ค้างเดือน") — กันกรอกแค่วันที่ D/C แล้วข้ามการตรวจ
+  const isDischarge=data['สถานะ']==='จำหน่ายแล้ว'||(!!data['D/C (Date)']&&!dcMatch(data['เหตุผลจำหน่าย'],'carryover'));
+  if(isDischarge){
     const dcReq={'D/C (Date)':'วันที่ D/C','D/C (Time)':'เวลา D/C','เหตุผลจำหน่าย':'เหตุผลจำหน่าย','CPR':'CPR','Palliative':'Palliative'};
     if(data['เหตุผลจำหน่าย']!=='Dead') dcReq['Ward/Hospital']='Ward/Hospital';
     const mDC=Object.entries(dcReq).filter(([k])=>!data[k]).map(([,v])=>v);
@@ -5922,6 +6102,7 @@ const PERM_MENUS={
     {value:'no_yearly',label:'ปิด รายปี'},
     {value:'no_dashboard',label:'ปิด Dashboard'},
     {value:'no_bedmap',label:'ปิด แผนผังเตียง'},
+    {value:'no_kardex',label:'ปิด Kardex'},
   ],
   doctor:[],
   admin:[
@@ -6348,6 +6529,34 @@ function setBedCol(name,show){
   });
 }
 
+// รวมข้อมูลที่ In Charge/RN แก้ไว้ระดับเตียง (_icBedData) ทับข้อมูลผู้ป่วยจากชีต — ใช้ร่วมกันระหว่างตารางแผนผังเตียงและ Kardex
+function mergeBedData(p){
+  const bedId=(p['เตียง']||'').trim();
+  const bd=_icBedData[bedId];
+  if(!bd) return p;
+  return {
+    ...p,
+    'Diagnosis แรกรับ': bd.dx!==undefined?bd.dx:p['Diagnosis แรกรับ'],
+    'ยา HD': bd.hadrugsList!==undefined?bd.hadrugsList:p['ยา HD'],
+    'แพทย์เจ้าของไข้': bd.doctor!==undefined?bd.doctor:p['แพทย์เจ้าของไข้'],
+    'SOS Score': bd.sos!==undefined?bd.sos:p['SOS Score'],
+    'ประเภทผู้ป่วย ICU': bd.patType!==undefined?bd.patType:p['ประเภทผู้ป่วย ICU'],
+    'Ventilator (Start)': bd.vent_start||p['Ventilator (Start)'],
+    'Ventilator (End)': bd.vent_stop||p['Ventilator (End)'],
+    'A-Line (Start)': bd.aline_start||p['A-Line (Start)'],
+    'A-Line (End)': bd.aline_stop||p['A-Line (End)'],
+    'C-Line (Start)': bd.cline_start||p['C-Line (Start)'],
+    'C-Line (End.)': bd.cline_stop||p['C-Line (End.)'],
+    'IV (Start)': bd.iv_start||p['IV (Start)'],
+    'IV (End)': bd.iv_stop||p['IV (End)'],
+    'F/C (Start)': bd.fc_start||p['F/C (Start)'],
+    'F/C (END)': bd.fc_stop||p['F/C (END)'],
+    'ICD (Start)': bd.icd_start||p['ICD (Start)'],
+    'ICD (End)': bd.icd_stop||p['ICD (End)'],
+    'DL for HD (Start)': bd.dl_start||p['DL for HD (Start)'],
+    'DL for HD (End)': bd.dl_stop||p['DL for HD (End)'],
+  };
+}
 function renderBedAdmitTable(pts){
   const admitted=pts.filter(p=>p['สถานะ']==='กำลัง admit');
   const body=document.getElementById('bedAdmitBody');
@@ -6356,34 +6565,8 @@ function renderBedAdmitTable(pts){
     body.innerHTML='<tr><td colspan="17" class="loading-msg">ไม่มีผู้ป่วยที่กำลัง Admit</td></tr>';
     return;
   }
-  // merge ข้อมูลจาก _icBedData (ถ้ามี)
-  const mergedPts=admitted.map(p=>{
-    const bedId=(p['เตียง']||'').trim();
-    const bd=_icBedData[bedId];
-    if(!bd) return p;
-    return {
-      ...p,
-      'Diagnosis แรกรับ': bd.dx!==undefined?bd.dx:p['Diagnosis แรกรับ'],
-      'ยา HD': bd.hadrugsList!==undefined?bd.hadrugsList:p['ยา HD'],
-      'แพทย์เจ้าของไข้': bd.doctor!==undefined?bd.doctor:p['แพทย์เจ้าของไข้'],
-      'SOS Score': bd.sos!==undefined?bd.sos:p['SOS Score'],
-      'ประเภทผู้ป่วย ICU': bd.patType!==undefined?bd.patType:p['ประเภทผู้ป่วย ICU'],
-      'Ventilator (Start)': bd.vent_start||p['Ventilator (Start)'],
-      'Ventilator (End)': bd.vent_stop||p['Ventilator (End)'],
-      'A-Line (Start)': bd.aline_start||p['A-Line (Start)'],
-      'A-Line (End)': bd.aline_stop||p['A-Line (End)'],
-      'C-Line (Start)': bd.cline_start||p['C-Line (Start)'],
-      'C-Line (End.)': bd.cline_stop||p['C-Line (End.)'],
-      'IV (Start)': bd.iv_start||p['IV (Start)'],
-      'IV (End)': bd.iv_stop||p['IV (End)'],
-      'F/C (Start)': bd.fc_start||p['F/C (Start)'],
-      'F/C (END)': bd.fc_stop||p['F/C (END)'],
-      'ICD (Start)': bd.icd_start||p['ICD (Start)'],
-      'ICD (End)': bd.icd_stop||p['ICD (End)'],
-      'DL for HD (Start)': bd.dl_start||p['DL for HD (Start)'],
-      'DL for HD (End)': bd.dl_stop||p['DL for HD (End)'],
-    };
-  });
+  // merge ข้อมูลจาก _icBedData (ถ้ามี) — ใช้ตัวเดียวกับ Kardex
+  const mergedPts=admitted.map(mergeBedData);
   mergedPts.sort((a,b)=>{
     const n=x=>parseInt(String(x['เตียง']||'').replace(/\D/g,''))||999;
     return n(a)-n(b);
@@ -6433,7 +6616,7 @@ function renderBedAdmitTable(pts){
       <td class="bc-PI" style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td class="bc-หมอ" style="font-size:10px">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td class="bc-พยาบาล" style="font-size:10px">${p['nurseInCharge']||'-'}</td>
-      <td><button class="btn btn-outline btn-sm" onclick="openBedEdit('${esc(pid)}',${bm},${by})">✏️ แก้ไข</button></td>
+      <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="openBedEdit('${esc(pid)}',${bm},${by})">✏️ แก้ไข</button> ${kxAllowed()?`<button class="btn btn-outline btn-sm" title="สรุปผู้ป่วย (Kardex) พิมพ์ได้" onclick="openKardex('${esc(pid)}')">📋 Kardex</button>`:''}</td>
     </tr>`;
   }).join('');
 }
@@ -6442,6 +6625,493 @@ function renderBedAdmitTable(pts){
 // BED-BOARD QUICK EDIT — แก้ไขเฉพาะฟิลด์ที่แสดงในตารางแผนผังเตียง
 // (ต่างจาก openEdit ที่เปิดฟอร์มเต็มทุกฟิลด์)
 // ============================================================
+// ============================================================
+// KARDEX รายเตียง — เนื้อหาตามแบบของหน่วย (ข้อมูลจากระบบ + ช่องที่พยาบาลกรอกเพิ่มและบันทึกได้) พิมพ์ได้
+//   ข้อมูลที่กรอกเพิ่มเก็บเป็น JSON ในคอลัมน์ "Kardex" ของแถวผู้ป่วย (ยกยอดเดือนแล้วตามไปด้วย)
+// ============================================================
+const KX_DEVICES=[
+  ['Ventilator','Ventilator (Start)','Ventilator (End)'],
+  ['A-Line','A-Line (Start)','A-Line (End)'],
+  ['C-Line','C-Line (Start)','C-Line (End.)'],
+  ['IV','IV (Start)','IV (End)'],
+  ['F/C','F/C (Start)','F/C (END)'],
+  ['ICD','ICD (Start)','ICD (End)'],
+  ['DL for HD','DL for HD (Start)','DL for HD (End)']
+];
+const KX_MAXLEN=1500,KX_MAXLEN_CC=4000,KX_MAXPROB=15;
+let _kx={pid:null,p:null,k:{},edit:false};
+const kxText=v=>{const t=String(v==null?'':v).trim();return t?_ht(t):'<span class="kx-empty">-</span>';};
+const kxPre=v=>{const t=String(v==null?'':v).trim();return t?'<span class="kx-pre">'+_ht(t)+'</span>':'<span class="kx-empty">-</span>';};
+function kxDate(v){const m=/^(\d{4}-\d{2}-\d{2})/.exec(String(v||''));return m?toDMY(m[1]):(v?_ht(fmtDate(v)):'');}
+function kxGender(name){
+  const n=String(name||'');
+  if(n.startsWith('นาย')||n.startsWith('เด็กชาย')||n.startsWith('ด.ช.'))return 'ชาย';
+  if(n.startsWith('น.ส')||n.startsWith('นาง')||n.startsWith('เด็กหญิง')||n.startsWith('ด.ญ.'))return 'หญิง';
+  return '';
+}
+function kxParse(p){try{const o=JSON.parse((p&&p['Kardex'])||'{}');return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}}
+const kxv=(k,key)=>String(k&&k[key]!=null?k[key]:'');
+function kxRow(k,v){return `<div class="kx-r"><div class="kx-k">${k}</div><div class="kx-v">${v}</div></div>`;}
+// ช่องที่พยาบาลกรอกเพิ่ม: โหมดดู = ข้อความ | โหมดแก้ = ช่องกรอก
+function kxTA(k,key,ph,rows,max){return `<textarea class="kx-in" data-kx="${key}" rows="${rows||2}" maxlength="${max||KX_MAXLEN}" placeholder="${_ha(ph||'')}">${_ht(kxv(k,key))}</textarea>`;}
+function kxNew(label,key,k,edit,ph,rows){return kxRow(label,edit?kxTA(k,key,ph,rows):kxPre(kxv(k,key)));}
+function kxSec(n,title,body,sys){return `<div class="kx-sec"><h4>${title}${sys?'<span class="kx-sys">'+sys+'</span>':''}</h4>${body}</div>`;}
+
+// ข้อมูลแรกรับ เรียงแบบบรรยาย: ผู้ป่วย → รับย้าย/รับใหม่ จาก… → Dx → U/D → แพ้ยา/แพ้อาหาร → ประวัติการผ่าตัด (ข้อมูลที่ไม่มีจะข้ามไป ไม่ใส่ข้อความเปล่า)
+function kxAdmissionNarrative(p,k){
+  const b=t=>'<b>'+_ht(t)+'</b>',val=v=>String(v==null?'':v).trim();
+  const gender=kxGender(p['ชื่อ-สกุล']),age=val(p['อายุ']);
+  const recv=val(p['การรับ']),from=val(p['Ward ที่รับ']);
+  const dt=kxDate(p['Admit (Date)']),tm=val(p['Admit (Time)']);
+  const dx=val(p['Diagnosis แรกรับ']),ud=val(p['U/D']);
+  const drug=val(p['แพ้ยา']),food=val(kxv(k,'foodAllergy')),surgOld=val(kxv(k,'surgHx'));
+  const paras=[];
+  // ย่อหน้า 1: ผู้ป่วย + การรับ + Dx + โรคประจำตัว
+  const s1=[];
+  let who='';
+  if(gender||age)who='ผู้ป่วย'+(gender?b(gender):'')+(age?' อายุ '+b(age)+' ปี':'');
+  let adm='';
+  if(recv||from||dt)adm=(recv?b(recv):'รับเข้า')+(from?' จาก '+b(from):'')+(dt?' เมื่อวันที่ '+_ht(dt)+(tm?' เวลา '+_ht(tm)+' น.':''):'');
+  if(who||adm){const first=(who+(who&&adm?' ':'')+adm).trim();s1.push(/\.$/.test(first)?first:first+'.');}   // เวลาลงท้าย "น." อยู่แล้ว ไม่ใส่จุดซ้ำ
+  if(s1.length)paras.push(s1.join(' '));
+  const dxud=[];   // การวินิจฉัย + โรคประจำตัว อยู่บรรทัดเดียวกัน
+  if(dx)dxud.push('การวินิจฉัยแรกรับ '+b(dx)+'.');
+  if(ud)dxud.push(/^ไม่มี/.test(ud)?'ไม่มีโรคประจำตัว.':'โรคประจำตัว '+b(ud)+'.');
+  if(dxud.length)paras.push(dxud.join(' '));
+  // ย่อหน้า 2: แพ้ยา / แพ้อาหาร (แพ้ยาเน้นสีแดง)
+  const s2=[];
+  if(drug)s2.push(/^ไม่(มี|แพ้)/.test(drug)?'ไม่มีประวัติแพ้ยา.':'แพ้ยา <span class="kx-alert">⚠️ '+_ht(drug)+'</span>.');
+  if(food)s2.push('แพ้อาหาร '+b(food)+'.');
+  if(s2.length)paras.push(s2.join(' '));
+  // ย่อหน้า 3: ประวัติการผ่าตัด (ที่พยาบาลบันทึก) ต่อด้วย ผ่าตัดก่อนเข้า ICU (จากฟอร์มผู้ป่วย เทียบวันที่กับวัน Admit ICU)
+  const before=kxSurgeries(p).filter(x=>!x.after);
+  const s3=[];
+  if(surgOld)s3.push('ประวัติการผ่าตัด '+b(surgOld)+'.');
+  if(before.length)s3.push('ผ่าตัดก่อนเข้า ICU '+before.map((x,i)=>'ครั้งที่ '+(i+1)+': '+b(x.t)+(x.d?' ('+kxDate(x.d)+')':'')).join(', ')+'.');
+  else if(p['ผ่าตัด']==='No')s3.push('ไม่มีการผ่าตัดก่อนเข้า ICU.');
+  if(s3.length)paras.push(s3.join(' '));
+  return paras.length?'<div class="kx-narr">'+paras.map(x=>'<p>'+x+'</p>').join('')+'</div>':'<span class="kx-empty">-</span>';
+}
+// ── Problems: ชื่อปัญหา + บรรทัดบันทึกรายวัน (วันที่ตรงเนื้อหา: "2/12/69. เกิดอะไร → treat อะไร") ──
+const KX_MAXHIST=30,KX_MAXENT=10;
+function kxNormProblems(a){
+  return (Array.isArray(a)?a:[]).map(x=>{
+    if(typeof x==='string')return {t:x,e:[]};
+    if(!x||typeof x!=='object')return null;
+    let e=Array.isArray(x.e)?x.e.filter(y=>y&&typeof y==='object').map(y=>({d:String(y.d||''),s:String(y.s||'')})):[];
+    if(!e.length&&(x.d||x.s))e=[{d:String(x.d||''),s:String(x.s||'')}];      // รูปแบบเดิม {t,d,s}
+    return {t:String(x.t||''),e:e.filter(y=>y.s)};
+  }).filter(x=>x&&(x.t||x.e.length));
+}
+function kxShortDate(iso){const t=toDMY(String(iso||'').slice(0,10));if(!t)return '';const a=t.split('/');return a.length===3?(+a[0])+'/'+(+a[1])+'/'+String(a[2]).slice(-2):'';}   // 2/12/69
+function kxProbEntry(en){
+  en=en||{};
+  return `<div class="kx-erow"><span class="kx-pdw"><input class="kx-in kx-ed" type="date" name="kxDate" value="${_ha(en.d!==undefined?en.d:localToday())}"></span><textarea class="kx-in kx-es" rows="1" maxlength="400" placeholder="เกิดอะไร → treat อะไร  เช่น BP 78/45 → เริ่ม Norepinephrine + NSS 30 ml/kg">${_ht(en.s||'')}</textarea><button type="button" class="btn btn-danger btn-sm" title="ลบบรรทัด" onclick="kxRemoveEntry(this)">✕</button></div>`;
+}
+function kxProbCard(pr){
+  pr=pr||{};
+  return `<div class="kx-pcard"><div class="kx-prow1"><input class="kx-in kx-pt" type="text" maxlength="100" value="${_ha(pr.t||'')}" placeholder="ปัญหา (สั้นๆ)"><button type="button" class="btn btn-danger btn-sm" title="ลบปัญหา" onclick="kxRemoveProblem(this)">✕</button></div><div class="kx-elist">${(pr.e&&pr.e.length?pr.e:[{}]).map(kxProbEntry).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddEntry(this)">➕ เพิ่มวันที่ / บรรทัด</button></div>`;
+}
+function kxAddEntry(btn){
+  const l=btn.closest('.kx-pcard').querySelector('.kx-elist');
+  if(l.children.length>=KX_MAXENT){toast('เพิ่มได้สูงสุด '+KX_MAXENT+' บรรทัดต่อปัญหา',true);return;}
+  l.insertAdjacentHTML('beforeend',kxProbEntry({}));
+}
+function kxRemoveEntry(btn){const l=btn.closest('.kx-elist');btn.closest('.kx-erow').remove();if(!l.children.length)l.insertAdjacentHTML('beforeend',kxProbEntry({}));}
+// ── การผ่าตัด: ก่อนเข้า ICU / หลังเข้า ICU แยกตามวันที่เทียบกับวัน Admit ICU (วันเดียวกัน = ก่อนเข้า ICU เพราะมักผ่าตัดแล้วย้ายเข้า ICU; ไม่ทราบวันที่ = จัดไว้หลังเข้า ICU) ──
+function kxSurgeries(p){
+  if(p['ผ่าตัด']!=='Yes')return [];
+  const isD=v=>/^\d{4}-\d{2}-\d{2}/.test(String(v||'')),admit=isD(p['Admit (Date)'])?String(p['Admit (Date)']).slice(0,10):'';
+  const st=String(p['ชนิดการผ่าตัด']||'').split(', ').map(x=>x.trim()).filter(Boolean),sd=String(p['วันที่ผ่าตัด']||'').split(', ').map(x=>x.trim());
+  return st.map((t,i)=>{const d=isD(sd[i])?sd[i].slice(0,10):'';return {t,d,after:d?(admit?d>admit:true):true};});
+}
+const kxDaysEn=n=>n===1?'1 day':n+' days';
+// ── Specific / Common clinical risk: ดึงจากข้อมูลผู้ป่วยในระบบ (ช่องกรอกจะเพิ่มในฟอร์มเพิ่มผู้ป่วยภายหลัง) ──
+function kxRiskFromSystem(v){
+  const items=String(v==null?'':v).split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
+  return items.length?'<span class="kx-pre">'+items.map(_ht).join(', ')+'</span>':'<span class="kx-empty">-</span>';   // ตัวอักษรล้วน ไม่มีกรอบ
+}
+// ── อุปกรณ์/สาย: อุปกรณ์ · ครั้งที่ · วันที่ใส่ · วัน off · จำนวนวัน · เหตุผลที่ใส่ต่อ (+ข้อความเตือนตามเกณฑ์ของหน่วยอยู่ในช่องนี้) ──
+// เกณฑ์ที่หน่วยกำหนด (หน้าตั้งค่า Dropdown): ชื่อ|remind แพทย์(วัน)|ครบกำหนด(วัน)|ทำอะไร  เช่น F/C|3|14|off , IV||4|เปลี่ยนเส้น
+function kxDevRules(){
+  const out={},num=v=>{const x=parseInt(v,10);return x>0?x:0;};
+  (o('kardexDeviceRules')||[]).forEach(line=>{
+    const a=String(line).split('|').map(x=>x.trim());
+    if(a[0])out[a[0]]={remind:num(a[1]),due:num(a[2]),action:a[3]||''};
+  });
+  return out;
+}
+function kxRuleLines(rule,days){
+  if(!rule||(!rule.remind&&!rule.due))return '';
+  const L=[],act=rule.action||'ครบกำหนด';
+  if(rule.remind)L.push(days>=rule.remind?`<span class="kx-al warn">🔔 ครบ ${rule.remind} วัน — remind แพทย์</span>`:`<span class="kx-al">remind แพทย์ที่ ${rule.remind} วัน (อีก ${rule.remind-days} วัน)</span>`);
+  if(rule.due)L.push(days>=rule.due?`<span class="kx-al bad">🔴 ครบ ${rule.due} วัน — ${_ht(act)}</span>`:`<span class="kx-al">${_ht(act)} ที่ ${rule.due} วัน (อีก ${rule.due-days} วัน)</span>`);
+  return L.join('');
+}
+// ครั้งที่ใส่ทั้งหมดของแต่ละอุปกรณ์ = ประวัติครั้งก่อน (พยาบาลบันทึกใน Kardex) + ครั้งปัจจุบันจากระบบ
+function kxDevGroups(p,k){
+  const isD=v=>/^\d{4}-\d{2}-\d{2}/.test(String(v||'')),hist=(Array.isArray(k&&k.devHist)?k.devHist:[]).filter(h=>h&&typeof h==='object'&&typeof h.n==='string'&&isD(h.s));
+  return KX_DEVICES.map(d=>{
+    const cs=isD(p[d[1]])?String(p[d[1]]).slice(0,10):'',ce=isD(p[d[2]])?String(p[d[2]]).slice(0,10):'';
+    const eps=hist.filter(h=>h.n===d[0]).map(h=>({s:String(h.s).slice(0,10),e:isD(h.e)?String(h.e).slice(0,10):'',cur:false})).sort((a,b)=>a.s.localeCompare(b.s)).filter(x=>!(cs&&x.s===cs));
+    if(cs)eps.push({s:cs,e:ce,cur:true});
+    return {name:d[0],eps};
+  }).filter(g=>g.eps.length);
+}
+const KX_DEV_NAMES=KX_DEVICES.map(d=>d[0]);
+function kxHistRow(h){
+  h=h||{};
+  return `<div class="kx-hrow"><select class="kx-sel kx-h-n">${KX_DEV_NAMES.map(n=>`<option value="${_ha(n)}"${h.n===n?' selected':''}>${_ht(n)}</option>`).join('')}</select><span class="kx-h-sep">ใส่</span><input class="kx-in kx-h-s" type="date" name="kxDate" value="${_ha(h.s||'')}"><span class="kx-h-sep">→ off</span><input class="kx-in kx-h-e" type="date" name="kxDate" value="${_ha(h.e||'')}"><button type="button" class="btn btn-danger btn-sm" title="ลบ" onclick="this.closest('.kx-hrow').remove()">✕</button></div>`;
+}
+function kxHistEditor(k){
+  const hist=(Array.isArray(k&&k.devHist)?k.devHist:[]).filter(h=>h&&typeof h==='object');
+  return `<div class="kx-hist"><div class="kx-hist-h">ประวัติการใส่ครั้งก่อน (ที่ off ไปแล้ว) — ครั้งปัจจุบันดึงจากระบบ</div><div id="kxHistList">${hist.map(kxHistRow).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddHist()">➕ เพิ่มประวัติการใส่ครั้งก่อน</button></div>`;
+}
+function kxAddHist(){
+  const l=document.getElementById('kxHistList');if(!l)return;
+  if(l.children.length>=KX_MAXHIST){toast('เพิ่มได้สูงสุด '+KX_MAXHIST+' รายการ',true);return;}
+  l.insertAdjacentHTML('beforeend',kxHistRow({}));
+}
+// อุปกรณ์อื่นที่ไม่มีในระบบ (เช่น OG, NG, EVD, closed suction) — พยาบาลเพิ่มเอง แสดงรวมในตารางเดียวกัน
+const KX_MAXEXTRA=10;
+function kxNormExtra(k){
+  const isD=v=>/^\d{4}-\d{2}-\d{2}/.test(String(v||''));
+  return (Array.isArray(k&&k.devExtra)?k.devExtra:[]).filter(x=>x&&typeof x==='object'&&typeof x.n==='string'&&x.n.trim()&&isD(x.s)).map(x=>({n:x.n.trim(),no:String(x.no||''),s:String(x.s).slice(0,10),e:isD(x.e)?String(x.e).slice(0,10):'',r:String(x.r||'')}));
+}
+function kxExtraRow(x){
+  x=x||{};
+  return `<div class="kx-xrow"><input class="kx-in kx-x-n" type="text" maxlength="40" placeholder="ชื่ออุปกรณ์ เช่น OG tube" value="${_ha(x.n||'')}"><input class="kx-in kx-x-no" type="text" maxlength="40" placeholder="เบอร์ (no.)" value="${_ha(x.no||'')}"><span class="kx-h-sep">ใส่</span><input class="kx-in kx-x-s" type="date" name="kxDate" value="${_ha(x.s||'')}"><span class="kx-h-sep">→ off</span><input class="kx-in kx-x-e" type="date" name="kxDate" value="${_ha(x.e||'')}"><input class="kx-in kx-x-r" type="text" maxlength="200" placeholder="เหตุผลที่ใส่ต่อ" value="${_ha(x.r||'')}"><button type="button" class="btn btn-danger btn-sm" title="ลบ" onclick="this.closest('.kx-xrow').remove()">✕</button></div>`;
+}
+function kxExtraEditor(k){
+  return `<div class="kx-hist"><div class="kx-hist-h">อุปกรณ์อื่นที่ไม่มีในระบบ (เช่น OG, NG, EVD, closed suction) — แสดงรวมในตารางด้านบน</div><div id="kxExtraList">${kxNormExtra(k).map(kxExtraRow).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddExtra()">➕ เพิ่มอุปกรณ์อื่น</button></div>`;
+}
+function kxAddExtra(){
+  const l=document.getElementById('kxExtraList');if(!l)return;
+  if(l.children.length>=KX_MAXEXTRA){toast('เพิ่มได้สูงสุด '+KX_MAXEXTRA+' รายการ',true);return;}
+  l.insertAdjacentHTML('beforeend',kxExtraRow({}));
+}
+// หัตถการใน ICU (ฉบับแรก): ดึงจากข้อมูลที่ระบบมีอยู่ — วันที่ใส่อุปกรณ์รุกล้ำ (ท่อช่วยหายใจ/A-Line/C-Line/ICD/สายฟอกไต ทุกครั้งที่ใส่) เรียงตามวันที่ (การผ่าตัดอยู่หัวข้อ "การผ่าตัดหลังเข้า ICU")
+const KX_PROC_LABEL={'Ventilator':'ใส่ท่อช่วยหายใจ / on ventilator','A-Line':'ใส่ A-Line','C-Line':'ใส่ C-Line','ICD':'ใส่ ICD (สายระบายทรวงอก)','DL for HD':'ใส่สายฟอกไต (DL for HD)'};
+function kxProcedures(p,k){
+  const items=[],isD=v=>/^\d{4}-\d{2}-\d{2}/.test(String(v||''));
+  kxDevGroups(p,k).forEach(g=>{const lb=KX_PROC_LABEL[g.name];if(!lb)return;g.eps.forEach((e,i)=>items.push({d:e.s,t:lb+(g.eps.length>1?' (ครั้งที่ '+(i+1)+')':'')}));});
+  items.sort((a,b)=>(a.d||'9999-99-99').localeCompare(b.d||'9999-99-99'));
+  return items;
+}
+function kxProcHtml(p,k){
+  const it=kxProcedures(p,k);
+  return it.length?it.map(x=>`<div class="kx-proc"><span class="kx-pdate">${x.d?kxDate(x.d):'-'}</span> ${_ht(x.t)}</div>`).join(''):'<span class="kx-empty">-</span>';
+}
+function kxDeviceTable(p,k,edit,locked,dcIso){
+  const rules=kxDevRules(),dev=(k&&k.dev&&typeof k.dev==='object'&&!Array.isArray(k.dev))?k.dev:{};
+  const breath=String(p['การหายใจ']||p['Ventilator (Name)']||'').trim();
+  const groups=kxDevGroups(p,k).concat(kxNormExtra(k).map(x=>({name:x.n,extra:x,eps:[{s:x.s,e:x.e,cur:true}]})));
+  const isAct=g=>g.eps.some(e=>e.cur&&!e.e);
+  groups.sort((a,b)=>(isAct(b)?1:0)-(isAct(a)?1:0));
+  let html;
+  if(!groups.length)html='<span class="kx-empty">ไม่มีอุปกรณ์/สายในระบบ</span>';
+  else{
+    const body=groups.map(g=>{
+      const n=g.eps.length,rec=(!g.extra&&dev[g.name]&&typeof dev[g.name]==='object')?dev[g.name]:{};
+      const noTxt=g.extra?g.extra.no:String(rec.no||'');
+      const noCell=(edit&&!g.extra&&g.eps.some(e=>e.cur))?`<input class="kx-in kx-dev-no" type="text" data-dev="${_ha(g.name)}" maxlength="60" placeholder="เบอร์/ขนาด (no.)" value="${_ha(noTxt)}">`:(noTxt?`<div class="kx-no">${_ht(noTxt)}</div>`:'');
+      return g.eps.map((e,i)=>{
+        const active=e.cur&&!e.e&&!locked,days=e.e?devDays(e.s,e.e):((e.cur&&!(locked&&!dcIso))?devDays(e.s,locked?dcIso:''):'');   // จำหน่ายแล้ว: อุปกรณ์ที่ยังไม่มีวัน off นับถึงวัน D/C และไม่มีข้อความเตือน
+        let reason='<span class="kx-empty">-</span>';
+        if(active){
+          const rt=g.extra?g.extra.r:String(rec.r||'');
+          const txt=(edit&&!g.extra)?`<input class="kx-in kx-dev-r" type="text" data-dev="${_ha(g.name)}" maxlength="200" value="${_ha(rt)}" placeholder="เหตุผลที่ยังต้องใส่">`:(rt?'<span class="kx-pre">'+_ht(rt)+'</span>':'');
+          const rl=kxRuleLines(rules[g.name],days===''?0:days);
+          if(txt||rl)reason=txt+rl;
+        }
+        return `<tr data-dev="${_ha(g.name)}" class="${active?'':'kx-off'}">${i===0?`<td rowspan="${n}"><b>${_ht(g.name)}</b>${g.name==='Ventilator'&&breath?' <span style="font-size:11px">('+_ht(breath)+')</span>':''}${noCell}<div class="kx-sys">ใส่ ${n} ครั้ง${g.extra?' · เพิ่มเอง':''}</div></td>`:''}<td>${i+1}</td><td>${kxDate(e.s)}</td><td>${e.e?kxDate(e.e):(e.cur?(locked?'ไม่ได้บันทึกวัน off':'ยังใส่อยู่'):'-')}</td><td>${days===''?'-':days+' วัน'}</td><td>${reason}</td></tr>`;
+      }).join('');
+    }).join('');
+    html=`<div class="kx-tblwrap"><table class="kx-tbl kx-dev"><thead><tr><th>อุปกรณ์</th><th>ครั้งที่</th><th>วันที่ใส่</th><th>วัน off</th><th>จำนวนวัน</th><th>เหตุผลที่ใส่ต่อ</th></tr></thead><tbody>${body}</tbody></table></div>`;
+  }
+  return html+(edit?kxHistEditor(k)+kxExtraEditor(k):'');
+}
+function buildKardexHtml(p,k,edit){
+  k=k||{};
+  const admitIso=(/^(\d{4}-\d{2}-\d{2})/.exec(String(p['Admit (Date)']||''))||[])[1]||'';
+  const locked=kxIsLocked(p),dcIso=kxDcIso(p);
+  const endIso=locked?dcIso:'';                       // จำหน่ายแล้ว: นับวันถึงวัน D/C ไม่ใช่ถึงวันนี้ (ไม่มีวัน D/C = ไม่แสดงจำนวนวัน)
+  const dayCount=iso=>iso?((locked&&!dcIso)?'':devDays(iso,endIso)):'';
+  const los=dayCount(admitIso);
+  const ageRaw=String(p['อายุ']||'').trim(),age=/^\d+$/.test(ageRaw)?ageRaw+' ปี':ageRaw;
+  // Problems
+  const probs=kxNormProblems(k.problems);
+  const probView=probs.length?probs.map((x,i)=>`<div class="kx-pitem"><div><b>${i+1}. ${_ht(x.t||'(ไม่มีชื่อ)')}</b></div>${x.e.map(y=>`<div class="kx-psum">${y.d?'<span class="kx-pdate">'+_ht(kxShortDate(y.d))+'.</span> ':''}<span class="kx-pre">${_ht(y.s)}</span></div>`).join('')}</div>`).join(''):'<span class="kx-empty">-</span>';
+  const probEdit=`<div id="kxProbList">${(probs.length?probs:[{}]).map(kxProbCard).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddProblem()">➕ เพิ่ม Problem</button>`;
+  // ICDSC (จากระบบ)
+  const icdsc=String(p['ICDSC Score']||'').trim();
+  const icdscHtml=icdsc?((parseInt(icdsc)>=4?`<span style="color:#c62828;font-weight:700">${_ht(icdsc)} ⚠️</span>`:_ht(icdsc))+(p['ICDSC Date']?' <span class="kx-sys">('+kxDate(p['ICDSC Date'])+')</span>':'')):'<span class="kx-empty">-</span>';
+  // Complication (จากระบบ)
+  let pi='<span class="kx-empty">-</span>';
+  try{const ev=JSON.parse(p['Pressure Injury']||'[]');if(ev.length)pi=ev.map(e=>_ht(e.grade||'')+(e.date?' ('+kxDate(e.date)+')':'')).join(', ');}catch(e){}
+  const clabsi=/^(ใช่|yes)$/i.test(String(p['CLABSI']||'').trim())?'<span class="kx-tag">CLABSI</span>':'<span class="kx-empty">-</span>';
+  // คะแนนประเมิน (จากระบบ): NEWS = ช่อง SOS Score เหมือนในตารางแผนผังเตียง / Apache IV
+  const apache=String(p['Apache IV Score']||'').trim(),apm=String(p['Apache IV Mortality']||'').trim();
+  const scoresHtml=kxRow('NEWS',kxText(p['SOS Score']))+kxRow('Apache IV',apache?_ht(apache)+(apm?' <span class="kx-sys">(Mortality '+_ht(apm)+(/%/.test(apm)?'':'%')+')</span>':''):'<span class="kx-empty">-</span>');
+  // การติดเชื้อ (จากระบบ): VAP / CAUTI / SSI / MDR + เชื้อที่พบ + สิ่งส่งตรวจ  (CLABSI แสดงในหัวข้อ Complication ตามแบบของหน่วย)
+  const infFlags=['VAP','CAUTI','SSI','MDR'].filter(f=>/^(ใช่|yes)$/i.test(String(p[f]||'').trim()));
+  const pathogen=String(p['ชนิดของเชื้อที่พบ']||'').trim(),specimen=String(p['ชนิดสิ่งส่งตรวจ']||'').trim();
+  const infHtml=(infFlags.length||pathogen||specimen)?(infFlags.length?kxRow('การติดเชื้อ',infFlags.map(f=>`<span class="kx-tag">${f}</span>`).join('')):'')+(pathogen?kxRow('เชื้อที่พบ',_ht(pathogen)):'')+(specimen?kxRow('สิ่งส่งตรวจ',_ht(specimen)):''):'<span class="kx-empty">-</span>';
+  // ยา HD / High Alert (จากระบบ) — แยกเป็นหัวข้อของตัวเอง
+  const haHtml=p['ยา HD']?`<span style="color:#c62828;font-weight:700">${_ht(p['ยา HD'])}</span>`:'<span class="kx-empty">-</span>';
+  // Palliative / PPS
+  const ppsOpts=['','100','90','80','70','60','50','40','30','20','10','0'];
+  const palEdit=`<select class="kx-sel" data-kx="palliative">${['','Yes','No'].map(o=>`<option value="${o}"${kxv(k,'palliative')===o?' selected':''}>${o||'-- Palliative --'}</option>`).join('')}</select> <select class="kx-sel" data-kx="pps">${ppsOpts.map(o=>`<option value="${o}"${kxv(k,'pps')===o?' selected':''}>${o===''?'-- PPS % --':'PPS '+o+'%'}</option>`).join('')}</select>`;
+  const palView=(kxv(k,'palliative')||kxv(k,'pps'))?_ht(kxv(k,'palliative')||'-')+(kxv(k,'pps')!==''?' · PPS '+_ht(kxv(k,'pps'))+'%':''):'<span class="kx-empty">-</span>';
+  // Consult (จากระบบ)
+  const cd=String(p['แผนกที่ Consult']||'').split(', ').map(x=>x.trim()).filter(Boolean),cp=String(p['แพทย์ที่ Consult']||'').split(', ').map(x=>x.trim());
+  const consult=cd.length?cd.map((d,i)=>_ht(d)+(cp[i]&&cp[i]!=='-'?' — '+_ht(cp[i]):'')).join('<br>'):(p['มีแผนกที่ Consult']==='No'?'ไม่มี':'<span class="kx-empty">-</span>');
+  const devHtml=kxDeviceTable(p,k,edit,locked,dcIso);
+  // Hospital admission: ระบบยังไม่มีช่องนี้ → พยาบาลกรอกใน Kardex (ต้องไม่หลังวัน Admit ICU)
+  const hospIso=/^\d{4}-\d{2}-\d{2}/.test(kxv(k,'hospAdmit'))?kxv(k,'hospAdmit').slice(0,10):'',hospDays=dayCount(hospIso);
+  const hospHtml=edit?`<span class="kx-hospw"><input class="kx-in kx-hosp" type="date" name="kxDate" value="${_ha(hospIso)}"></span>`:(hospIso?kxDate(hospIso)+(hospDays!==''?` (${kxDaysEn(hospDays)})`:''):'<span class="kx-empty">-</span>');
+  // การผ่าตัดหลังเข้า ICU
+  const afterSurg=kxSurgeries(p).filter(x=>x.after).sort((a,b)=>(a.d||'9999-99-99').localeCompare(b.d||'9999-99-99'));
+  const afterSurgHtml=afterSurg.length?afterSurg.map(x=>`<div class="kx-proc"><span class="kx-pdate">${x.d?kxDate(x.d):'-'}</span> ผ่าตัด: ${_ht(x.t)}</div>`).join(''):(p['ผ่าตัด']==='No'?'ไม่มี':'<span class="kx-empty">-</span>');
+  const now=new Date().toLocaleString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  const meta=k._at?`อัปเดตล่าสุด ${_ht(new Date(k._at).toLocaleString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}))}${k._by?' โดย '+_ht(k._by):''}`:'ยังไม่เคยบันทึกข้อมูลเพิ่มเติม';
+  const sys='(จากระบบ)';
+  // CC: กล่องเล็ก | HPI: กล่องบรรยายใหญ่ (ขยายตามข้อความ)
+  const ccBox=`<div class="kx-cc kx-cc-s">${edit?kxTA(k,'cc','',2,300):kxPre(kxv(k,'cc'))}</div>`;   // CC: กล่องเหมือน HPI แต่เล็ก
+  const hpiBox=`<div class="kx-cc">${edit?kxTA(k,'hpi','',8,KX_MAXLEN_CC):kxPre(kxv(k,'hpi'))}</div>`;
+  return `<div class="kx-sheet">
+    ${locked?`<div class="kx-lock">🔒 ${String(p['สถานะ']||'').trim()==='ค้างเดือน'?'ยกยอดไปเดือนถัดไปแล้ว'+(dcIso?' (ฉบับ ณ วันที่ '+kxDate(dcIso)+')':'')+' — ฉบับล่าสุดอยู่ในเดือนถัดไป':'จำหน่ายแล้ว'+(dcIso?' '+kxDate(dcIso):'')+(String(p['เหตุผลจำหน่าย']||'').trim()?' · '+_ht(String(p['เหตุผลจำหน่าย']).trim()):'')} — ดูและพิมพ์ได้อย่างเดียว</div>`:''}
+    ${edit?'<div class="kx-edit-banner">✏️ กำลังแก้ไข — ข้อความสีเทา "(จากระบบ)" แก้ที่ฟอร์มผู้ป่วย กรอกช่องอื่นแล้วกด "บันทึก Kardex"</div>':''}
+    <div class="kx-head">
+      <div class="kx-hl"><div class="kx-brand">หอผู้ป่วยหนัก โรงพยาบาลสตูล</div><div class="kx-ttl">KARDEX</div><div class="kx-meta">${meta}</div></div>
+      <div class="kx-hr"><div class="kx-bed">เตียง ${_ht(p['เตียง']||'-')}</div><div class="kx-print">พิมพ์เมื่อ ${_ht(now)}</div></div>
+    </div>
+    <div class="kx-idg">
+      <div class="kx-f nm c5"><i>ชื่อ-สกุล</i><b>${kxText(p['ชื่อ-สกุล'])}</b></div>
+      <div class="kx-f hn c3"><i>HN</i><b>${kxText(p['HN'])}</b></div>
+      <div class="kx-f an c2"><i>AN</i><b>${kxText(p['AN'])}</b></div>
+      <div class="kx-f ag c2"><i>อายุ</i><b>${kxText(age)}</b></div>
+      <div class="kx-f ic c5"><i>ICU admission</i><b>${kxDate(p['Admit (Date)'])?kxDate(p['Admit (Date)'])+(p['Admit (Time)']?' '+_ht(p['Admit (Time)']):'')+(los!==''?` (${kxDaysEn(los)})`:''):'<span class="kx-empty">-</span>'}</b></div>
+      <div class="kx-f ho c4"><i>Hospital admission</i><b>${hospHtml}</b></div>
+      <div class="kx-f dr c3"><i>แพทย์เจ้าของไข้</i><b>${kxText(p['แพทย์เจ้าของไข้'])}</b></div>
+    </div>
+    ${kxSec(1,'ข้อมูลแรกรับ',kxAdmissionNarrative(p,k)+(edit?kxNew('แพ้อาหาร','foodAllergy',k,edit,'เช่น อาหารทะเล, ไข่',1)+kxNew('ประวัติผ่าตัดเดิม','surgHx',k,edit,'ผ่าตัดอะไร เมื่อไหร่ (ก่อนมา admit)',2):''),edit?'(ข้อความบรรยายสร้างจากข้อมูลในระบบ — แก้ Dx/U/D/แพ้ยา/ผ่าตัด ที่ฟอร์มผู้ป่วย)':'')}
+    ${kxSec(2,'Chief Complaint (CC)',ccBox)}
+    ${kxSec(2,'History of Present Illness (HPI)',hpiBox)}
+    ${kxSec(3,'Problems',edit?probEdit:probView)}
+    ${kxSec(4,'Specific clinical risk',kxRiskFromSystem(p['Specific Clinical Risk']),sys)}
+    ${kxSec(5,'Common clinical risk',kxRiskFromSystem(p['Common Clinical Risk']),sys)}
+    ${kxSec(6,'คะแนนประเมิน',scoresHtml,sys)}
+    ${kxSec(7,'VTE (Caprini) / U/S DVT',
+      kxRow('Caprini score',edit?`<input class="kx-in" style="max-width:110px" type="number" min="0" max="50" data-kx="caprini" value="${_ha(kxv(k,'caprini'))}">`:kxText(kxv(k,'caprini')))+
+      kxNew('U/S DVT','dvtUS',k,edit,'วันที่ / ผล',1))}
+    ${kxSec(8,'Delirium (ICDSC)',kxRow('ICDSC',icdscHtml),sys)}
+    ${kxSec(9,'Rehabilitation',kxNew('','rehab',k,edit,'การฟื้นฟู / กายภาพ',2).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(10,'ด้านจิต-สังคม',kxNew('','psych',k,edit,'ผู้ดูแล / ครอบครัว / อารมณ์ / เศรษฐานะ ฯลฯ',2).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(11,'Complication',
+      kxRow('Bedsores',pi)+kxRow('CLABSI',clabsi)+kxRow('Falling score',kxText(p['Falling']))+
+      kxNew('Phlebitis / อื่นๆ','complication',k,edit,'Phlebitis, ตกเตียง, อื่นๆ',1),'(Bedsores/CLABSI/Falling จากระบบ)')}
+    ${kxSec(12,'การติดเชื้อ',infHtml,sys)}
+    ${kxSec(13,'Palliative care / PPS',kxRow('Palliative / PPS',edit?palEdit:palView))}
+    ${kxSec(14,'แพทย์ Consult',kxRow('แผนก — แพทย์',consult),sys)}
+    ${kxSec(15,'Diet',kxNew('','diet',k,edit,'ชนิดอาหาร / NPO / จำกัด',1).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(16,'ประวัติการถ่าย',kxNew('','bowel',k,edit,'ถ่ายล่าสุด / ลักษณะ',1).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(17,'ยา HD ที่ใช้อยู่',haHtml,sys)}
+    ${kxSec(18,'การผ่าตัดหลังเข้า ICU',afterSurgHtml,sys)}
+    ${kxSec(18,'หัตถการใน ICU',kxProcHtml(p,k),sys)}
+    ${kxSec(19,'อุปกรณ์ทางการแพทย์',devHtml,sys)}
+    ${kxSec(20,'ผลการเพาะเชื้อ (Culture)',kxNew('','culture',k,edit,'ชนิดสิ่งส่งตรวจ วันที่ส่ง ผลเชื้อที่พบ และความไวต่อยา',3).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(21,'ผลตรวจ (CT brain ฯลฯ)',kxNew('','imaging',k,edit,'CT / MRI / X-ray / อื่นๆ',2).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(22,'รายการส่งต่อและแผนการดำเนินการในเวรถัดไป',kxNew('','handover',k,edit,'ระบุรายการที่ค้างส่งตรวจ รายการที่ฝากดำเนินการต่อ และแผนการดำเนินการในเวรถัดไป',4).replace('<div class="kx-k"></div>',''))}
+    <div class="kx-foot"><span>ผู้สรุป/ตรวจสอบ: ____________________  เวร: ________</span><span>ข้อมูลจากระบบ ICU Registry ณ เวลาพิมพ์</span></div>
+  </div>`;
+}
+function kxAddProblem(){
+  const l=document.getElementById('kxProbList');if(!l)return;
+  if(l.children.length>=KX_MAXPROB){toast('เพิ่มได้สูงสุด '+KX_MAXPROB+' ข้อ',true);return;}
+  l.insertAdjacentHTML('beforeend',kxProbCard({}));
+  const ins=l.querySelectorAll('.kx-pt');ins[ins.length-1].focus();
+}
+function kxRemoveProblem(btn){const l=document.getElementById('kxProbList');btn.closest('.kx-pcard').remove();if(l&&!l.children.length)l.insertAdjacentHTML('beforeend',kxProbCard({}));}
+function kxAutosize(el){el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px';}
+function kxAutosizeAll(){document.querySelectorAll('#kardexSheet textarea.kx-in').forEach(kxAutosize);}
+document.addEventListener('input',e=>{const t=e.target;if(t&&t.matches&&t.matches('#kardexSheet textarea.kx-in'))kxAutosize(t);});
+function kxRender(){
+  document.getElementById('kardexSheet').innerHTML=buildKardexHtml(_kx.p,_kx.k,_kx.edit);
+  if(_kx.edit)requestAnimationFrame(kxAutosizeAll);
+  document.getElementById('kxFtView').style.display=_kx.edit?'none':'contents';
+  const eb=document.getElementById('kxEditBtn');if(eb)eb.style.display=(_kx.p&&kxIsLocked(_kx.p))?'none':'';
+  document.getElementById('kxFtEdit').style.display=_kx.edit?'contents':'none';
+}
+// Kardex ถูกล็อก (ดู/พิมพ์ได้อย่างเดียว ทุกบทบาท) เมื่อ จำหน่ายแล้ว / ยกยอดเดือนแล้ว / มีวันที่ D/C — ฝั่งเซิร์ฟเวอร์ตรวจกติกาเดียวกัน
+function kxIsLocked(p){
+  const st=String((p&&p['สถานะ'])||'').trim(),dc=String((p&&p['D/C (Date)'])||'').trim();
+  return st==='จำหน่ายแล้ว'||st==='ค้างเดือน'||dc!=='';
+}
+const kxDcIso=p=>{const m=/^(\d{4}-\d{2}-\d{2})/.exec(String((p&&p['D/C (Date)'])||''));return m?m[1]:'';};
+function openKardexFromList(pid){openKardex(pid,{m:parseInt(document.getElementById('fMonth').value),y:parseInt(document.getElementById('fYear').value)});}
+function openKardex(pid,opts){
+  if(!kxAllowed()){toast('🔒 ไม่มีสิทธิ์เข้าถึง Kardex',true);return;}
+  const raw=_pts.find(x=>(x.id||String(x._row))===pid);
+  if(!raw){toast('ไม่พบข้อมูลผู้ป่วยรายนี้ ลองรีเฟรชหน้าแผนผังเตียงอีกครั้ง',true);return;}
+  const p=mergeBedData(raw);
+  const nowK=new Date();
+  _kx={pid,p,raw,k:kxParse(raw),edit:false,m:(opts&&opts.m)||nowK.getMonth()+1,y:(opts&&opts.y)||nowK.getFullYear()};   // เดือนของแถวที่เปิด (จากหน้ารายชื่อ = เดือนที่เลือก, จากแผนผังเตียง/หน้า Kardex = เดือนปัจจุบัน)
+  document.getElementById('kardexTitle').textContent='Kardex — เตียง '+(p['เตียง']||'-');
+  kxRender();
+  document.getElementById('kardexModal').classList.add('open');
+}
+function closeKardex(){document.getElementById('kardexModal').classList.remove('open');_kx.edit=false;}
+function kxStartEdit(){
+  if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
+  _kx.edit=true;kxRender();
+}
+function kxCancelEdit(){_kx.edit=false;kxRender();}
+// ช่องวันที่ที่แอปทำให้เป็น dd/mm/พ.ศ. จะมีช่องข้อความที่ class เดียวกันด้วย — เลือกเฉพาะ input[type=date] ตัวจริง (เก็บค่า yyyy-mm-dd)
+const kxDateOf=(root,cls)=>{const e=root.querySelector('input[type="date"].'+cls);return e?e.value:'';};
+function kxValidate(){
+  const today=localToday();
+  for(const r of Array.from(document.querySelectorAll('#kxHistList .kx-hrow'))){
+    const n=r.querySelector('.kx-h-n').value,s=kxDateOf(r,'kx-h-s'),e=kxDateOf(r,'kx-h-e');
+    if(!s&&!e)continue;
+    if(!s)return 'ประวัติการใส่ '+n+': กรุณากรอกวันที่ใส่';
+    if(e&&e<s)return 'ประวัติการใส่ '+n+': วัน off ต้องไม่ก่อนวันที่ใส่';
+    if(s>today||(e&&e>today))return 'ประวัติการใส่ '+n+': วันที่ต้องไม่เป็นวันในอนาคต';
+  }
+  for(const r of Array.from(document.querySelectorAll('#kxExtraList .kx-xrow'))){
+    const n=r.querySelector('.kx-x-n').value.trim(),no=r.querySelector('.kx-x-no').value.trim(),s=kxDateOf(r,'kx-x-s'),e=kxDateOf(r,'kx-x-e'),rs=r.querySelector('.kx-x-r').value.trim();
+    if(!n&&!no&&!s&&!e&&!rs)continue;
+    if(!n)return 'อุปกรณ์อื่น: กรุณากรอกชื่ออุปกรณ์';
+    if(!s)return 'อุปกรณ์อื่น '+n+': กรุณากรอกวันที่ใส่';
+    if(e&&e<s)return 'อุปกรณ์อื่น '+n+': วัน off ต้องไม่ก่อนวันที่ใส่';
+    if(s>today||(e&&e>today))return 'อุปกรณ์อื่น '+n+': วันที่ต้องไม่เป็นวันในอนาคต';
+  }
+  const cards=Array.from(document.querySelectorAll('#kxProbList .kx-pcard'));
+  for(let i=0;i<cards.length;i++){
+    const t=cards[i].querySelector('.kx-pt').value.trim(),ents=Array.from(cards[i].querySelectorAll('.kx-erow')).map(r=>({d:kxDateOf(r,'kx-ed'),s:r.querySelector('.kx-es').value.trim()}));
+    if(!t&&ents.some(y=>y.s))return 'Problem ข้อ '+(i+1)+': กรุณากรอกชื่อปัญหา';
+    if(ents.some(y=>y.s&&y.d&&y.d>today))return 'Problem ข้อ '+(i+1)+': วันที่ต้องไม่เป็นวันในอนาคต';
+  }
+  const hp=document.querySelector('#kardexSheet input[type="date"].kx-hosp'),icu=String((_kx.p&&_kx.p['Admit (Date)'])||'').slice(0,10);
+  if(hp&&hp.value){
+    if(hp.value>today)return 'Hospital admission: วันที่ต้องไม่เป็นวันในอนาคต';
+    if(/^\d{4}-\d{2}-\d{2}$/.test(icu)&&hp.value>icu)return 'Hospital admission ต้องไม่หลังวัน ICU admission';
+  }
+  return '';
+}
+function kxCollect(){
+  const k={v:1};
+  document.querySelectorAll('#kardexSheet [data-kx]').forEach(el=>{k[el.dataset.kx]=String(el.value==null?'':el.value).trim().slice(0,el.maxLength>0?el.maxLength:KX_MAXLEN);});
+  // เหตุผลที่ยังใส่อุปกรณ์ต่อ (เฉพาะอุปกรณ์ที่ยังใส่อยู่)
+  const devOut={};
+  document.querySelectorAll('#kardexSheet .kx-dev-r').forEach(inp=>{const r=inp.value.trim().slice(0,200);if(r)(devOut[inp.dataset.dev]=devOut[inp.dataset.dev]||{}).r=r;});
+  document.querySelectorAll('#kardexSheet .kx-dev-no').forEach(inp=>{const v=inp.value.trim().slice(0,60);if(v)(devOut[inp.dataset.dev]=devOut[inp.dataset.dev]||{}).no=v;});
+  if(Object.keys(devOut).length)k.dev=devOut;
+  // อุปกรณ์อื่นที่ไม่มีในระบบ
+  const extra=[];
+  document.querySelectorAll('#kxExtraList .kx-xrow').forEach(r=>{const n=r.querySelector('.kx-x-n').value.trim().slice(0,40),no=r.querySelector('.kx-x-no').value.trim().slice(0,40),s=kxDateOf(r,'kx-x-s'),e=kxDateOf(r,'kx-x-e'),rs=r.querySelector('.kx-x-r').value.trim().slice(0,200);if(n&&s){const o={n,s};if(no)o.no=no;if(e)o.e=e;if(rs)o.r=rs;extra.push(o);}});
+  if(extra.length)k.devExtra=extra.slice(0,KX_MAXEXTRA);
+  // ประวัติการใส่ครั้งก่อน
+  const hist=[];
+  document.querySelectorAll('#kxHistList .kx-hrow').forEach(r=>{const n=r.querySelector('.kx-h-n').value,s=kxDateOf(r,'kx-h-s'),e=kxDateOf(r,'kx-h-e');if(s)hist.push(e?{n,s,e}:{n,s});});
+  if(hist.length)k.devHist=hist.slice(0,KX_MAXHIST);
+  // Problems: ชื่อ + วันที่ + สรุป
+  k.problems=Array.from(document.querySelectorAll('#kxProbList .kx-pcard')).map(c=>({t:c.querySelector('.kx-pt').value.trim().slice(0,100),e:Array.from(c.querySelectorAll('.kx-erow')).map(r=>({d:kxDateOf(r,'kx-ed'),s:r.querySelector('.kx-es').value.trim().slice(0,400)})).filter(y=>y.s)})).filter(x=>x.t).map(x=>{const o={t:x.t};if(x.e.length)o.e=x.e.map(y=>{const q={};if(y.d)q.d=y.d;q.s=y.s;return q;});return o;}).slice(0,KX_MAXPROB);
+  const hp=document.querySelector('#kardexSheet input[type="date"].kx-hosp');if(hp&&hp.value)k.hospAdmit=hp.value;
+  Object.keys(k).forEach(x=>{if(x!=='v'&&(k[x]===''||(Array.isArray(k[x])&&!k[x].length)))delete k[x];});
+  k._at=new Date().toISOString();k._by=(currentUser&&currentUser.fullname)||'';
+  return k;
+}
+async function kxSave(){
+  if(!_kx.pid)return;
+  if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
+  const bad=kxValidate();if(bad){toast(bad,true);return;}
+  const k=kxCollect(),json=JSON.stringify(k);
+  const m=_kx.m,y=_kx.y;   // เดือน/ปีของแถวที่เปิดอยู่
+  const btn=document.getElementById('kxSaveBtn');if(btn){btn.disabled=true;btn.textContent='กำลังบันทึก...';}
+  try{
+    await api('savePatient',{},{month:m,year:y,id:_kx.pid,data:{Kardex:json}});
+    _kx.k=k;_kx.edit=false;
+    if(_kx.raw)_kx.raw['Kardex']=json;_kx.p['Kardex']=json;
+    try{api('writeLog',{},{user:currentUser.fullname,action:'แก้ Kardex เตียง '+(_kx.p['เตียง']||'-')});}catch(e){}
+    kxRender();toast('บันทึก Kardex แล้ว ✓');
+    const kbs=document.getElementById('sec-kardex');if(kbs&&kbs.classList.contains('active'))renderKardexBoard();   // การ์ดบนหน้า Kardex อัปเดตเวลา/ผู้แก้ทันที
+  }catch(e){toast(e.message,true);}
+  finally{if(btn){btn.disabled=false;btn.textContent='💾 บันทึก Kardex';}}
+}
+// พิมพ์: สร้างจากข้อมูลที่บันทึกแล้ว (ไม่ใช่จากช่องกรอก) ไว้ใต้ body โดยตรง แล้วซ่อนส่วนอื่นเฉพาะตอนพิมพ์
+function printKardex(){
+  if(!_kx.p)return;
+  if(_kx.edit){toast('กรุณากด "บันทึก Kardex" หรือ "ยกเลิก" ก่อนพิมพ์',true);return;}
+  const old=document.getElementById('kardexPrintRoot');if(old)old.remove();
+  const root=document.createElement('div');root.id='kardexPrintRoot';root.innerHTML=buildKardexHtml(_kx.p,_kx.k,false);document.body.appendChild(root);
+  const cleanup=()=>{const r=document.getElementById('kardexPrintRoot');if(r)r.remove();window.removeEventListener('afterprint',cleanup);};
+  window.addEventListener('afterprint',cleanup);
+  window.print();
+  setTimeout(cleanup,120000);
+}
+
+// ============================================================
+// หน้า Kardex (เมนูใหม่): การ์ดทุกเตียง กดแล้วเปิด Kardex — พิมพ์ทีละเตียงจากปุ่มพิมพ์ใน Kardex
+// สิทธิ์: พยาบาลทุกคนที่ล็อกอินแก้ได้ (บันทึกชื่อผู้แก้) — แพทย์และบัญชีจำกัดสิทธิ์ (Dashboard+แผนผังเตียง) ไม่เห็น Kardex
+// ============================================================
+function kxAllowed(){
+  const u=currentUser||{};
+  if(u.role==='doctor'||u.viewAccess==='dashboard_bedmap')return false;
+  return !String(u.viewAccess||'').split(',').includes('no_kardex');
+}
+let _kbPts=[];
+async function loadKardexBoard(){
+  const now=new Date(),m=now.getMonth()+1,y=now.getFullYear();
+  showLoad('กำลังโหลด Kardex...');
+  let pts=[];
+  delete _dashCache[`${y}-${m}`];                              // อ่านข้อมูลล่าสุดเสมอ (ไม่ใช้แคช) กัน Kardex เก่าไปทับของเพื่อนร่วมงาน
+  try{pts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}
+  finally{hideLoad();}
+  _pts=pts;                                                   // openKardex ค้นหาผู้ป่วยจาก _pts (เหมือนหน้าแผนผังเตียง)
+  _kbPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
+  renderKardexBoard();
+}
+function kbCard(raw){
+  const p=mergeBedData(raw),k=kxParse(raw),pid=raw.id||String(raw._row);
+  const admit=(/^(\d{4}-\d{2}-\d{2})/.exec(String(p['Admit (Date)']||''))||[])[1]||'',days=admit?devDays(admit,''):'';
+  const allergy=String(p['แพ้ยา']||'').trim(),hasAll=allergy&&!/^ไม่(มี|แพ้)/.test(allergy);
+  const ageRaw=String(p['อายุ']||'').trim(),age=/^\d+$/.test(ageRaw)?ageRaw+' ปี':ageRaw;
+  const upd=k._at?new Date(k._at).toLocaleString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+  const foot=upd?`<div class="kb-foot">อัปเดต ${_ht(upd)}${k._by?' · '+_ht(k._by):''}</div>`:'<div class="kb-foot kb-warn">ยังไม่เคยบันทึก Kardex</div>';
+  return `<button type="button" class="kb-card" onclick="openKardex('${_ha(pid)}')">
+    <div class="kb-top"><span class="kb-bed">${_ht(String(p['เตียง']||'-').trim()||'-')}</span><span class="kb-days">${days===''?'':_ht(kxDaysEn(days))}</span></div>
+    <div class="kb-name">${kxText(p['ชื่อ-สกุล'])}</div>
+    <div class="kb-sub">HN ${_ht(String(p['HN']||'-'))}${age?' · '+_ht(age):''}</div>
+    <div class="kb-dx">${_ht(String(p['Diagnosis แรกรับ']||'').trim())||'-'}</div>
+    ${hasAll?'<div class="kb-tag">⚠️ แพ้ยา</div>':''}
+    ${foot}
+  </button>`;
+}
+function renderKardexBoard(){
+  const grid=document.getElementById('kbGrid'),sum=document.getElementById('kbSummary');if(!grid||!sum)return;
+  const q=String((document.getElementById('kbSearch')||{}).value||'').trim().toLowerCase();
+  const bedNo=x=>parseInt(String(x['เตียง']||'').replace(/\D/g,''))||999;
+  const list=_kbPts.slice().sort((a,b)=>bedNo(a)-bedNo(b));
+  const never=list.filter(p=>!kxParse(p)._at).length;
+  const usedBeds=new Set(list.map(p=>String(p['เตียง']||'').trim()).filter(b=>{const m=/^ICU(\d+)$/.exec(b);return m&&+m[1]>=1&&+m[1]<=TOTAL_BEDS;})).size;   // นับเฉพาะเตียงในรายการ ให้ตรงกับการ์ดที่แสดง
+  sum.innerHTML=`ผู้ป่วย <b>${list.length}</b> ราย · เตียงว่าง <b>${TOTAL_BEDS-usedBeds}</b> · ยังไม่เคยบันทึก Kardex <b class="${never?'kb-warn-t':''}">${never}</b> ราย`;
+  if(q){
+    const m=list.filter(p=>[p['เตียง'],p['ชื่อ-สกุล'],p['HN']].some(v=>String(v==null?'':v).toLowerCase().includes(q)));
+    grid.innerHTML=m.length?m.map(kbCard).join(''):'<div class="kb-none">ไม่พบผู้ป่วยที่ค้นหา</div>';
+    return;
+  }
+  const inList=p=>{const m=/^ICU(\d+)$/.exec(String(p['เตียง']||'').trim());return !!m&&+m[1]>=1&&+m[1]<=TOTAL_BEDS;};
+  const html=[];
+  for(let n=1;n<=TOTAL_BEDS;n++){
+    const here=list.filter(p=>String(p['เตียง']||'').trim()==='ICU'+n);
+    if(here.length)here.forEach(p=>html.push(kbCard(p)));
+    else html.push(`<div class="kb-card kb-free"><div class="kb-top"><span class="kb-bed">ICU${n}</span></div><div class="kb-freetxt">ว่าง</div></div>`);
+  }
+  list.filter(p=>!inList(p)).forEach(p=>html.push(kbCard(p)));   // ผู้ป่วยที่ใช้เตียงนอกรายการ / ไม่ระบุเตียง
+  grid.innerHTML=html.join('');
+}
+
 let _bedEditPid=null,_bedEditM=null,_bedEditY=null;
 
 function openBedEdit(pid,m,y){
@@ -6511,6 +7181,10 @@ async function saveBedEdit(){
     'แพทย์เจ้าของไข้': g('be_doctor'),
     'nurseInCharge': g('be_nurse'),
   };
+  // แพทย์เจ้าของไข้ / NEWS (SOS Score): ถ้าเดิมมีค่าอยู่ ห้ามเว้นว่าง (ไม่ให้ข้ามการบังคับกรอกผ่านหน้านี้)
+  const origQ=_pts.find(x=>(x.id||String(x._row))===_bedEditPid)||{};
+  const blanked=[['แพทย์เจ้าของไข้','แพทย์เจ้าของไข้'],['SOS Score','NEWS']].filter(([k])=>!data[k]&&String(origQ[k]||'').trim()!=='').map(([,l])=>l);
+  if(blanked.length){toast('กรุณากรอก: '+blanked.join(', ')+' (ห้ามเว้นว่าง)',true);return;}
   // คำนวณจำนวนวันของอุปกรณ์ (ไม่งั้นคอลัมน์ (day) จะค้างค่าเก่า และกระทบสถิติรวมวัน)
   const calcDay=(s,e)=>devDays(s,e); // กติกาเดียวกับวันนอน (ขั้นต่ำ 1 วัน, ยังไม่หยุดนับถึงวันนี้)
   data['A-Line (day)']=calcDay(data['A-Line (Start)'],data['A-Line (End)']);
