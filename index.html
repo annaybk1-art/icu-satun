@@ -480,16 +480,15 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 @media screen and (max-width:620px){.kx-grid,.kx-boxes{grid-template-columns:1fr}.kx-k{flex-basis:96px}.kx-bed{font-size:20px}}
 #kardexPrintRoot{display:none}
 .kx-pre{white-space:pre-wrap}
+.kx-idl{border-bottom:1px solid #b9c9b9;padding:0 0 5px;margin:0 0 8px}
+.kx-line{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2px 20px;font-size:13px;line-height:1.7}
+.kx-it{white-space:nowrap}.kx-it i{font-style:normal;color:#555;margin-right:3px}.kx-it b{font-weight:700}.kx-nm b{font-size:14.5px}
+@media screen and (max-width:620px){.kx-it{white-space:normal}}
+.kx-cc-doc{margin:2px 0 4px}.kx-cc-doc .kx-pre{display:block;font-size:13px;line-height:1.65;font-weight:500}
+.kx-noprint{}
 .kx-lock{background:#eceff1;border:1px solid #90a4ae;color:#37474f;border-radius:6px;padding:4px 9px;font-size:12px;font-weight:700;margin-bottom:6px}
 .kx-head{align-items:center!important}
 .kx-hl .kx-meta{margin:2px 0 0}.kx-hr{text-align:right}.kx-print{font-size:11px;color:#555;margin-top:3px}
-.kx-idg{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px;margin:0 0 8px}
-.kx-f{border:1px solid #cfe8d1;border-radius:6px;background:#fbfffb;padding:3px 9px;min-width:0}
-.kx-f i{display:block;font-style:normal;font-size:10.5px;color:#6b7f6b;line-height:1.25}
-.kx-f b{display:block;font-size:13.5px;line-height:1.35;overflow-wrap:anywhere}
-.kx-f.nm b{font-size:14.5px}
-.kx-idg .c5{grid-column:span 5}.kx-idg .c4{grid-column:span 4}.kx-idg .c3{grid-column:span 3}.kx-idg .c2{grid-column:span 2}
-@media screen and (max-width:620px){.kx-idg .c5,.kx-idg .c4,.kx-idg .c3,.kx-idg .c2{grid-column:span 12}.kx-idg .hn,.kx-idg .an{grid-column:span 6}}
 .kx-cc-s .kx-in{min-height:40px}
 .kx-pdate{color:#1b5e20;font-weight:700}
 .kx-elist{margin:2px 0 4px}.kx-erow{display:flex;gap:5px;align-items:flex-start;margin-bottom:4px}.kx-erow .kx-pdw{flex:0 0 150px}.kx-erow .kx-es{flex:1;min-width:0}
@@ -536,7 +535,8 @@ textarea.kx-in{overflow:hidden}
   body>*:not(#kardexPrintRoot){display:none!important}
   #kardexPrintRoot{display:block!important;background:#fff}
   #kardexPrintRoot .kx-sheet{font-size:11.5px}
-  .kx-bed,.kx-f,.kx-lock,.kx-tbl th,.kx-alert{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .kx-noprint{display:none!important}
+  .kx-bed,.kx-lock,.kx-tbl th,.kx-alert{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 
 /* ── หน้า Kardex (การ์ดทุกเตียง) ── */
@@ -2065,7 +2065,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.35';
+const APP_VERSION='2026-10-17.36';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -4495,7 +4495,7 @@ function renderTbl(){
       <td style="text-align:center">${p['CPR']==='Yes'?'<span style="color:#c62828;font-weight:700">CPR</span>':'-'}</td>
       <td><span class="badge ${st==='จำหน่ายแล้ว'?'b-dc':'b-admit'}">${st}</span></td>
       <td><span style="display:flex;gap:2px">
-        ${kxAllowed()?`<button class="btn btn-outline btn-sm" title="Kardex" onclick="openKardex('${esc(pid)}',{m:${m},y:${yr}})">📋</button>`:''}
+        ${kxAllowed()?`<button class="btn btn-outline btn-sm" title="Kardex" onclick="openKardex('${esc(pid)}',{m:${m},y:${yr},ro:1})">📋</button>`:''}
         <button class="btn btn-outline btn-sm" onclick="openEdit('${esc(pid)}',${m},${yr})">✏️</button>
         <button class="btn btn-danger btn-sm" onclick="confirmDel('${esc(pid)}','${esc(p['ชื่อ-สกุล'])}',${m},${yr})">🗑️</button>
       </span></td>
@@ -6877,23 +6877,28 @@ function buildKardexHtml(p,k,edit){
   const meta=k._at?`อัปเดตล่าสุด ${_ht(new Date(k._at).toLocaleString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}))}${k._by?' โดย '+_ht(k._by):''}`:'ยังไม่เคยบันทึกข้อมูลเพิ่มเติม';
   const sys='(จากระบบ)';
   // CC: กล่องเล็ก | HPI: กล่องบรรยายใหญ่ (ขยายตามข้อความ)
-  const ccBox=`<div class="kx-cc kx-cc-s">${edit?kxTA(k,'cc','',2,300):kxPre(kxv(k,'cc'))}</div>`;   // CC: กล่องเหมือน HPI แต่เล็ก
-  const hpiBox=`<div class="kx-cc">${edit?kxTA(k,'hpi','',8,KX_MAXLEN_CC):kxPre(kxv(k,'hpi'))}</div>`;
+  const ccBox=edit?`<div class="kx-cc kx-cc-s">${kxTA(k,'cc','',2,300)}</div>`:`<div class="kx-cc-doc">${kxPre(kxv(k,'cc'))}</div>`;   // โหมดแก้ไข = กล่อง | โหมดอ่าน = ข้อความแบบเอกสาร
+  const hpiBox=edit?`<div class="kx-cc">${kxTA(k,'hpi','',8,KX_MAXLEN_CC)}</div>`:`<div class="kx-cc-doc">${kxPre(kxv(k,'hpi'))}</div>`;
   return `<div class="kx-sheet">
+    ${(_kx.ro&&!locked&&!edit)?'<div class="kx-lock kx-noprint">📖 เปิดจากหน้ารายชื่อผู้ป่วย — ดูและพิมพ์ได้อย่างเดียว แก้ไข Kardex ได้ที่เมนู Kardex</div>':''}
     ${locked?`<div class="kx-lock">🔒 ${String(p['สถานะ']||'').trim()==='ค้างเดือน'?'ยกยอดไปเดือนถัดไปแล้ว'+(dcIso?' (ฉบับ ณ วันที่ '+kxDate(dcIso)+')':'')+' — ฉบับล่าสุดอยู่ในเดือนถัดไป':'จำหน่ายแล้ว'+(dcIso?' '+kxDate(dcIso):'')+(String(p['เหตุผลจำหน่าย']||'').trim()?' · '+_ht(String(p['เหตุผลจำหน่าย']).trim()):'')} — ดูและพิมพ์ได้อย่างเดียว</div>`:''}
     ${edit?'<div class="kx-edit-banner">✏️ กำลังแก้ไข — ข้อความสีเทา "(จากระบบ)" แก้ที่ฟอร์มผู้ป่วย กรอกช่องอื่นแล้วกด "บันทึก Kardex"</div>':''}
     <div class="kx-head">
       <div class="kx-hl"><div class="kx-brand">หอผู้ป่วยหนัก โรงพยาบาลสตูล</div><div class="kx-ttl">KARDEX</div><div class="kx-meta">${meta}</div></div>
       <div class="kx-hr"><div class="kx-bed">เตียง ${_ht(p['เตียง']||'-')}</div><div class="kx-print">พิมพ์เมื่อ ${_ht(now)}</div></div>
     </div>
-    <div class="kx-idg">
-      <div class="kx-f nm c5"><i>ชื่อ-สกุล</i><b>${kxText(p['ชื่อ-สกุล'])}</b></div>
-      <div class="kx-f hn c3"><i>HN</i><b>${kxText(p['HN'])}</b></div>
-      <div class="kx-f an c2"><i>AN</i><b>${kxText(p['AN'])}</b></div>
-      <div class="kx-f ag c2"><i>อายุ</i><b>${kxText(age)}</b></div>
-      <div class="kx-f ic c5"><i>ICU admission</i><b>${kxDate(p['Admit (Date)'])?kxDate(p['Admit (Date)'])+(p['Admit (Time)']?' '+_ht(p['Admit (Time)']):'')+(los!==''?` (${kxDaysEn(los)})`:''):'<span class="kx-empty">-</span>'}</b></div>
-      <div class="kx-f ho c4"><i>Hospital admission</i><b>${hospHtml}</b></div>
-      <div class="kx-f dr c3"><i>แพทย์เจ้าของไข้</i><b>${kxText(p['แพทย์เจ้าของไข้'])}</b></div>
+    <div class="kx-idl">
+      <div class="kx-line">
+        <span class="kx-it kx-nm"><i>ชื่อ-สกุล</i> <b>${kxText(p['ชื่อ-สกุล'])}</b></span>
+        <span class="kx-it"><i>HN</i> <b>${kxText(p['HN'])}</b></span>
+        <span class="kx-it"><i>AN</i> <b>${kxText(p['AN'])}</b></span>
+        <span class="kx-it"><i>อายุ</i> <b>${kxText(age)}</b></span>
+      </div>
+      <div class="kx-line">
+        <span class="kx-it"><i>ICU admission</i> <b>${kxDate(p['Admit (Date)'])?kxDate(p['Admit (Date)'])+(p['Admit (Time)']?' '+_ht(p['Admit (Time)']):'')+(los!==''?` (${kxDaysEn(los)})`:''):'<span class="kx-empty">-</span>'}</b></span>
+        <span class="kx-it"><i>Hospital admission</i> <b>${hospHtml}</b></span>
+        <span class="kx-it"><i>แพทย์เจ้าของไข้</i> <b>${kxText(p['แพทย์เจ้าของไข้'])}</b></span>
+      </div>
     </div>
     ${kxSec(1,'ข้อมูลแรกรับ',kxAdmissionNarrative(p,k)+(edit?kxNew('แพ้อาหาร','foodAllergy',k,edit,'เช่น อาหารทะเล, ไข่',1)+kxNew('ประวัติผ่าตัดเดิม','surgHx',k,edit,'ผ่าตัดอะไร เมื่อไหร่ (ก่อนมา admit)',2):''),edit?'(ข้อความบรรยายสร้างจากข้อมูลในระบบ — แก้ Dx/U/D/แพ้ยา/ผ่าตัด ที่ฟอร์มผู้ป่วย)':'')}
     ${kxSec(2,'Chief Complaint (CC)',ccBox)}
@@ -6940,7 +6945,7 @@ function kxRender(){
   document.getElementById('kardexSheet').innerHTML=buildKardexHtml(_kx.p,_kx.k,_kx.edit);
   if(_kx.edit)requestAnimationFrame(kxAutosizeAll);
   document.getElementById('kxFtView').style.display=_kx.edit?'none':'contents';
-  const eb=document.getElementById('kxEditBtn');if(eb)eb.style.display=(_kx.p&&kxIsLocked(_kx.p))?'none':'';
+  const eb=document.getElementById('kxEditBtn');if(eb)eb.style.display=kxReadOnly()?'none':'';
   document.getElementById('kxFtEdit').style.display=_kx.edit?'contents':'none';
 }
 // Kardex ถูกล็อก (ดู/พิมพ์ได้อย่างเดียว ทุกบทบาท) เมื่อ จำหน่ายแล้ว / ยกยอดเดือนแล้ว / มีวันที่ D/C — ฝั่งเซิร์ฟเวอร์ตรวจกติกาเดียวกัน
@@ -6956,14 +6961,16 @@ function openKardex(pid,opts){
   if(!raw){toast('ไม่พบข้อมูลผู้ป่วยรายนี้ ลองรีเฟรชหน้าแผนผังเตียงอีกครั้ง',true);return;}
   const p=mergeBedData(raw);
   const nowK=new Date();
-  _kx={pid,p,raw,k:kxParse(raw),edit:false,m:(opts&&opts.m)||nowK.getMonth()+1,y:(opts&&opts.y)||nowK.getFullYear()};   // เดือนของแถวที่เปิด (จากหน้ารายชื่อ = เดือนที่เลือก, จากแผนผังเตียง/หน้า Kardex = เดือนปัจจุบัน)
+  _kx={pid,p,raw,k:kxParse(raw),edit:false,ro:!!(opts&&opts.ro),m:(opts&&opts.m)||nowK.getMonth()+1,y:(opts&&opts.y)||nowK.getFullYear()};   // เดือนของแถวที่เปิด (จากหน้ารายชื่อ = เดือนที่เลือก, จากแผนผังเตียง/หน้า Kardex = เดือนปัจจุบัน)
   document.getElementById('kardexTitle').textContent='Kardex — เตียง '+(p['เตียง']||'-');
   kxRender();
   document.getElementById('kardexModal').classList.add('open');
 }
 function closeKardex(){document.getElementById('kardexModal').classList.remove('open');_kx.edit=false;}
+const kxReadOnly=()=>!!(_kx.p&&(kxIsLocked(_kx.p)||_kx.ro));
 function kxStartEdit(){
   if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
+  if(_kx.ro){toast('📖 หน้ารายชื่อผู้ป่วยอ่าน Kardex ได้อย่างเดียว — แก้ไขได้ที่เมนู Kardex',true);return;}
   _kx.edit=true;kxRender();
 }
 function kxCancelEdit(){_kx.edit=false;kxRender();}
@@ -7025,6 +7032,7 @@ function kxCollect(){
 async function kxSave(){
   if(!_kx.pid)return;
   if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
+  if(_kx.ro){toast('📖 หน้ารายชื่อผู้ป่วยอ่าน Kardex ได้อย่างเดียว — แก้ไขได้ที่เมนู Kardex',true);return;}
   const bad=kxValidate();if(bad){toast(bad,true);return;}
   const k=kxCollect(),json=JSON.stringify(k);
   const m=_kx.m,y=_kx.y;   // เดือน/ปีของแถวที่เปิดอยู่
