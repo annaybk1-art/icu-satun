@@ -476,10 +476,10 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 .kx-tbl th{background:#e8f5e9;color:#1b5e20;font-weight:700}.kx-off td{color:#999}
 .kx-boxes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .kx-box{border:1px solid #999;border-radius:4px;min-height:74px;padding:3px 6px;font-size:11px;color:#777}
-.kx-foot{margin-top:12px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#555}
 @media screen and (max-width:620px){.kx-grid,.kx-boxes{grid-template-columns:1fr}.kx-k{flex-basis:96px}.kx-bed{font-size:20px}}
 #kardexPrintRoot{display:none}
 .kx-pre{white-space:pre-wrap}
+.kx-rec{margin-top:5px;font-size:13px}.kx-rec i{font-style:normal;color:#555;margin-right:3px}.kx-rec b{font-weight:700}
 .kx-idl{border-bottom:1px solid #b9c9b9;padding:0 0 5px;margin:0 0 8px}
 .kx-line{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2px 20px;font-size:13px;line-height:1.7}
 .kx-it{white-space:nowrap}.kx-it i{font-style:normal;color:#555;margin-right:3px}.kx-it b{font-weight:700}.kx-nm b{font-size:14.5px}
@@ -2065,7 +2065,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.36';
+const APP_VERSION='2026-10-17.38';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -4758,7 +4758,7 @@ function buildForm(p){
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
     'ICD (Start)','ICD (End)','ICD (day)','DL for HD (Start)','DL for HD (End)','DL for HD (day)','Falling','APACHE II','Pain score',
     'VAP','CAUTI','CLABSI','SSI','MDR','ชนิดของเชื้อที่พบ','ชนิดสิ่งส่งตรวจ',
-    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','Kardex','Specific Clinical Risk','Common Clinical Risk','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
+    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','Kardex','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
     'การหายใจ','dxSpecialType','nurseInCharge','IV (Start)','IV (End)','IV (day)','หมายเหตุ',
     'Pressure Injury','Pressure Injury Date','Unplanned Extubation','Unplanned Extubation Date',
     'Medication Error','Medication Error Date','Medication Error Type','ICDSC Score',
@@ -6665,32 +6665,22 @@ function kxAdmissionNarrative(p,k){
   const dt=kxDate(p['Admit (Date)']),tm=val(p['Admit (Time)']);
   const dx=val(p['Diagnosis แรกรับ']),ud=val(p['U/D']);
   const drug=val(p['แพ้ยา']),food=val(kxv(k,'foodAllergy')),surgOld=val(kxv(k,'surgHx'));
-  const paras=[];
-  // ย่อหน้า 1: ผู้ป่วย + การรับ + Dx + โรคประจำตัว
-  const s1=[];
+  const sent=[];   // ประโยคทั้งหมดต่อกันเป็นย่อหน้าเดียว (ไม่ขึ้นย่อหน้าใหม่)
   let who='';
-  if(gender||age)who='ผู้ป่วย'+(gender?b(gender):'')+(age?' อายุ '+b(age)+' ปี':'');
+  if(gender||age)who='ผู้ป่วย'+(gender?b(gender):'')+(age?' อายุ '+b(age)+(/^\d+$/.test(age)?' ปี':''):'');   // เติม "ปี" เฉพาะอายุที่เป็นตัวเลข (เช่น "3 เดือน" ไม่ต้องเติม)
   let adm='';
   if(recv||from||dt)adm=(recv?b(recv):'รับเข้า')+(from?' จาก '+b(from):'')+(dt?' เมื่อวันที่ '+_ht(dt)+(tm?' เวลา '+_ht(tm)+' น.':''):'');
-  if(who||adm){const first=(who+(who&&adm?' ':'')+adm).trim();s1.push(/\.$/.test(first)?first:first+'.');}   // เวลาลงท้าย "น." อยู่แล้ว ไม่ใส่จุดซ้ำ
-  if(s1.length)paras.push(s1.join(' '));
-  const dxud=[];   // การวินิจฉัย + โรคประจำตัว อยู่บรรทัดเดียวกัน
-  if(dx)dxud.push('การวินิจฉัยแรกรับ '+b(dx)+'.');
-  if(ud)dxud.push(/^ไม่มี/.test(ud)?'ไม่มีโรคประจำตัว.':'โรคประจำตัว '+b(ud)+'.');
-  if(dxud.length)paras.push(dxud.join(' '));
-  // ย่อหน้า 2: แพ้ยา / แพ้อาหาร (แพ้ยาเน้นสีแดง)
-  const s2=[];
-  if(drug)s2.push(/^ไม่(มี|แพ้)/.test(drug)?'ไม่มีประวัติแพ้ยา.':'แพ้ยา <span class="kx-alert">⚠️ '+_ht(drug)+'</span>.');
-  if(food)s2.push('แพ้อาหาร '+b(food)+'.');
-  if(s2.length)paras.push(s2.join(' '));
-  // ย่อหน้า 3: ประวัติการผ่าตัด (ที่พยาบาลบันทึก) ต่อด้วย ผ่าตัดก่อนเข้า ICU (จากฟอร์มผู้ป่วย เทียบวันที่กับวัน Admit ICU)
+  if(who||adm){const first=(who+(who&&adm?' ':'')+adm).trim();sent.push(/\.$/.test(first)?first:first+'.');}   // เวลาลงท้าย "น." อยู่แล้ว ไม่ใส่จุดซ้ำ
+  if(dx)sent.push('การวินิจฉัยแรกรับ '+b(dx)+'.');
+  if(ud)sent.push(/^ไม่มี/.test(ud)?'ไม่มีโรคประจำตัว.':'โรคประจำตัว '+b(ud)+'.');
+  if(drug)sent.push(/^ไม่(มี|แพ้)/.test(drug)?'ไม่มีประวัติแพ้ยา.':'แพ้ยา <span class="kx-alert">⚠️ '+_ht(drug)+'</span>.');
+  if(food)sent.push('แพ้อาหาร '+b(food)+'.');
+  // ประวัติการผ่าตัด (ที่พยาบาลบันทึก) ต่อด้วย ผ่าตัดก่อนเข้า ICU (จากฟอร์มผู้ป่วย เทียบวันที่กับวัน Admit ICU)
   const before=kxSurgeries(p).filter(x=>!x.after);
-  const s3=[];
-  if(surgOld)s3.push('ประวัติการผ่าตัด '+b(surgOld)+'.');
-  if(before.length)s3.push('ผ่าตัดก่อนเข้า ICU '+before.map((x,i)=>'ครั้งที่ '+(i+1)+': '+b(x.t)+(x.d?' ('+kxDate(x.d)+')':'')).join(', ')+'.');
-  else if(p['ผ่าตัด']==='No')s3.push('ไม่มีการผ่าตัดก่อนเข้า ICU.');
-  if(s3.length)paras.push(s3.join(' '));
-  return paras.length?'<div class="kx-narr">'+paras.map(x=>'<p>'+x+'</p>').join('')+'</div>':'<span class="kx-empty">-</span>';
+  if(surgOld)sent.push('ประวัติการผ่าตัด '+b(surgOld)+'.');
+  if(before.length)sent.push('ผ่าตัดก่อนเข้า ICU '+before.map((x,i)=>'ครั้งที่ '+(i+1)+': '+b(x.t)+(x.d?' ('+kxDate(x.d)+')':'')).join(', ')+'.');
+  else if(p['ผ่าตัด']==='No')sent.push('ไม่มีการผ่าตัดก่อนเข้า ICU.');
+  return sent.length?'<div class="kx-narr"><p>'+sent.join(' ')+'</p></div>':'<span class="kx-empty">-</span>';
 }
 // ── Problems: ชื่อปัญหา + บรรทัดบันทึกรายวัน (วันที่ตรงเนื้อหา: "2/12/69. เกิดอะไร → treat อะไร") ──
 const KX_MAXHIST=30,KX_MAXENT=10;
@@ -6726,11 +6716,6 @@ function kxSurgeries(p){
   return st.map((t,i)=>{const d=isD(sd[i])?sd[i].slice(0,10):'';return {t,d,after:d?(admit?d>admit:true):true};});
 }
 const kxDaysEn=n=>n===1?'1 day':n+' days';
-// ── Specific / Common clinical risk: ดึงจากข้อมูลผู้ป่วยในระบบ (ช่องกรอกจะเพิ่มในฟอร์มเพิ่มผู้ป่วยภายหลัง) ──
-function kxRiskFromSystem(v){
-  const items=String(v==null?'':v).split(/[,;\n]+/).map(x=>x.trim()).filter(Boolean);
-  return items.length?'<span class="kx-pre">'+items.map(_ht).join(', ')+'</span>':'<span class="kx-empty">-</span>';   // ตัวอักษรล้วน ไม่มีกรอบ
-}
 // ── อุปกรณ์/สาย: อุปกรณ์ · ครั้งที่ · วันที่ใส่ · วัน off · จำนวนวัน · เหตุผลที่ใส่ต่อ (+ข้อความเตือนตามเกณฑ์ของหน่วยอยู่ในช่องนี้) ──
 // เกณฑ์ที่หน่วยกำหนด (หน้าตั้งค่า Dropdown): ชื่อ|remind แพทย์(วัน)|ครบกำหนด(วัน)|ทำอะไร  เช่น F/C|3|14|off , IV||4|เปลี่ยนเส้น
 function kxDevRules(){
@@ -6741,10 +6726,11 @@ function kxDevRules(){
   });
   return out;
 }
-function kxRuleLines(rule,days){
+function kxRuleLines(rule,days,rm){
   if(!rule||(!rule.remind&&!rule.due))return '';
   const L=[],act=rule.action||'ครบกำหนด';
-  if(rule.remind)L.push(days>=rule.remind?`<span class="kx-al warn">🔔 ครบ ${rule.remind} วัน — remind แพทย์</span>`:`<span class="kx-al">remind แพทย์ที่ ${rule.remind} วัน (อีก ${rule.remind-days} วัน)</span>`);
+  if(rule.remind&&rm&&rm.done)L.push(`<span class="kx-al ok">✅ remind แพทย์แล้ว${rm.d?' ('+_ht(kxShortDate(rm.d))+')':''}</span>`);   // ติ๊กแล้ว: แทนข้อความเตือน
+  else if(rule.remind)L.push(days>=rule.remind?`<span class="kx-al warn">🔔 ครบ ${rule.remind} วัน — remind แพทย์</span>`:`<span class="kx-al">remind แพทย์ที่ ${rule.remind} วัน (อีก ${rule.remind-days} วัน)</span>`);
   if(rule.due)L.push(days>=rule.due?`<span class="kx-al bad">🔴 ครบ ${rule.due} วัน — ${_ht(act)}</span>`:`<span class="kx-al">${_ht(act)} ที่ ${rule.due} วัน (อีก ${rule.due-days} วัน)</span>`);
   return L.join('');
 }
@@ -6821,8 +6807,10 @@ function kxDeviceTable(p,k,edit,locked,dcIso){
         if(active){
           const rt=g.extra?g.extra.r:String(rec.r||'');
           const txt=(edit&&!g.extra)?`<input class="kx-in kx-dev-r" type="text" data-dev="${_ha(g.name)}" maxlength="200" value="${_ha(rt)}" placeholder="เหตุผลที่ยังต้องใส่">`:(rt?'<span class="kx-pre">'+_ht(rt)+'</span>':'');
-          const rl=kxRuleLines(rules[g.name],days===''?0:days);
-          if(txt||rl)reason=txt+rl;
+          const rule=rules[g.name],rmRec=(!g.extra&&rec.rm&&typeof rec.rm==='object'&&rec.rm.s===e.s)?rec.rm:null;   // ติ๊กนี้ใช้กับครั้งที่ใส่ปัจจุบันเท่านั้น (ใส่ใหม่ = ต้องติ๊กใหม่)
+          const rmBox=(edit&&!g.extra&&rule&&rule.remind)?`<label class="kx-chk"><input type="checkbox" class="kx-dev-rm" data-dev="${_ha(g.name)}" data-s="${_ha(e.s)}"${rmRec?' checked':''}> remind แพทย์แล้ว</label>`:'';
+          const rl=kxRuleLines(rule,days===''?0:days,rmRec?{done:true,d:rmRec.d}:null);
+          if(txt||rl||rmBox)reason=txt+rmBox+rl;
         }
         return `<tr data-dev="${_ha(g.name)}" class="${active?'':'kx-off'}">${i===0?`<td rowspan="${n}"><b>${_ht(g.name)}</b>${g.name==='Ventilator'&&breath?' <span style="font-size:11px">('+_ht(breath)+')</span>':''}${noCell}<div class="kx-sys">ใส่ ${n} ครั้ง${g.extra?' · เพิ่มเอง':''}</div></td>`:''}<td>${i+1}</td><td>${kxDate(e.s)}</td><td>${e.e?kxDate(e.e):(e.cur?(locked?'ไม่ได้บันทึกวัน off':'ยังใส่อยู่'):'-')}</td><td>${days===''?'-':days+' วัน'}</td><td>${reason}</td></tr>`;
       }).join('');
@@ -6890,22 +6878,24 @@ function buildKardexHtml(p,k,edit){
     <div class="kx-idl">
       <div class="kx-line">
         <span class="kx-it kx-nm"><i>ชื่อ-สกุล</i> <b>${kxText(p['ชื่อ-สกุล'])}</b></span>
+        <span class="kx-it"><i>อายุ</i> <b>${kxText(age)}</b></span>
         <span class="kx-it"><i>HN</i> <b>${kxText(p['HN'])}</b></span>
         <span class="kx-it"><i>AN</i> <b>${kxText(p['AN'])}</b></span>
-        <span class="kx-it"><i>อายุ</i> <b>${kxText(age)}</b></span>
       </div>
       <div class="kx-line">
         <span class="kx-it"><i>ICU admission</i> <b>${kxDate(p['Admit (Date)'])?kxDate(p['Admit (Date)'])+(p['Admit (Time)']?' '+_ht(p['Admit (Time)']):'')+(los!==''?` (${kxDaysEn(los)})`:''):'<span class="kx-empty">-</span>'}</b></span>
         <span class="kx-it"><i>Hospital admission</i> <b>${hospHtml}</b></span>
+      </div>
+      <div class="kx-line">
         <span class="kx-it"><i>แพทย์เจ้าของไข้</i> <b>${kxText(p['แพทย์เจ้าของไข้'])}</b></span>
       </div>
     </div>
     ${kxSec(1,'ข้อมูลแรกรับ',kxAdmissionNarrative(p,k)+(edit?kxNew('แพ้อาหาร','foodAllergy',k,edit,'เช่น อาหารทะเล, ไข่',1)+kxNew('ประวัติผ่าตัดเดิม','surgHx',k,edit,'ผ่าตัดอะไร เมื่อไหร่ (ก่อนมา admit)',2):''),edit?'(ข้อความบรรยายสร้างจากข้อมูลในระบบ — แก้ Dx/U/D/แพ้ยา/ผ่าตัด ที่ฟอร์มผู้ป่วย)':'')}
     ${kxSec(2,'Chief Complaint (CC)',ccBox)}
-    ${kxSec(2,'History of Present Illness (HPI)',hpiBox)}
+    ${kxSec(2,'History of Present Illness (HPI)',hpiBox+`<div class="kx-rec"><i>ผู้บันทึก Admit</i> <b>${kxText(p['ผู้บันทึก Admit'])}</b> <span class="kx-sys">(จากระบบ)</span></div>`)}
     ${kxSec(3,'Problems',edit?probEdit:probView)}
-    ${kxSec(4,'Specific clinical risk',kxRiskFromSystem(p['Specific Clinical Risk']),sys)}
-    ${kxSec(5,'Common clinical risk',kxRiskFromSystem(p['Common Clinical Risk']),sys)}
+    ${kxSec(4,'Specific clinical risk',kxNew('','specRisk',k,edit,'ความเสี่ยงเฉพาะของผู้ป่วยรายนี้',2).replace('<div class="kx-k"></div>',''))}
+    ${kxSec(5,'Common clinical risk',kxNew('','commonRisk',k,edit,'ความเสี่ยงทั่วไป',2).replace('<div class="kx-k"></div>',''))}
     ${kxSec(6,'คะแนนประเมิน',scoresHtml,sys)}
     ${kxSec(7,'VTE (Caprini) / U/S DVT',
       kxRow('Caprini score',edit?`<input class="kx-in" style="max-width:110px" type="number" min="0" max="50" data-kx="caprini" value="${_ha(kxv(k,'caprini'))}">`:kxText(kxv(k,'caprini')))+
@@ -6928,7 +6918,6 @@ function buildKardexHtml(p,k,edit){
     ${kxSec(20,'ผลการเพาะเชื้อ (Culture)',kxNew('','culture',k,edit,'ชนิดสิ่งส่งตรวจ วันที่ส่ง ผลเชื้อที่พบ และความไวต่อยา',3).replace('<div class="kx-k"></div>',''))}
     ${kxSec(21,'ผลตรวจ (CT brain ฯลฯ)',kxNew('','imaging',k,edit,'CT / MRI / X-ray / อื่นๆ',2).replace('<div class="kx-k"></div>',''))}
     ${kxSec(22,'รายการส่งต่อและแผนการดำเนินการในเวรถัดไป',kxNew('','handover',k,edit,'ระบุรายการที่ค้างส่งตรวจ รายการที่ฝากดำเนินการต่อ และแผนการดำเนินการในเวรถัดไป',4).replace('<div class="kx-k"></div>',''))}
-    <div class="kx-foot"><span>ผู้สรุป/ตรวจสอบ: ____________________  เวร: ________</span><span>ข้อมูลจากระบบ ICU Registry ณ เวลาพิมพ์</span></div>
   </div>`;
 }
 function kxAddProblem(){
@@ -7013,6 +7002,11 @@ function kxCollect(){
   const devOut={};
   document.querySelectorAll('#kardexSheet .kx-dev-r').forEach(inp=>{const r=inp.value.trim().slice(0,200);if(r)(devOut[inp.dataset.dev]=devOut[inp.dataset.dev]||{}).r=r;});
   document.querySelectorAll('#kardexSheet .kx-dev-no').forEach(inp=>{const v=inp.value.trim().slice(0,60);if(v)(devOut[inp.dataset.dev]=devOut[inp.dataset.dev]||{}).no=v;});
+  document.querySelectorAll('#kardexSheet .kx-dev-rm').forEach(cb=>{
+    if(!cb.checked)return;
+    const n=cb.dataset.dev,sd=cb.dataset.s,prev=(_kx.k&&_kx.k.dev&&_kx.k.dev[n]&&_kx.k.dev[n].rm&&_kx.k.dev[n].rm.s===sd)?_kx.k.dev[n].rm:null;
+    (devOut[n]=devOut[n]||{}).rm=prev||{s:sd,d:localToday(),b:(currentUser&&currentUser.fullname)||''};   // คงวันที่/ผู้ติ๊กเดิมไว้ ถ้าติ๊กไว้แล้ว
+  });
   if(Object.keys(devOut).length)k.dev=devOut;
   // อุปกรณ์อื่นที่ไม่มีในระบบ
   const extra=[];
