@@ -479,6 +479,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 @media screen and (max-width:620px){.kx-grid,.kx-boxes{grid-template-columns:1fr}.kx-k{flex-basis:96px}.kx-bed{font-size:20px}}
 #kardexPrintRoot{display:none}
 .kx-pre{white-space:pre-wrap}
+.kx-hint{margin-top:3px;font-size:11.5px;color:#2e7d32;font-weight:600}
 .kx-probtools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:2px}
 .kx-budget{font-size:11.5px;color:#607d60}.kx-budget b{font-weight:700}.kx-budget b.warn,.kx-budget.warn{color:#b26a00}.kx-budget b.over,.kx-budget.over{color:#c62828;font-weight:700}
 .kx-closedbox{margin-top:10px;border-top:1px dashed #cfd8cf;padding-top:6px}
@@ -674,37 +675,8 @@ textarea.kx-in{overflow:hidden}
   </div>
 </div>
 <!-- RN Modal -->
-<div id="rnModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:center;justify-content:center;padding:16px">
-  <div style="background:white;border-radius:14px;width:min(420px,95vw);max-height:90vh;overflow-y:auto">
-    <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:14px 16px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center">
-      <div style="color:white;font-weight:700;font-size:15px">👩‍⚕️ RN บันทึกข้อมูล</div>
-      <button onclick="closeRNModal()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
-    </div>
-    
-    <!-- เลือกเตียง -->
-    <div id="rnBedSelectBox" style="padding:16px">
-      <div style="font-size:13px;font-weight:600;margin-bottom:4px;color:#374151">สวัสดี <span id="rnWelcomeName"></span> 👋</div>
-      <div style="font-size:12px;color:#6b7280;margin-bottom:12px">เลือกเตียงที่คุณดูแล</div>
-      <div id="rnBedList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px"></div>
-      <button onclick="openRNForm()" class="btn btn-primary" style="width:100%;background:#2e7d32" id="rnStartBtn" disabled>เริ่มบันทึกข้อมูล</button>
-    </div>
-  </div>
-</div>
 
 <!-- RN Form Modal -->
-<div id="rnFormModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1500;align-items:flex-start;justify-content:center;padding:16px 16px 80px;overflow-y:auto">
-  <div style="background:white;border-radius:14px;width:min(500px,95vw);margin:auto">
-    <div style="background:linear-gradient(135deg,#2e7d32,#43a047);padding:14px 16px;border-radius:14px 14px 0 0;display:flex;justify-content:space-between;align-items:center">
-      <div style="color:white;font-weight:700;font-size:14px">👩‍⚕️ RN — <span id="rnFormBedTitle"></span></div>
-      <button onclick="closeRNForm()" style="background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:16px">×</button>
-    </div>
-    <div id="rnFormContent" style="padding:16px"></div>
-    <div style="padding:0 16px 16px;display:flex;gap:8px">
-      <button onclick="saveRNData()" class="btn btn-primary" style="flex:1;background:#2e7d32">💾 บันทึก</button>
-      <button onclick="closeRNForm()" class="btn btn-outline" style="flex:1">ยกเลิก</button>
-    </div>
-  </div>
-</div>
 
 <!-- Apache IV Assessment Modal -->
 <div id="apache4Modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
@@ -731,52 +703,8 @@ textarea.kx-in{overflow:hidden}
 </div>
 
 <!-- NEWS2 Assessment Modal -->
-<div id="news2Modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
-  <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div style="font-weight:700;font-size:15px;color:#1565c0">📊 แบบประเมิน NEWS2</div>
-      <button onclick="closeNews2Assess()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
-    </div>
-    <div id="news2Items"></div>
-    <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="news2Result">
-      <div style="font-size:16px;font-weight:700">คะแนนรวม: <span id="news2Total">0</span>/20</div>
-      <div id="news2Interpret" style="font-size:12px;margin-top:4px"></div>
-    </div>
-    <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
-      <input type="text" id="news2Assessor" placeholder="ชื่อผู้ประเมิน..." style="padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
-      <div style="display:flex;gap:8px">
-        <input type="date" id="news2Date" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
-        <button onclick="saveNews2Assess()" class="btn btn-primary" style="flex:1;background:#1565c0">💾 บันทึก</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ICDSC Assessment Modal -->
-<div id="icdscModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;padding:16px">
-  <div style="background:white;border-radius:12px;width:min(500px,95vw);max-height:90vh;overflow-y:auto;padding:16px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-      <div style="font-weight:700;font-size:15px;color:#1b5e20">🧠 แบบประเมิน ICDSC</div>
-      <button onclick="closeIcdscAssess()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#9ca3af">×</button>
-    </div>
-    <div style="font-size:11px;color:#6b7280;background:#f9fafb;padding:8px;border-radius:8px;margin-bottom:12px">
-      ⚠️ ประเมินผู้ป่วยในแต่ละเวร/วัน · ข้อ 1-4 ประเมิน ณ ขณะนั้น · ข้อ 5-8 จากข้อมูลย้อนหลัง 24 ชม.
-    </div>
-    <div id="icdscItems"></div>
-    <div style="margin-top:12px;padding:12px;border-radius:8px;text-align:center" id="icdscResult">
-      <div style="font-size:14px;font-weight:700">คะแนนรวม: <span id="icdscTotal">0</span>/8</div>
-      <div id="icdscInterpret" style="font-size:12px;margin-top:4px"></div>
-    </div>
-    <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
-      <input type="text" id="icdscAssessor" placeholder="ชื่อผู้ประเมิน..." 
-        style="padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
-      <div style="display:flex;gap:8px">
-        <input type="date" id="icdscAssessDate" style="flex:1;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:12px">
-        <button onclick="saveIcdscAssess()" class="btn btn-primary" style="flex:1">💾 บันทึก</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <div id="appPage">
   <div class="topbar">
@@ -1003,10 +931,6 @@ textarea.kx-in{overflow:hidden}
       <div class="tbl-wrap">
         <div class="tbl-head" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
           <div class="tbl-title">🛏️ ผู้ป่วยที่กำลัง Admit</div>
-          <div style="display:flex;gap:4px;flex-wrap:wrap">
-            <button class="btn btn-primary" id="rnBtn" onclick="openRNMode()" style="display:none;background:linear-gradient(135deg,#2e7d32,#43a047);font-size:12px;padding:6px 14px">👩‍⚕️ RN</button>
-            <button class="btn btn-primary" onclick="openInCharge()" style="background:linear-gradient(135deg,#1565c0,#1e88e5);font-size:12px;padding:6px 14px">📋 In Charge</button>
-          </div>
         </div>
         <div style="overflow-x:auto">
           <table id="bedAdmitTbl">
@@ -1028,7 +952,6 @@ textarea.kx-in{overflow:hidden}
               <th class="bc-PI">🩹 Bedsore</th>
               <th class="bc-หมอ">👨‍⚕️ แพทย์</th>
               <th class="bc-พยาบาล">👩‍⚕️ พยาบาล</th>
-              <th>จัดการ</th>
             </tr></thead>
             <tbody id="bedAdmitBody"><tr><td colspan="17" class="loading-msg">กำลังโหลด...</td></tr></tbody>
           </table>
@@ -1293,23 +1216,7 @@ textarea.kx-in{overflow:hidden}
         <div class="opt-note" style="margin-top:8px">แจ้งเตือนเมื่อ: มีสมาชิกใหม่รออนุมัติ / มี Dropdown รออนุมัติ</div>
       </div>
 
-      <!-- ── ตั้งค่า In Charge ── -->
       <div class="dash-card" style="margin-bottom:16px">
-        <div class="dash-card-title">📋 ตั้งค่า In Charge</div>
-        <div class="fgrid">
-          <div class="fg"><label>เวรเช้าเริ่ม</label><input type="time" id="icShiftMorning" value="07:00"></div>
-          <div class="fg"><label>เวรบ่ายเริ่ม</label><input type="time" id="icShiftAfternoon" value="15:00"></div>
-          <div class="fg"><label>เวรดึกเริ่ม</label><input type="time" id="icShiftNight" value="23:00"></div>
-        </div>
-        <div style="margin-top:12px">
-          <button class="btn btn-primary" onclick="saveInChargeSettings()">💾 บันทึกตั้งค่า In Charge</button>
-        </div>
-      </div>
-
-      <!-- ── ตั้งค่าระบบ In Charge (Telegram) ── -->
-      <div class="dash-card" style="margin-bottom:16px">
-        <div class="dash-card-title">📋 ตั้งค่าระบบ In Charge (Telegram)</div>
-        <div class="opt-note" style="margin-top:8px">Token ถูก hardcode ใน Code.gs แล้ว ระบบส่ง Telegram ทำงานอัตโนมัติครับ</div>
 
       <!-- ── ตั้งค่าแถบข้อความวิ่ง ── -->
       <div class="dash-card" style="margin-bottom:16px">
@@ -1696,92 +1603,10 @@ textarea.kx-in{overflow:hidden}
 </div>
 
 <!-- IN CHARGE LOGIN MODAL -->
-<div class="overlay" id="icLoginModal" style="display:none">
-  <div class="modal" style="max-width:360px">
-    <div class="modal-hd" style="background:linear-gradient(135deg,#1565c0,#1e88e5)">
-      <h2 style="color:white">🔐 เข้าสู่ระบบ In Charge</h2>
-      <button class="modal-x" style="color:white" onclick="document.getElementById('icLoginModal').style.display='none'">✕</button>
-    </div>
-    <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
-      <div style="text-align:center;font-size:12px;color:var(--gray500);margin-bottom:4px">กรุณาเข้าสู่ระบบเพื่อยืนยันตัวตนก่อนบันทึกเวร In Charge</div>
-      <div class="fg">
-        <label>ชื่อผู้ใช้ (Username)</label>
-        <input type="text" id="icLoginUser" placeholder="username" autocomplete="username" style="width:100%">
-      </div>
-      <div class="fg">
-        <label>รหัสผ่าน</label>
-        <div style="position:relative">
-          <input type="password" id="icLoginPass" placeholder="password" autocomplete="current-password" style="width:100%;padding-right:42px" onkeydown="if(event.key==='Enter')doIcLogin()">
-          <button type="button" onclick="togglePw('icLoginPass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9ca3af;font-size:18px;padding:0;line-height:1">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div id="icLoginErr" style="display:none;color:#dc2626;font-size:11px;padding:6px 10px;background:#fff1f1;border-radius:6px"></div>
-      <button class="btn btn-primary" onclick="doIcLogin()" style="justify-content:center;margin-top:4px">🔐 เข้าสู่ระบบ In Charge</button>
-    </div>
-  </div>
-</div>
 
 <!-- IN CHARGE MODAL -->
-<div class="overlay" id="inchargeModal" style="display:none;padding-bottom:80px">
-  <div class="modal" style="max-width:680px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
-    <div class="modal-hd">
-      <h2>📋 In Charge — บันทึกเวร</h2>
-      <button class="modal-x" onclick="closeInCharge()">✕</button>
-    </div>
-    <div style="padding:14px 20px;background:#f9fafb;border-bottom:1px solid var(--g100);flex-shrink:0">
-      <div class="fgrid">
-        <div class="fg">
-          <label>เวร</label>
-          <select id="icShift">
-            <option value="เช้า">☀️ เวรเช้า</option>
-            <option value="บ่าย">🌤️ เวรบ่าย</option>
-            <option value="ดึก">🌙 เวรดึก</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>ผู้รับเวร (In Charge)</label>
-          <div id="icNurseDisplay" style="padding:8px 12px;background:#e8f5e9;border-radius:6px;font-weight:700;color:#2e7d32;font-size:13px">-</div>
-          <input type="hidden" id="icNurse">
-        </div>
-        <div class="fg">
-          <label>วันที่/เวลา</label>
-          <input type="datetime-local" id="icDateTime">
-        </div>
-      </div>
-    </div>
-
-    <!-- รายการเตียง -->
-    <div style="flex:1;overflow-y:auto;padding:14px 20px">
-      <div id="icBedList"></div>
-    </div>
-
-    <div style="padding:14px 20px;border-top:1px solid var(--g100);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
-      <button class="btn btn-outline" style="background:#e8f5e9;color:#2e7d32;border-color:#2e7d32" onclick="saveInChargeToPatients()">💾 บันทึก</button>
-      <button class="btn btn-outline" onclick="icPreviewMsg()">👁️ ดูข้อความก่อนส่ง</button>
-      <button class="btn btn-primary" onclick="icSendLine()">📲 ส่ง Telegram</button>
-      <button class="btn btn-outline" onclick="closeInCharge()" style="margin-left:auto">ปิด</button>
-    </div>
-  </div>
-</div>
 
 <!-- IN CHARGE PREVIEW MODAL -->
-<div class="overlay" id="icPreviewModal" style="display:none">
-  <div class="modal" style="max-width:480px">
-    <div class="modal-hd">
-      <h2>📲 ข้อความที่จะส่ง LINE</h2>
-      <button class="modal-x" onclick="document.getElementById('icPreviewModal').style.display='none'">✕</button>
-    </div>
-    <div style="padding:16px 20px">
-      <pre id="icMsgPreview" style="white-space:pre-wrap;font-size:12px;background:#f9fafb;padding:12px;border-radius:8px;border:1px solid var(--g100);max-height:400px;overflow-y:auto;font-family:'Sarabun',sans-serif;line-height:1.7"></pre>
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="icSendLine()">📲 ส่ง Telegram</button>
-        <button class="btn btn-outline" onclick="icCopyMsg()">📋 คัดลอก</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- CARRYOVER MODAL -->
 <div class="overlay" id="carryoverModal" style="display:none">
@@ -1842,16 +1667,6 @@ textarea.kx-in{overflow:hidden}
 </div>
 
 <!-- BED-BOARD QUICK EDIT MODAL: เฉพาะฟิลด์ที่แสดงในตารางแผนผังเตียง -->
-<div class="overlay" id="bedEditModal">
-  <div class="modal" style="max-width:520px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column">
-    <div class="modal-hd"><h2 id="bedEditTitle">แก้ไขข้อมูล (เตียง)</h2><button class="modal-x" onclick="closeBedEditModal()">✕</button></div>
-    <div class="modal-bd" id="bedEditBd" style="overflow-y:auto;padding:14px"></div>
-    <div class="modal-ft">
-      <button class="btn btn-outline" onclick="closeBedEditModal()">ยกเลิก</button>
-      <button class="btn btn-primary" id="bedEditSaveBtn" onclick="saveBedEdit()">💾 บันทึก</button>
-    </div>
-  </div>
-</div>
 
 <!-- KARDEX (สรุปผู้ป่วยรายเตียง — อ่านอย่างเดียว พิมพ์ได้) -->
 <div class="overlay" id="kardexModal">
@@ -2077,7 +1892,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.42';
+const APP_VERSION='2026-10-17.44';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -2544,9 +2359,6 @@ function showApp(user){
     });
   }
   showEditButtonIfAdmin();
-  // แสดงปุ่ม RN เฉพาะ nurse
-  const rnBtn=document.getElementById('rnBtn');
-  if(rnBtn) rnBtn.style.display=(user.role==='nurse'||user.role==='admin')?'':'none';
   if(user.hiddenMenus){
     const hidden=typeof user.hiddenMenus==='string'?JSON.parse(user.hiddenMenus||'[]'):user.hiddenMenus||[];
     hidden.forEach(id=>{
@@ -2796,7 +2608,7 @@ function showSec(name,el){
   if(name==='kpi'){loadKPI();loadMonthly();}
   if(name==='yearly') loadYearly();
   if(name==='users') renderUsers();
-  if(name==='opts'){ renderOpts(); loadMarqueeFromServer(); loadNewsBoardSettings(); loadInChargeSettings();
+  if(name==='opts'){ renderOpts(); loadMarqueeFromServer(); loadNewsBoardSettings();
     setTimeout(()=>{
       const el=document.getElementById('optsApiUrl');if(el)el.value=API_URL;
       const t=_opts['adminTelegramToken'];const c=_opts['adminTelegramChatId'];
@@ -2892,776 +2704,8 @@ function updateStats(){
   updateNewsBoard(pts, admitted, dc, male);
 }
 
-// ============================================================
-// IN CHARGE SYSTEM
-// ============================================================
-let _icSettings={telegramToken:'',telegramChatId:'',shiftMorning:'07:00',shiftAfternoon:'15:00',shiftNight:'23:00'};
-let _icBedData={}; // {bedId: {level, gcs, dx, hadrugs, doctor, note}}
-let _icAdmittedPts=[]; // ผู้ป่วยที่กำลัง admit ตอน in charge
-
-function getCurrentShift(){
-  const now=new Date();
-  const hm=`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-  const [mH,mM]=(_icSettings.shiftMorning||'07:00').split(':').map(Number);
-  const [aH,aM]=(_icSettings.shiftAfternoon||'15:00').split(':').map(Number);
-  const [nH,nM]=(_icSettings.shiftNight||'23:00').split(':').map(Number);
-  const t=now.getHours()*60+now.getMinutes();
-  const mT=mH*60+mM, aT=aH*60+aM, nT=nH*60+nM;
-  if(t>=mT&&t<aT) return 'เช้า';
-  if(t>=aT&&t<nT) return 'บ่าย';
-  return 'ดึก';
-}
-
-async function loadInChargeSettings(){
-  try{
-    const raw=localStorage.getItem('icu_incharge_settings');
-    if(raw) _icSettings={..._icSettings,...JSON.parse(raw)};
-  }catch(e){}
-  try{
-    const opts=await api('getOpts');
-    if(opts['__incharge__']&&opts['__incharge__'][0]){
-      _icSettings={..._icSettings,...JSON.parse(opts['__incharge__'][0])};
-      localStorage.setItem('icu_incharge_settings',JSON.stringify(_icSettings));
-    }
-  }catch(e){}
-  // ใส่ค่าในหน้า opts
-  const f=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
-  f('icTelegramToken',_icSettings.telegramToken);
-  f('icTelegramChatId',_icSettings.telegramChatId);
-  f('icShiftMorning',_icSettings.shiftMorning||'07:00');
-  f('icShiftAfternoon',_icSettings.shiftAfternoon||'15:00');
-  f('icShiftNight',_icSettings.shiftNight||'23:00');
-}
-
-async function saveInChargeSettings(){
-  if(!requireAdmin()) return;
-  _icSettings.telegramToken=document.getElementById('icTelegramToken')?.value.trim()||'';
-  _icSettings.telegramChatId=document.getElementById('icTelegramChatId')?.value.trim()||'';
-  _icSettings.shiftMorning=document.getElementById('icShiftMorning')?.value||'07:00';
-  _icSettings.shiftAfternoon=document.getElementById('icShiftAfternoon')?.value||'15:00';
-  _icSettings.shiftNight=document.getElementById('icShiftNight')?.value||'23:00';
-  showLoad('กำลังบันทึก...');
-  try{
-    await api('saveOpts',{},{key:'__incharge__',values:[JSON.stringify(_icSettings)]});
-    localStorage.setItem('icu_incharge_settings',JSON.stringify(_icSettings));
-    toast('บันทึกตั้งค่า In Charge สำเร็จ ✓');
-  }catch(e){toast('ไม่สำเร็จ: '+e.message,true);}
-  finally{hideLoad();}
-}
-
-async function openInCharge(){
-  // เปิด Login modal ก่อนเสมอ
-  document.getElementById('icLoginUser').value='';
-  document.getElementById('icLoginPass').value='';
-  document.getElementById('icLoginErr').style.display='none';
-  document.getElementById('icLoginModal').style.display='flex';
-  setTimeout(()=>document.getElementById('icLoginUser').focus(),100);
-}
-
-async function doIcLogin(){
-  const username=document.getElementById('icLoginUser').value.trim();
-  const password=document.getElementById('icLoginPass').value;
-  const errEl=document.getElementById('icLoginErr');
-  errEl.style.display='none';
-  if(!username||!password){errEl.textContent='กรุณากรอก username และ password';errEl.style.display='block';return;}
-
-  showLoad('กำลังตรวจสอบ...');
-  try{
-    const res=await api('login',{},{username,password});
-    if(!res||res.status!=='approved'){
-      throw new Error(res?.status==='pending'?'บัญชียังรอการอนุมัติ':res?.status==='rejected'?'บัญชีถูกปฏิเสธ':'username หรือ password ไม่ถูกต้อง');
-    }
-    // Login สำเร็จ — ใช้ชื่อจาก account ที่ login
-    const nurseName=res.fullname||res.username||username;
-    document.getElementById('icLoginModal').style.display='none';
-    document.getElementById('icNurse').value=nurseName;
-    document.getElementById('icNurseDisplay').textContent='👤 '+nurseName;
-
-    // โหลดผู้ป่วยปัจจุบัน
-    const m=parseInt(document.getElementById('fMonth')?.value||new Date().getMonth()+1);
-    const y=parseInt(document.getElementById('fYear')?.value||new Date().getFullYear());
-    _icAdmittedPts=[];
-    // ล้าง cache เพื่อโหลดข้อมูลใหม่พร้อม id
-    const cacheKey=`${y}-${m}`;
-    if(_dashCache[cacheKey]) delete _dashCache[cacheKey];
-    try{_icAdmittedPts=await fetchMonthPts(m,y);}catch(e){toast(e.message,true);}
-    _icAdmittedPts=_icAdmittedPts.filter(p=>p['สถานะ']==='กำลัง admit');
-
-    // ตั้งเวรอัตโนมัติ
-    const shiftEl=document.getElementById('icShift');
-    if(shiftEl) shiftEl.value=getCurrentShift();
-
-    // วันที่/เวลา
-    const now=new Date();
-    const dtEl=document.getElementById('icDateTime');
-    if(dtEl) dtEl.value=now.toISOString().slice(0,16);
-
-    _icBedData={};
-    // pre-fill ข้อมูลเดิมจาก Sheet
-    _icAdmittedPts.forEach(pt=>{
-      const bedId=(pt['เตียง']||'').trim();
-      if(!bedId) return;
-      _icBedData[bedId]={
-        dx: pt['Diagnosis แรกรับ']||'',
-        hadrugsList: pt['ยา HD']||'',
-        doctor: pt['แพทย์เจ้าของไข้']||'',
-        sos: pt['SOS Score']||'',
-        patType: pt['ประเภทผู้ป่วย ICU']||'',
-        note: pt['หมายเหตุ']||'',
-        vent_start: pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'' ,
-        vent_stop:  pt['Ventilator (End)']?di(pt['Ventilator (End)']):'' ,
-        aline_start:pt['A-Line (Start)']?di(pt['A-Line (Start)']):'' ,
-        aline_stop: pt['A-Line (End)']?di(pt['A-Line (End)']):'' ,
-        cline_start:pt['C-Line (Start)']?di(pt['C-Line (Start)']):'' ,
-        cline_stop: pt['C-Line (End.)']?di(pt['C-Line (End.)']):'' ,
-        iv_start:   pt['IV (Start)']?di(pt['IV (Start)']):'' ,
-        iv_stop:    pt['IV (End)']?di(pt['IV (End)']):'' ,
-        fc_start:   pt['F/C (Start)']?di(pt['F/C (Start)']):'' ,
-        fc_stop:    pt['F/C (END)']?di(pt['F/C (END)']):'' ,
-        icd_start:  pt['ICD (Start)']?di(pt['ICD (Start)']):'' ,
-        icd_stop:   pt['ICD (End)']?di(pt['ICD (End)']):'' ,
-        dl_start:   pt['DL for HD (Start)']?di(pt['DL for HD (Start)']):'' ,
-        dl_stop:    pt['DL for HD (End)']?di(pt['DL for HD (End)']):'' ,
-        piEvents:   tryParseJSON(pt['Pressure Injury'])||[],
-        ueEvents:   tryParseJSON(pt['Unplanned Extubation'])||[],
-        meEvents:   tryParseJSON(pt['Medication Error'])||[],
-        icdscLatest: pt['ICDSC Score']||'',
-        icdscDate:  pt['ICDSC Date']||'',
-        icdscMax:   pt['ICDSC Max']||'',
-        icdscMaxDate: pt['ICDSC Max Date']||'',
-      };
-    });
-    renderIcBedList();
-    document.getElementById('inchargeModal').style.display='flex';
-  }catch(e){
-    errEl.textContent=e.message||'เข้าสู่ระบบไม่สำเร็จ';
-    errEl.style.display='block';
-  }finally{hideLoad();}
-}
-
-function icValidateNurse(){
-  const nurse=document.getElementById('icNurse')?.value;
-  if(!nurse){
-    toast('⚠️ กรุณาเข้าสู่ระบบ In Charge ก่อน',true);
-    return false;
-  }
-  return true;
-}
-
-function closeInCharge(){
-  document.getElementById('inchargeModal').style.display='none';
-}
-
-function renderIcBedList(){
-  const container=document.getElementById('icBedList');
-  if(!container) return;
-  const BED_NUMS=[1,2,3,4,5,6,7,8,9,10,11,12,13,14];
-  const haList=['Adrenaline','Adenosine','Dopamine','Dobutamine','NorE (Norepinephrine)','Amiodarone','Chloral hydrate syrup','Digoxin','Esmolol','Magnesium sulfate','Midazolam','Fentanyl','Morphine','Pethidine','Phenytoin inj (Dilantin)','KCL/K2HPO4','Warfarin tab','Alteplase inj','SK inj (Streptokinase)','Nicardipine','Nitroglycerine','Regular insulin','NPH insulin','Insulin glargine','3% NaCl inj.','10% MgSO4 inj.','Clozapine tablet'];
-  const patTypes=['4a (ICU)','3b (CI)','2b (SI)','1a (MI)','1b (MI)','1c (CL)','1d (CL)'];
-  const icItems=[
-    {key:'vent',label:'🫁 Ventilator',startF:'Ventilator (Start)',endF:'Ventilator (End)'},
-    {key:'aline',label:'💉 A-Line',startF:'A-Line (Start)',endF:'A-Line (End)'},
-    {key:'cline',label:'🔗 C-Line',startF:'C-Line (Start)',endF:'C-Line (End.)'},
-    {key:'iv',label:'🩸 IV',startF:'IV (Start)',endF:'IV (End)'},
-    {key:'fc',label:'🪠 F/C',startF:'F/C (Start)',endF:'F/C (END)'},
-    {key:'icd',label:'🩺 ICD',startF:'ICD (Start)',endF:'ICD (End)'},
-    {key:'dl',label:'🩸 DL for HD',startF:'DL for HD (Start)',endF:'DL for HD (End)'},
-  ];
-  const today=new Date().toISOString().split('T')[0];
-
-  container.innerHTML=BED_NUMS.map(n=>{
-    const bedId='ICU'+n;
-    const pt=_icAdmittedPts.find(p=>(p['เตียง']||'').trim()===bedId);
-    const bd=_icBedData[bedId]||{};
-    if(!pt) return `<div class="ic-bed-card" style="opacity:.45"><div class="ic-bed-hd"><span class="bed-badge">${bedId}</span><span style="color:var(--gray400);font-size:12px">ว่าง</span></div></div>`;
-
-    const dx=bd.dx!==undefined?bd.dx:(pt['Diagnosis แรกรับ']||'');
-    const haD=bd.hadrugsList!==undefined?bd.hadrugsList:(pt['ยา HD']||'');
-    const doc=bd.doctor!==undefined?bd.doctor:(pt['แพทย์เจ้าของไข้']||'');
-    const sos=bd.sos!==undefined?bd.sos:(pt['SOS Score']||'');
-    const patType=bd.patType!==undefined?bd.patType:(pt['ประเภทผู้ป่วย ICU']||'');
-    const note=bd.note||'';
-    const dept=normalizePatType(pt['ประเภทผู้ป่วย']||'');
-    const patName=pt['ชื่อ-สกุล']||'-';
-
-    const selHA=(haD||'').split(',').map(v=>v.trim()).filter(Boolean);
-    const msdId='icmsd_'+bedId;
-    const haOpts=haList.map(h=>`<label class="msd-item"><input type="checkbox" value="${h}" ${selHA.includes(h)?'checked':''} onchange="icMsdChange('${msdId}','${bedId}')"><span>${h}</span></label>`).join('');
-    const haDisplay=selHA.length?selHA.join(', '):'-- เลือกยา HD --';
-
-    const icRows=icItems.map(ic=>{
-      const started=bd[ic.key+'_start']!==undefined?bd[ic.key+'_start']:(pt[ic.startF]?di(pt[ic.startF]):'');
-      const stopped=bd[ic.key+'_stop']!==undefined?bd[ic.key+'_stop']:(pt[ic.endF]?di(pt[ic.endF]):'');
-      return `<div style="display:grid;grid-template-columns:90px 1fr 1fr;gap:4px;align-items:center;padding:4px 0;border-bottom:1px solid var(--g100)">
-        <span style="font-size:10px;font-weight:600">${ic.label}</span>
-        <label style="font-size:9px;color:var(--gray500)">เริ่ม<input type="date" value="${started||''}" onchange="icSet('${bedId}','${ic.key}_start',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
-        <label style="font-size:9px;color:var(--gray500)">หยุด<input type="date" value="${stopped||''}" onchange="icSet('${bedId}','${ic.key}_stop',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
-      </div>`;
-    }).join('');
-
-    return `<div class="ic-bed-card ic-used">
-      <div class="ic-bed-hd">
-        <span class="bed-badge">${bedId}</span>
-        <span style="font-size:12px;font-weight:600">${patName}</span>
-        ${dept?`<span style="font-size:10px;background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:4px">${dept}</span>`:''}
-      </div>
-      <div class="ic-bed-grid">
-        <!-- In Charge section -->
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px">Dx (อัปเดต)</label>
-          <input type="text" value="${esc(dx)}" placeholder="Diagnosis..." oninput="icSet('${bedId}','dx',this.value)" style="width:100%">
-        </div>
-        <div class="fg">
-          <label style="font-size:10px">ประเภทผู้ป่วย ICU</label>
-          <input type="text" value="${esc(patType)}" placeholder="เช่น 4a, 3b, 2b..." oninput="icSet('${bedId}','patType',this.value)" style="width:100%">
-        </div>
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px">แพทย์เจ้าของไข้</label>
-          <select onchange="icSet('${bedId}','doctor',this.value)" style="width:100%">
-            <option value="${esc(doc)}" selected>${doc||'-- เลือก --'}</option>
-            ${(_opts['doctors']||[]).filter(d=>d!==doc).map(d=>`<option value="${esc(d)}">${d}</option>`).join('')}
-          </select>
-        </div>
-        <!-- SOS read-only (RN กรอก) -->
-        <div class="fg">
-          <label style="font-size:10px;color:#6b7280">SOS Score <span style="font-size:9px">(RN)</span></label>
-          <div style="padding:6px 10px;background:#f9fafb;border:1px solid var(--g200);border-radius:8px;font-weight:700;font-size:13px">${sos||'-'}</div>
-        </div>
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px">💊 ยา HD (เลือกได้หลายตัว)</label>
-          <div class="msd-wrap" id="${msdId}">
-            <div class="msd-btn" onclick="msdToggle('${msdId}')">
-              <span class="msd-display" id="${msdId}-display">${haDisplay}</span>
-              <span class="msd-arrow">▾</span>
-            </div>
-            <div class="msd-list" id="${msdId}-list">
-              <div class="msd-search"><input type="text" placeholder="🔍 ค้นหายา..." oninput="msdFilter('${msdId}',this.value)" onclick="event.stopPropagation()"></div>
-              <div class="msd-items" id="${msdId}-items">${haOpts}</div>
-              <div class="msd-footer">
-                <button type="button" class="btn btn-outline btn-sm" onclick="icMsdClear('${msdId}','${bedId}');event.stopPropagation()">ล้าง</button>
-                <button type="button" class="btn btn-primary btn-sm" onclick="msdClose('${msdId}');event.stopPropagation()">ตกลง</button>
-              </div>
-            </div>
-            <input type="hidden" id="${msdId}-hidden" value="${esc(haD)}">
-          </div>
-        </div>
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px;color:#6b7280">🩺 IC Devices <span style="font-size:9px">(RN)</span></label>
-          <div style="background:#f9fafb;border-radius:6px;padding:8px;border:1px solid var(--g100)">
-            ${icItems.map(ic=>{
-              const started=bd[ic.key+'_start']!==undefined?bd[ic.key+'_start']:(pt[ic.startF]?di(pt[ic.startF]):'');
-              const stopped=bd[ic.key+'_stop']!==undefined?bd[ic.key+'_stop']:(pt[ic.endF]?di(pt[ic.endF]):'');
-              if(!started) return '';
-              return `<div style="display:flex;gap:8px;font-size:10px;padding:3px 0;border-bottom:1px solid var(--g100)">
-                <span style="font-weight:600;width:80px">${ic.label}</span>
-                <span>เริ่ม: ${fmtDate(started)||'-'}</span>
-                <span>หยุด: ${fmtDate(stopped)||'-'}</span>
-              </div>`;
-            }).join('')||'<span style="font-size:10px;color:#9ca3af">ยังไม่มีข้อมูล</span>'}
-          </div>
-        </div>
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px">หมายเหตุ</label>
-          <input type="text" value="${esc(note)}" placeholder="หมายเหตุ..." oninput="icSet('${bedId}','note',this.value)" style="width:100%">
-        </div>
-        <div class="fg" style="grid-column:1/-1">
-          <label style="font-size:10px;font-weight:700;color:#c62828">🛡️ Patient Safety</label>
-          
-          <!-- Pressure Injury -->
-          <div style="margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:10px;font-weight:600">🩹 Pressure Injury</span>
-              <button type="button" onclick="icAddEvent('${bedId}','pi')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-            </div>
-            <div id="pi_list_${bedId}">${renderIcEvents(bd.piEvents||[],'pi','${bedId}')}</div>
-          </div>
-
-          <!-- Unplanned Extubation -->
-          <div style="margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:10px;font-weight:600">😮 Unplanned Extubation</span>
-              <button type="button" onclick="icAddEvent('${bedId}','ue')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-            </div>
-            <div id="ue_list_${bedId}">${renderIcEvents(bd.ueEvents||[],'ue','${bedId}')}</div>
-          </div>
-
-          <!-- Medication Error -->
-          <div style="margin-bottom:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <span style="font-size:10px;font-weight:600">💊 Medication Error</span>
-              <button type="button" onclick="icAddEvent('${bedId}','me')" class="btn btn-outline btn-sm" style="font-size:10px;padding:2px 8px">+ เพิ่ม</button>
-            </div>
-            <div id="me_list_${bedId}">${renderIcEvents(bd.meEvents||[],'me','${bedId}')}</div>
-          </div>
-
-          <!-- ICDSC read-only (RN กรอก) -->
-          <div>
-            <label style="font-size:10px;color:#6b7280">🧠 ICDSC Score <span style="font-size:9px">(RN)</span></label>
-            <div style="display:flex;gap:8px;font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
-              <span>ล่าสุด: <b>${bd.icdscLatest||'-'}</b> (${fmtDate(bd.icdscDate)||'-'})</span>
-              <span>สูงสุด: <b>${bd.icdscMax||'-'}</b> (${fmtDate(bd.icdscMaxDate)||'-'})</span>
-              ${parseInt(bd.icdscLatest||0)>=4?'<span style="color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
-            </div>
-          </div>
-              </div>
-            </div>
-            ${parseInt(bd.icdscLatest||0)>=4?'<span style="font-size:9px;color:#c62828;font-weight:700">⚠️ Delirium</span>':''}
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderIcEvents(events,type,bedId){
-  if(!events||!events.length) return '<div style="font-size:10px;color:#9ca3af">ยังไม่มีข้อมูล</div>';
-  return events.map((ev,i)=>`
-    <div style="display:flex;align-items:center;gap:4px;background:#f9fafb;border-radius:6px;padding:4px 6px;margin-bottom:2px;font-size:10px">
-      ${type==='pi'?`<span>📅 ${ev.date}</span><span style="background:#fee2e2;color:#c62828;padding:1px 6px;border-radius:4px">${ev.grade||''}</span>`:''}
-      ${type==='ue'?`<span>ครั้งที่ ${ev.count||i+1}</span><span>📅 ${ev.date}</span>`:''}
-      ${type==='me'?`<span>📅 ${ev.date}</span><span style="background:#fff3e0;color:#e65100;padding:1px 6px;border-radius:4px">${ev.type||''}</span>${ev.detail?`<span style="color:#6b7280">${ev.detail}</span>`:''}`:'' }
-      <button type="button" onclick="icRemoveEvent('${bedId}','${type}',${i})" style="margin-left:auto;background:none;border:none;cursor:pointer;color:#c62828;font-size:12px">×</button>
-    </div>`).join('');
-}
-
-function renderIcdscHistory(history){
-  const entries=Object.entries(history).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,7);
-  if(!entries.length) return '<div style="font-size:10px;color:#9ca3af">ยังไม่มีประวัติ</div>';
-  return `<div style="display:flex;flex-wrap:wrap;gap:4px">${entries.map(([d,s])=>`
-    <div style="font-size:9px;background:${parseInt(s)>=4?'#fee2e2':'#f3f4f6'};color:${parseInt(s)>=4?'#c62828':'#374151'};padding:2px 6px;border-radius:4px">
-      ${d.slice(5)}: <b>${s}</b>
-    </div>`).join('')}</div>`;
-}
-
-function showInlineSelect(label, options){
-  return new Promise(resolve=>{
-    const old=document.getElementById('inlinePromptBox');
-    if(old) old.remove();
-    const box=document.createElement('div');
-    box.id='inlinePromptBox';
-    box.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:12px;padding:20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);width:min(320px,90vw)';
-    box.innerHTML=`
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1b5e20">${label}</div>
-      <select id="inlineSelectEl" style="width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:8px;font-size:14px">
-        ${options.map(o=>`<option value="${o}">${o}</option>`).join('')}
-      </select>
-      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-        <button onclick="document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve('')" style="padding:6px 16px;border-radius:8px;border:1.5px solid #ccc;background:white;cursor:pointer;font-size:13px">ยกเลิก</button>
-        <button onclick="const v=document.getElementById('inlineSelectEl').value;document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve(v)" style="padding:6px 16px;border-radius:8px;border:none;background:#2e7d32;color:white;cursor:pointer;font-size:13px;font-weight:700">ตกลง</button>
-      </div>`;
-    window._inlinePromptResolve=resolve;
-    document.body.appendChild(box);
-  });
-}
-
-function showInlineDatePicker(label){
-  return new Promise(resolve=>{
-    const old=document.getElementById('inlinePromptBox');
-    if(old) old.remove();
-    const today=new Date().toISOString().split('T')[0];
-    const box=document.createElement('div');
-    box.id='inlinePromptBox';
-    box.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:12px;padding:20px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,.25);width:min(320px,90vw)';
-    box.innerHTML=`
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:#1b5e20">${label}</div>
-      <input type="date" id="inlineDateEl" value="${today}" style="width:100%;padding:8px 12px;border:1.5px solid #a5d6a7;border-radius:8px;font-size:14px">
-      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
-        <button onclick="document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve('')" style="padding:6px 16px;border-radius:8px;border:1.5px solid #ccc;background:white;cursor:pointer;font-size:13px">ยกเลิก</button>
-        <button onclick="const v=document.getElementById('inlineDateEl').value;document.getElementById('inlinePromptBox').remove();window._inlinePromptResolve(v)" style="padding:6px 16px;border-radius:8px;border:none;background:#2e7d32;color:white;cursor:pointer;font-size:13px;font-weight:700">ตกลง</button>
-      </div>`;
-    window._inlinePromptResolve=resolve;
-    document.body.appendChild(box);
-    setTimeout(()=>document.getElementById('inlineDateEl')?.focus(),100);
-  });
-}
-
-async function icAddEvent(bedId,type){
-  const today=new Date().toISOString().split('T')[0];
-  if(!_icBedData[bedId]) _icBedData[bedId]={};
-  const bd=_icBedData[bedId];
-  
-  if(type==='pi'){
-    // Pressure Injury — เกรด + วันที่
-    const grade=await showInlineSelect('เลือกเกรด Pressure Injury',['Grade 1','Grade 2','Grade 3','Grade 4','Unstageable','Deep Tissue Injury']);
-    if(!grade) return;
-    const date=await showInlineDatePicker('วันที่พบ Pressure Injury');
-    if(!date) return;
-    if(!bd.piEvents) bd.piEvents=[];
-    bd.piEvents.push({date,grade});
-    const listEl=document.getElementById('pi_list_'+bedId);
-    if(listEl) listEl.innerHTML=renderIcEvents(bd.piEvents,'pi',bedId);
-    
-  } else if(type==='ue'){
-    // Unplanned Extubation — ครั้งที่ + วันที่
-    const date=await showInlineDatePicker('วันที่เกิด Unplanned Extubation');
-    if(!date) return;
-    if(!bd.ueEvents) bd.ueEvents=[];
-    const count=bd.ueEvents.length+1;
-    bd.ueEvents.push({date,count});
-    const listEl=document.getElementById('ue_list_'+bedId);
-    if(listEl) listEl.innerHTML=renderIcEvents(bd.ueEvents,'ue',bedId);
-    
-  } else if(type==='me'){
-    // Medication Error — ประเภท + รายละเอียด + วันที่
-    const meType=await showInlineSelect('ประเภท Medication Error',['Wrong dose','Wrong drug','Wrong time','Wrong patient','Wrong route','อื่นๆ']);
-    if(!meType) return;
-    const detail=await showInlinePrompt('รายละเอียด (เช่น ชื่อยา, ขนาดยา):');
-    const date=await showInlineDatePicker('วันที่เกิด ME');
-    if(!date) return;
-    if(!bd.meEvents) bd.meEvents=[];
-    bd.meEvents.push({date,type:meType,detail:detail||''});
-    const listEl=document.getElementById('me_list_'+bedId);
-    if(listEl) listEl.innerHTML=renderIcEvents(bd.meEvents,'me',bedId);
-  }
-}
-
-function icRemoveEvent(bedId,type,idx){
-  if(!_icBedData[bedId]) return;
-  const bd=_icBedData[bedId];
-  const key=type==='pi'?'piEvents':type==='ue'?'ueEvents':'meEvents';
-  if(bd[key]) bd[key].splice(idx,1);
-  // อัปเดตทั้ง In Charge และ RN list
-  ['pi_list_','ue_list_','me_list_','rn_pi_','rn_ue_','rn_me_'].forEach(prefix=>{
-    if(prefix.includes(type.replace('pi','pi').replace('ue','ue').replace('me','me'))){
-      const el=document.getElementById(prefix+bedId);
-      if(el) el.innerHTML=renderIcEvents(bd[key]||[],type,bedId);
-    }
-  });
-  // อัปเดตทุก element ที่เกี่ยวข้อง
-  [type+'_list_'+bedId, 'rn_'+type+'_'+bedId].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.innerHTML=renderIcEvents(bd[key]||[],type,bedId);
-  });
-}
-
-function icSaveIcdsc(bedId){
-  if(!_icBedData[bedId]) _icBedData[bedId]={};
-  const bd=_icBedData[bedId];
-  const score=bd.icdscToday;
-  if(!score&&score!=='0'){toast('กรุณากรอก ICDSC Score',true);return;}
-  const today=new Date().toISOString().split('T')[0];
-  if(!bd.icdscHistory) bd.icdscHistory={};
-  bd.icdscHistory[today]=score;
-  document.getElementById('icdsc_list_'+bedId).innerHTML=renderIcdscHistory(bd.icdscHistory);
-  toast('✅ บันทึก ICDSC แล้ว');
-}
-
-function icTogglePIDate(bedId,v){const el=document.getElementById('pi_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
-function icToggleUEDate(bedId,v){const el=document.getElementById('ue_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
-function icToggleMEBox(bedId,v){const el=document.getElementById('me_'+bedId);if(el)el.style.display=v==='Yes'?'block':'none';}
-
-// ── RN System ────────────────────────────────────────────
-let _rnUser=null;
-let _rnSelectedBeds=[];
-
-function openRNMode(){
-  _rnUser=currentUser;
-  _rnSelectedBeds=[];
-  document.getElementById('rnWelcomeName').textContent=currentUser?.fullname||currentUser?.username||'';
-  document.getElementById('rnBedList').innerHTML='<div style="color:#9ca3af;font-size:12px">กำลังโหลด...</div>';
-  document.getElementById('rnStartBtn').disabled=true;
-  document.getElementById('rnModal').style.display='flex';
-  // ใช้ _pts ที่โหลดอยู่แล้ว
-  const allPts=(_pts&&_pts.length)?_pts:[];
-  const admitted=allPts.filter(p=>p['สถานะ']==='กำลัง admit');
-  if(admitted.length){
-    _icAdmittedPts=admitted;
-    admitted.forEach(pt=>{
-      const bedId=(pt['เตียง']||'').trim();
-      if(!_icBedData[bedId]||!_icBedData[bedId]._loaded){
-        _icBedData[bedId]={_loaded:true,sos:pt['SOS Score']||'',rass:pt['RASS']||'',
-          news2Score:pt['NEWS2 Score']||'',news2Date:pt['NEWS2 Date']||'',
-          icdscLatest:pt['ICDSC Score']||'',icdscDate:pt['ICDSC Date']||'',
-          icdscMax:pt['ICDSC Max']||'',icdscMaxDate:pt['ICDSC Max Date']||'',
-          piEvents:tryParseJSON(pt['Pressure Injury'])||[],
-          ueEvents:tryParseJSON(pt['Unplanned Extubation'])||[],
-          meEvents:tryParseJSON(pt['Medication Error'])||[],
-          vent_start:pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'' ,
-          vent_stop:pt['Ventilator (End)']?di(pt['Ventilator (End)']):'' ,
-          aline_start:pt['A-Line (Start)']?di(pt['A-Line (Start)']):'' ,
-          aline_stop:pt['A-Line (End)']?di(pt['A-Line (End)']):'' ,
-          cline_start:pt['C-Line (Start)']?di(pt['C-Line (Start)']):'' ,
-          cline_stop:pt['C-Line (End.)']?di(pt['C-Line (End.)']):'' ,
-          iv_start:pt['IV (Start)']?di(pt['IV (Start)']):'' ,
-          iv_stop:pt['IV (End)']?di(pt['IV (End)']):'' ,
-          fc_start:pt['F/C (Start)']?di(pt['F/C (Start)']):'' ,
-          fc_stop:pt['F/C (END)']?di(pt['F/C (END)']):'' ,
-          icd_start:pt['ICD (Start)']?di(pt['ICD (Start)']):'' ,
-          icd_stop:pt['ICD (End)']?di(pt['ICD (End)']):'' ,
-          dl_start:pt['DL for HD (Start)']?di(pt['DL for HD (Start)']):'' ,
-          dl_stop:pt['DL for HD (End)']?di(pt['DL for HD (End)']):'' ,
-        };
-      }
-    });
-    renderRNBedList(admitted.map(p=>p['เตียง']).filter(Boolean));
-  } else {
-    const now_=new Date();
-    fetchMonthPts(now_.getMonth()+1,now_.getFullYear()).then(p=>{
-      const adm=p.filter(x=>x['สถานะ']==='กำลัง admit');
-      _icAdmittedPts=adm;
-      renderRNBedList(adm.map(x=>x['เตียง']).filter(Boolean));
-    }).catch(e=>{
-      document.getElementById('rnBedList').innerHTML=`<div style="color:#c62828;font-size:12px">${e.message}</div>`;
-    });
-  }
-}
-
-function renderRNBedList(beds){
-  document.getElementById('rnBedList').innerHTML=beds.map(b=>`
-    <button type="button" onclick="toggleRNBed('${b}',this)" 
-      style="padding:10px;border:2px solid var(--g200);border-radius:8px;background:white;cursor:pointer;font-size:12px;font-weight:600">
-      ${b}
-    </button>`).join('');
-}
-
-function closeRNModal(){document.getElementById('rnModal').style.display='none';}
-
-async function doRNLogin(){
-  const uname=document.getElementById('rnUsername').value.trim();
-  const pwd=document.getElementById('rnPassword').value;
-  const errEl=document.getElementById('rnLoginErr');
-  if(!uname||!pwd){errEl.textContent='กรุณากรอกข้อมูลให้ครบ';errEl.style.display='block';return;}
-  errEl.style.display='none';
-  showLoad('กำลังเข้าสู่ระบบ...');
-  try{
-    const res=await api('login',{},{username:uname,password:pwd});
-    if(!res||res.status!=='approved') throw new Error('บัญชีนี้ยังไม่ได้รับการอนุมัติ');
-    _rnUser=res;
-    document.getElementById('rnWelcomeName').textContent=res.fullname||res.username;
-    // โหลดผู้ป่วยถ้ายังไม่มี
-    if(!_icAdmittedPts||!_icAdmittedPts.length){
-      const m=new Date().getMonth()+1;
-      const y=new Date().getFullYear();
-      try{
-        let pts=await fetchMonthPts(m,y);
-        _icAdmittedPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
-      }catch(e){}
-    }
-    // แสดงเตียงที่มีผู้ป่วย admit อยู่
-    const beds=(_icAdmittedPts||[]).map(p=>p['เตียง']).filter(Boolean);
-    document.getElementById('rnBedList').innerHTML=beds.map(b=>`
-      <button onclick="toggleRNBed('${b}',this)" 
-        style="padding:10px;border:2px solid var(--g200);border-radius:8px;background:white;cursor:pointer;font-size:12px;font-weight:600">
-        ${b}
-      </button>`).join('');
-    document.getElementById('rnLoginBox').style.display='none';
-    document.getElementById('rnBedSelectBox').style.display='block';
-  }catch(e){
-    errEl.textContent=e.message||'เข้าสู่ระบบไม่สำเร็จ';
-    errEl.style.display='block';
-  }finally{hideLoad();}
-}
-
-function toggleRNBed(bed,btn){
-  const idx=_rnSelectedBeds.indexOf(bed);
-  if(idx>=0){
-    _rnSelectedBeds.splice(idx,1);
-    btn.style.background='white';
-    btn.style.borderColor='var(--g200)';
-    btn.style.color='inherit';
-  } else {
-    _rnSelectedBeds.push(bed);
-    btn.style.background='#2e7d32';
-    btn.style.borderColor='#2e7d32';
-    btn.style.color='white';
-  }
-  document.getElementById('rnStartBtn').disabled=_rnSelectedBeds.length===0;
-}
-
-let _rnCurrentBedIdx=0;
-
-function openRNForm(){
-  if(!_rnSelectedBeds.length) return;
-  _rnCurrentBedIdx=0;
-  document.getElementById('rnModal').style.display='none';
-  showRNFormForBed(_rnSelectedBeds[0]);
-  document.getElementById('rnFormModal').style.display='flex';
-}
-
-function showRNFormForBed(bedId){
-  const pt=(_icAdmittedPts||[]).find(p=>p['เตียง']===bedId);
-  if(!pt) return;
-  if(!_icBedData[bedId]) _icBedData[bedId]={};
-  const bd=_icBedData[bedId];
-  // โหลดข้อมูลเดิมจาก Sheet ถ้ายังไม่มีใน bd
-  if(!bd._loaded){
-    bd.sos=bd.sos||pt['SOS Score']||'';
-    bd.rass=bd.rass||pt['RASS']||'';
-    bd.news2Score=bd.news2Score!==undefined?bd.news2Score:(pt['NEWS2 Score']||'');
-    bd.news2Date=bd.news2Date||pt['NEWS2 Date']||'';
-    bd.vent_start=bd.vent_start||(pt['Ventilator (Start)']?di(pt['Ventilator (Start)']):'')||'';
-    bd.vent_stop=bd.vent_stop||(pt['Ventilator (End)']?di(pt['Ventilator (End)']):'')||'';
-    bd.aline_start=bd.aline_start||(pt['A-Line (Start)']?di(pt['A-Line (Start)']):'')||'';
-    bd.aline_stop=bd.aline_stop||(pt['A-Line (End)']?di(pt['A-Line (End)']):'')||'';
-    bd.cline_start=bd.cline_start||(pt['C-Line (Start)']?di(pt['C-Line (Start)']):'')||'';
-    bd.cline_stop=bd.cline_stop||(pt['C-Line (End.)']?di(pt['C-Line (End.)']):'')||'';
-    bd.iv_start=bd.iv_start||(pt['IV (Start)']?di(pt['IV (Start)']):'')||'';
-    bd.iv_stop=bd.iv_stop||(pt['IV (End)']?di(pt['IV (End)']):'')||'';
-    bd.fc_start=bd.fc_start||(pt['F/C (Start)']?di(pt['F/C (Start)']):'')||'';
-    bd.fc_stop=bd.fc_stop||(pt['F/C (END)']?di(pt['F/C (END)']):'')||'';
-    bd.icd_start=bd.icd_start||(pt['ICD (Start)']?di(pt['ICD (Start)']):'')||'';
-    bd.icd_stop=bd.icd_stop||(pt['ICD (End)']?di(pt['ICD (End)']):'')||'';
-    bd.dl_start=bd.dl_start||(pt['DL for HD (Start)']?di(pt['DL for HD (Start)']):'')||'';
-    bd.dl_stop=bd.dl_stop||(pt['DL for HD (End)']?di(pt['DL for HD (End)']):'')||'';
-    bd.icdscLatest=bd.icdscLatest||pt['ICDSC Score']||'';
-    bd.icdscDate=bd.icdscDate||pt['ICDSC Date']||'';
-    bd.icdscMax=bd.icdscMax||pt['ICDSC Max']||'';
-    bd.icdscMaxDate=bd.icdscMaxDate||pt['ICDSC Max Date']||'';
-    bd._loaded=true;
-  }
-  const icItems=[
-    {key:'vent',label:'🫁 Vent'},
-    {key:'aline',label:'💉 A-Line'},
-    {key:'cline',label:'🔗 C-Line'},
-    {key:'iv',label:'🩸 IV'},
-    {key:'fc',label:'🪠 F/C'},
-    {key:'icd',label:'🩺 ICD'},
-    {key:'dl',label:'🩸 DL for HD'},
-  ];
-  document.getElementById('rnFormBedTitle').textContent=`${bedId} — ${pt['ชื่อ-สกุล']||''}`;
-  document.getElementById('rnFormContent').innerHTML=`
-    <div style="font-size:11px;color:#6b7280;margin-bottom:8px">ผู้บันทึก: <b>${_rnUser?.fullname||_rnUser?.username||''}</b></div>
-    <div class="fg" style="margin-bottom:12px">
-      <label style="font-size:11px;font-weight:600">👤 ผู้ประเมิน</label>
-      <input type="text" id="rnAssessorInput_${bedId}" value="${_rnUser?.fullname||_rnUser?.username||''}" 
-        placeholder="ชื่อผู้ประเมิน..." 
-        style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
-    </div>
-    
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">📊 NEWS2 Score</div>
-      <button type="button" onclick="openNews2Assess('${bedId}')" 
-        class="btn btn-outline btn-sm" style="width:100%;background:#e3f2fd;border-color:#1565c0;color:#1565c0;margin-bottom:6px">
-        📋 ประเมิน NEWS2 (7 พารามิเตอร์)
-      </button>
-      <div style="font-size:11px;background:#f9fafb;padding:6px 8px;border-radius:6px;border:1px solid var(--g200)">
-        คะแนน: <b>${bd.news2Score!==undefined&&bd.news2Score!==''?bd.news2Score:'-'}</b>
-        ${bd.news2Score>=7?'<span style="color:#c62828;font-weight:700"> 🔴 High</span>':bd.news2Score>=5?'<span style="color:#e65100;font-weight:700"> 🟠 Medium</span>':bd.news2Score>=1?'<span style="color:#f9a825;font-weight:700"> 🟡 Low</span>':''}
-        ${bd.news2Date?`<span style="color:#6b7280;font-size:10px"> (${fmtDate(bd.news2Date)})</span>`:''}
-      </div>
-    </div>
-    <!-- SOS Score -->
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">📊 SOS Score (ล่าสุด)</div>
-      <input type="number" min="0" max="16" value="${bd.sos||''}" placeholder="0-16"
-        oninput="icSet('${bedId}','sos',this.value)"
-        style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:14px">
-    </div>
-
-    <!-- IC Devices -->
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">🩺 IC Devices</div>
-      ${icItems.map(ic=>{
-        const started=bd[ic.key+'_start']||'';
-        const stopped=bd[ic.key+'_stop']||'';
-        return `<div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:4px;align-items:center;padding:4px 0;border-bottom:1px solid var(--g100)">
-          <span style="font-size:10px;font-weight:600">${ic.label}</span>
-          <label style="font-size:9px;color:var(--gray500)">เริ่ม<input type="date" value="${started}" onchange="icSet('${bedId}','${ic.key}_start',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
-          <label style="font-size:9px;color:var(--gray500)">หยุด<input type="date" value="${stopped}" onchange="icSet('${bedId}','${ic.key}_stop',this.value)" style="width:100%;font-size:10px;display:block;margin-top:2px"></label>
-        </div>`;
-      }).join('')}
-    </div>
-    <!-- RASS -->
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">🧠 RASS Score</div>
-      <select id="rnRass_${bedId}" onchange="icSet('${bedId}','rass',this.value)" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">
-        <option value="">-- เลือก RASS --</option>
-        ${[
-          ['+4','ต่อสู้ ก้าวร้าวรุนแรง เป็นอันตรายทันที'],
-          ['+3','กระวนกระวายมาก ดึงท่อหรือสายต่างๆ'],
-          ['+2','กระวนกระวาย เคลื่อนไหวไม่มีเป้าหมาย'],
-          ['+1','กระสับกระส่าย วิตกกังวล ไม่ก้าวร้าว'],
-          ['0','ตื่นตัวและสงบ'],
-          ['-1','ง่วงซึม ปลุกด้วยเสียงได้ >10 วิ'],
-          ['-2','ง่วงซึมเล็กน้อย สบตาได้ ≤10 วิ'],
-          ['-3','ง่วงซึมปานกลาง ขยับเมื่อเรียก ไม่สบตา'],
-          ['-4','ง่วงซึมลึก ไม่ตอบสนองเสียง'],
-          ['-5','ไม่ตื่น ไม่ตอบสนองทุกอย่าง'],
-        ].map(([v,l])=>`<option value="${v}" ${(bd.rass||'')=== v?'selected':''}>${v}: ${l}</option>`).join('')}
-      </select>
-      ${bd.rass?`<div style="margin-top:4px;font-size:11px;color:${parseInt(bd.rass)>=1?'#c62828':parseInt(bd.rass)<=-3?'#1565c0':'#2e7d32'};font-weight:700">RASS = ${bd.rass}</div>`:''}
-    </div>
-
-    <div class="fsec" style="margin-bottom:12px">
-      <div class="fsec-title" style="font-size:12px">🧠 ICDSC Score</div>
-      <button type="button" onclick="openIcdscAssess('${bedId}')" 
-        class="btn btn-outline btn-sm" style="width:100%;background:#e8f5e9;border-color:#2e7d32;color:#2e7d32;margin-bottom:6px">
-        📋 ประเมิน ICDSC (8 ข้อ)
-      </button>
-      <div style="display:flex;gap:6px;font-size:11px">
-        <span>ล่าสุด: <b>${bd.icdscLatest||'-'}</b> (${fmtDate(bd.icdscDate)||'-'})</span>
-        <span>สูงสุด: <b>${bd.icdscMax||'-'}</b></span>
-      </div>
-    </div>
-
-    <!-- ผู้บันทึก -->
-    <input type="hidden" id="rnAssessor_${bedId}" value="${_rnUser?.fullname||_rnUser?.username||''}">
-    
-    <!-- ปุ่มเตียงถัดไป -->
-    ${_rnSelectedBeds.length>1?`
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-top:8px">
-      <span>เตียง ${_rnCurrentBedIdx+1}/${_rnSelectedBeds.length}</span>
-      ${_rnCurrentBedIdx<_rnSelectedBeds.length-1?`<button onclick="rnNextBed()" class="btn btn-outline btn-sm">เตียงถัดไป →</button>`:''}
-    </div>`:''}
-  `;
-}
-
-function rnNextBed(){
-  saveRNData(false);
-  _rnCurrentBedIdx++;
-  if(_rnCurrentBedIdx<_rnSelectedBeds.length){
-    showRNFormForBed(_rnSelectedBeds[_rnCurrentBedIdx]);
-  }
-}
-
-async function saveRNData(close=true){
-  const bedId=_rnSelectedBeds[_rnCurrentBedIdx];
-  const pt=(_icAdmittedPts||[]).find(p=>p['เตียง']===bedId);
-  if(!pt) return;
-  const bd=_icBedData[bedId]||{};
-  const assessor=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||_rnUser?.username||'';
-  
-  // บันทึก assessor
-  if(assessor) icSet(bedId,'rnAssessor',assessor);
-
-  // ใช้เดือน/ปีปัจจุบันเสมอ
-  const now_=new Date();
-  const rnM=now_.getMonth()+1;
-  const rnY=now_.getFullYear();
-  const updated={...pt};
-  if(bd.news2Score!==undefined) updated['NEWS2 Score']=bd.news2Score;
-  if(bd.news2Date!==undefined) updated['NEWS2 Date']=bd.news2Date;
-  if(bd.news2Assessor!==undefined) updated['NEWS2 Assessor']=bd.news2Assessor;
-  if(bd.rass!==undefined) updated['RASS']=bd.rass;
-  if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
-  if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
-  if(bd.icdscMax!==undefined) updated['ICDSC Max']=bd.icdscMax;
-  if(bd.icdscMaxDate!==undefined) updated['ICDSC Max Date']=bd.icdscMaxDate;
-  if(bd.piEvents!==undefined) updated['Pressure Injury']=JSON.stringify(bd.piEvents);
-  if(bd.ueEvents!==undefined) updated['Unplanned Extubation']=JSON.stringify(bd.ueEvents);
-  if(bd.meEvents!==undefined) updated['Medication Error']=JSON.stringify(bd.meEvents);
-  if(assessor) updated['RN Assessor']=assessor;
-  applyIcDevices(updated,bd);
-
-  try{
-    const ptId=pt['id']||pt['id ']||'';
-    // ส่ง HN และ เตียง ใน data เผื่อ id ว่าง
-    if(!updated['HN']) updated['HN']=pt['HN']||'';
-    if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
-    await api('savePatient',{},{id:pt['id'],month:rnM,year:rnY,data:updated});
-    if(close){toast(`✅ บันทึกข้อมูล ${bedId} สำเร็จ`);closeRNForm();}
-  }catch(e){toast('⚠️ '+e.message,true);}
-}
-
-function closeRNForm(){
-  document.getElementById('rnFormModal').style.display='none';
-}
-
-function openRNMode_fromIcdsc(){
-  document.getElementById('rnFormModal').style.display='flex';
-}
-
-// ── End RN System ─────────────────────────────────────────
+// {bedId: {level, gcs, dx, hadrugs, doctor, note}}
+// ผู้ป่วยที่กำลัง admit ตอน in charge
 
 // ── Apache IV Assessment ──────────────────────────────────
 // กรอกค่าจริง แล้วคำนวณ /286
@@ -3800,390 +2844,6 @@ function saveApache4(){
 }
 
 function closeApache4(){document.getElementById('apache4Modal').style.display='none';}
-
-
-// ── NEWS2 Assessment ─────────────────────────────────────
-const NEWS2_PARAMS=[
-  {name:'อัตราการหายใจ (RR)',unit:'ครั้ง/นาที',
-    opts:[{label:'≤8',score:3},{label:'9-11',score:1},{label:'12-20',score:0},{label:'21-24',score:2},{label:'≥25',score:3}]},
-  {name:'SpO₂ (Scale 1)',unit:'%',
-    opts:[{label:'≤91',score:3},{label:'92-93',score:2},{label:'94-95',score:1},{label:'≥96',score:0}]},
-  {name:'SpO₂ (Scale 2 — ผู้ป่วย COPD)',unit:'%',
-    opts:[{label:'≤83',score:3},{label:'84-85',score:2},{label:'86-87',score:1},{label:'88-92 หรือ ≥93 บน O₂',score:0},{label:'93-94 บน O₂',score:1},{label:'95-96 บน O₂',score:2},{label:'≥97 บน O₂',score:3}]},
-  {name:'ออกซิเจน',unit:'',
-    opts:[{label:'Room air',score:0},{label:'On O₂',score:2}]},
-  {name:'ความดันโลหิต Systolic',unit:'mmHg',
-    opts:[{label:'≤90',score:3},{label:'91-100',score:2},{label:'101-110',score:1},{label:'111-219',score:0},{label:'≥220',score:3}]},
-  {name:'ชีพจร (HR)',unit:'ครั้ง/นาที',
-    opts:[{label:'≤40',score:3},{label:'41-50',score:1},{label:'51-90',score:0},{label:'91-110',score:1},{label:'111-130',score:2},{label:'≥131',score:3}]},
-  {name:'ระดับความรู้สึกตัว',unit:'',
-    opts:[{label:'Alert (A)',score:0},{label:'Confusion/Voice/Pain/Unresponsive',score:3}]},
-  {name:'อุณหภูมิ',unit:'°C',
-    opts:[{label:'≤35.0',score:3},{label:'35.1-36.0',score:1},{label:'36.1-38.0',score:0},{label:'38.1-39.0',score:1},{label:'≥39.1',score:2}]},
-];
-
-let _news2BedId='';
-
-function openNews2Assess(bedId){
-  _news2BedId=bedId;
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('news2Date').value=today;
-  const assessorEl=document.getElementById('news2Assessor');
-  if(assessorEl) assessorEl.value=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||currentUser?.fullname||'';
-  document.getElementById('news2Items').innerHTML=NEWS2_PARAMS.map((param,i)=>`
-    <div style="padding:10px;border-bottom:1px solid #f3f4f6">
-      <div style="font-size:12px;font-weight:600;margin-bottom:6px">${i+1}. ${param.name} ${param.unit?`<span style="color:#6b7280;font-size:10px">(${param.unit})</span>`:''}}</div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px">
-        ${param.opts.map(opt=>`
-          <label style="display:flex;align-items:center;gap:3px;font-size:11px;cursor:pointer;background:#f9fafb;padding:4px 8px;border-radius:6px;border:1px solid var(--g200)">
-            <input type="radio" name="news2_${i}" value="${opt.score}" onchange="calcNews2()">
-            ${opt.label} <span style="color:#6b7280">(${opt.score})</span>
-          </label>`).join('')}
-      </div>
-    </div>`).join('');
-  calcNews2();
-  document.getElementById('news2Modal').style.display='flex';
-}
-
-function calcNews2(){
-  let total=0;
-  NEWS2_PARAMS.forEach((_,i)=>{
-    const v=document.querySelector(`input[name="news2_${i}"]:checked`)?.value;
-    if(v!==undefined) total+=parseInt(v);
-  });
-  document.getElementById('news2Total').textContent=total;
-  const res=document.getElementById('news2Result');
-  const interp=document.getElementById('news2Interpret');
-  if(total>=7){res.style.background='#ffebee';interp.textContent='🔴 High — แจ้งแพทย์ทันที';}
-  else if(total>=5){res.style.background='#fff3e0';interp.textContent='🟠 Medium — เฝ้าระวังใกล้ชิด';}
-  else if(total>=1){res.style.background='#fffde7';interp.textContent='🟡 Low — Monitor ต่อเนื่อง';}
-  else{res.style.background='#e8f5e9';interp.textContent='🟢 Normal';}
-}
-
-function saveNews2Assess(){
-  let total=0;
-  NEWS2_PARAMS.forEach((_,i)=>{
-    const v=document.querySelector(`input[name="news2_${i}"]:checked`)?.value;
-    if(v!==undefined) total+=parseInt(v);
-  });
-  const date=document.getElementById('news2Date').value;
-  const assessor=document.getElementById('news2Assessor')?.value||'';
-  icSet(_news2BedId,'news2Score',total);
-  icSet(_news2BedId,'news2Date',date);
-  icSet(_news2BedId,'news2Assessor',assessor);
-  closeNews2Assess();
-  toast(`✅ NEWS2 = ${total} คะแนน`);
-  showRNFormForBed(_news2BedId);
-}
-
-function closeNews2Assess(){document.getElementById('news2Modal').style.display='none';}
-
-// ── End NEWS2 ─────────────────────────────────────────────
-
-const ICDSC_ITEMS=[
-  {q:'การเปลี่ยนแปลงระดับรู้สึกตัว',desc:'Agitation [RASS 1-4] = 1, ตื่นตัวปกติ [RASS 0] = 0, หลับลึก [RASS -4/-5] = ไม่สามารถประเมิน'},
-  {q:'การขาดความสนใจ (Inattention)',desc:'ไม่สามารถทำตามคำสั่ง หรือฟุ้งซ่าน'},
-  {q:'การเกิดอาการสับสน (Disorientation)',desc:'ไม่รู้ว่าตัวเองอยู่ที่ไหน วันเวลา'},
-  {q:'Hallucination, delusion หรือ psychosis',desc:'มีอาการหลอน หวาดระแวง'},
-  {q:'Psychomotor agitation หรือ retardation',desc:'ดึงสาย IV หรือซึมเฉื่อยผิดปกติ'},
-  {q:'การใช้คำพูดหรืออารมณ์ไม่เหมาะสม',desc:'พูดไม่ต่อเนื่อง หรืออารมณ์แปรปรวน'},
-  {q:'วงจรการหลับ-ตื่นผิดปกติ',desc:'นอนน้อยกว่า 4 ชม. หรือหลับมากช่วงกลางวัน'},
-  {q:'อาการขึ้นลงตลอดเวลา',desc:'อาการเปลี่ยนแปลงในช่วง 24 ชม.'},
-];
-
-let _icdscBedId='';
-
-function openIcdscAssess(bedId){
-  _icdscBedId=bedId;
-  const today=new Date().toISOString().split('T')[0];
-  document.getElementById('icdscAssessDate').value=today;
-  document.getElementById('icdscItems').innerHTML=ICDSC_ITEMS.map((item,i)=>`
-    <div style="padding:10px;border-bottom:1px solid #f3f4f6">
-      <div style="font-size:12px;font-weight:600;margin-bottom:2px">${i+1}. ${item.q}</div>
-      <div style="font-size:10px;color:#6b7280;margin-bottom:6px">${item.desc}</div>
-      <div style="display:flex;gap:8px">
-        <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
-          <input type="radio" name="icdsc_${i}" value="0" checked onchange="calcIcdsc()"> 0 ไม่มี
-        </label>
-        <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
-          <input type="radio" name="icdsc_${i}" value="1" onchange="calcIcdsc()"> 1 มี
-        </label>
-        ${i===0?`<label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer">
-          <input type="radio" name="icdsc_${i}" value="na" onchange="calcIcdsc()"> ไม่สามารถประเมิน
-        </label>`:''}
-      </div>
-    </div>`).join('');
-  calcIcdsc();
-  document.getElementById('icdscModal').style.display='flex';
-  // ใส่ชื่อผู้ประเมินอัตโนมัติ
-  const assessorEl=document.getElementById('icdscAssessor');
-  if(assessorEl) assessorEl.value=document.getElementById('rnAssessorInput_'+bedId)?.value||_rnUser?.fullname||currentUser?.fullname||'';
-}
-
-function calcIcdsc(){
-  let total=0;
-  ICDSC_ITEMS.forEach((_,i)=>{
-    const v=document.querySelector(`input[name="icdsc_${i}"]:checked`)?.value;
-    if(v==='1') total++;
-  });
-  document.getElementById('icdscTotal').textContent=total;
-  const res=document.getElementById('icdscResult');
-  const interp=document.getElementById('icdscInterpret');
-  if(total===0){res.style.background='#e8f5e9';interp.textContent='ปกติ ไม่มีภาวะ Delirium';}
-  else if(total<=3){res.style.background='#fff3e0';interp.textContent='Subsyndromal Delirium (SSD)';}
-  else{res.style.background='#ffebee';interp.textContent='⚠️ มีภาวะสับสนเฉียบพลัน Delirium';}
-}
-
-function saveIcdscAssess(){
-  let total=0;
-  ICDSC_ITEMS.forEach((_,i)=>{
-    const v=document.querySelector(`input[name="icdsc_${i}"]:checked`)?.value;
-    if(v==='1') total++;
-  });
-  const date=document.getElementById('icdscAssessDate').value;
-  const assessor=document.getElementById('icdscAssessor')?.value||'';
-  const bd=_icBedData[_icdscBedId]||{};
-  icSet(_icdscBedId,'icdscLatest',total);
-  icSet(_icdscBedId,'icdscDate',date);
-  if(assessor) icSet(_icdscBedId,'icdscAssessor',assessor);
-  // อัปเดตค่าสูงสุด
-  if(total>parseInt(bd.icdscMax||0)){
-    icSet(_icdscBedId,'icdscMax',total);
-    icSet(_icdscBedId,'icdscMaxDate',date);
-  }
-  closeIcdscAssess();
-  toast(`✅ บันทึก ICDSC = ${total} คะแนน`);
-  // Re-render IC form
-  renderIcBedList();
-}
-
-function closeIcdscAssess(){document.getElementById('icdscModal').style.display='none';}
-
-function icUpdateIcdscMax(bedId){
-  const bd=_icBedData[bedId]||{};
-  const latest=parseInt(bd.icdscLatest||0);
-  const currentMax=parseInt(bd.icdscMax||0);
-  if(latest>currentMax){
-    icSet(bedId,'icdscMax',latest);
-    icSet(bedId,'icdscMaxDate',bd.icdscDate||new Date().toISOString().split('T')[0]);
-  }
-}
-
-function tryParseJSON(str){try{return str?JSON.parse(str):null;}catch(e){return null;}}
-
-function icSet(bedId,key,val){
-  if(!_icBedData[bedId]) _icBedData[bedId]={};
-  _icBedData[bedId][key]=val;
-  // อัปเดตตารางใต้แผนผังทันที
-  if(document.getElementById('bedAdmitBody')) renderBedAdmitTable(_pts);
-}
-function icMsdChange(msdId,bedId){
-  const items=document.querySelectorAll(`#${msdId}-items input[type=checkbox]`);
-  const selected=[...items].filter(c=>c.checked).map(c=>c.value);
-  const val=selected.join(', ');
-  const disp=document.getElementById(msdId+'-display');
-  const hidden=document.getElementById(msdId+'-hidden');
-  if(disp) disp.textContent=selected.length?val:'-- เลือกยา HD --';
-  if(hidden) hidden.value=val;
-  icSet(bedId,'hadrugsList',val);
-}
-function icMsdClear(msdId,bedId){
-  document.querySelectorAll(`#${msdId}-items input[type=checkbox]`).forEach(c=>c.checked=false);
-  icMsdChange(msdId,bedId);
-}
-function icUpdateType(bedId,sos){
-  const el=document.getElementById(`icType_${bedId}`);
-  if(!el) return;
-  const t=sosToType(sos);
-  el.style.color=t.color;
-  el.textContent=t.label!=='-'?`${t.label} ${t.desc}`:'-';
-}
-
-function buildIcMessage(){
-  const shift=document.getElementById('icShift')?.value||'';
-  const nurse=document.getElementById('icNurse')?.value||'-';
-  const dtVal=document.getElementById('icDateTime')?.value||'';
-  const dt=dtVal?new Date(dtVal):new Date();
-  const dtStr=dt.toLocaleDateString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',year:'numeric'})+' '+
-               dt.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
-
-  const admitted=_icAdmittedPts;
-  const total=admitted.length;
-  const freeB=Math.max(0,TOTAL_BEDS-total);
-
-  // นับรับใหม่/ย้าย (จากเดือนนี้ — ดึงจาก _pts)
-  const allPts=_pts||[];
-  const newAdmit=allPts.filter(p=>p['การรับ']==='รับใหม่').length;
-  const transfer=allPts.filter(p=>p['การรับ']==='รับย้าย').length;
-  const dc=allPts.filter(p=>p['สถานะ']==='จำหน่ายแล้ว'&&!dcMatch(p['เหตุผลจำหน่าย'],'carryover')).length;
-
-  // ประเภทผู้ป่วย จาก SOS
-  let count4a=0,count3b=0,count2b=0,count1=0;
-  _icAdmittedPts.forEach(pt=>{
-    const bedId=(pt['เตียง']||'').trim();
-    const bd=_icBedData[bedId]||{};
-    const sos=bd.sos||pt['SOS Score']||'';
-    const t=sosToType(sos);
-    if(t.label==='4a') count4a++;
-    else if(t.label==='3b') count3b++;
-    else if(t.label==='2b') count2b++;
-    else if(t.label==='1a') count1++;
-  });
-
-  // แผนก
-  const deptMap={};
-  admitted.forEach(p=>{
-    const d=normalizePatType(p['ประเภทผู้ป่วย']||'');
-    if(d) deptMap[d]=(deptMap[d]||0)+1;
-  });
-  const deptStr=Object.entries(deptMap).sort((a,b)=>b[1]-a[1]).map(([d,c])=>`${d} ${c}`).join(', ')||'-';
-
-  // Respiratory support
-  const onVent=admitted.filter(p=>p['Ventilator (Name)']&&!p['Ventilator (End)']).length;
-  const onHFNC=admitted.filter(p=>{
-    const v=String(p['Ventilator (Name)']||'').toLowerCase();
-    return v.includes('hfnc')&&!p['Ventilator (End)'];
-  }).length;
-  const onCanular=admitted.filter(p=>{
-    const v=String(p['Ventilator (Name)']||'').toLowerCase();
-    return v.includes('canular')&&!p['Ventilator (End)'];
-  }).length;
-  const ventOnly=onVent-onHFNC-onCanular;
-  const roomAir=total-onVent;
-
-  // ยา HD ที่ on
-  const hdDrugs={};
-  admitted.forEach(p=>{
-    const drugs=(_icBedData['ICU'+(p['เตียง']||'').replace(/\D/g,'')]?.hadrugsList||p['ยา HD']||'');
-    drugs.split(',').map(d=>d.trim()).filter(Boolean).forEach(d=>{
-      hdDrugs[d]=(hdDrugs[d]||0)+1;
-    });
-  });
-  const hdStr=Object.entries(hdDrugs).sort((a,b)=>b[1]-a[1]).map(([d,c])=>`${d}×${c}`).join(', ')||'-';
-
-  return `🏥 ICU รพ.สตูล — รายงานเวร${shift}
-📅 ${dtStr}  👩‍⚕️ IC: ${nurse}
-${'─'.repeat(30)}
-🛏️ ผู้ป่วยทั้งหมด: ${total} ราย (ว่าง ${freeB} เตียง)
-📥 รับใหม่: ${newAdmit}  รับย้าย: ${transfer}
-📤 จำหน่าย/ย้ายแผนก: ${dc} ราย
-${'─'.repeat(30)}
-🔴 4a (ICU): ${count4a} ราย
-🟠 3b (CI): ${count3b} ราย
-🟡 2b (SI): ${count2b} ราย
-🟢 1a-1d (MI/CL): ${count1} ราย
-${'─'.repeat(30)}
-🏷️ แผนก: ${deptStr}
-${'─'.repeat(30)}
-🫁 Ventilator: ${ventOnly>0?ventOnly:0} คน
-💨 HFNC: ${onHFNC} คน
-🌬️ Canular: ${onCanular} คน
-💨 Room air: ${roomAir} คน
-${'─'.repeat(30)}
-💊 ยา HD ที่ on: ${hdStr}`;
-}
-
-function icPreviewMsg(){
-  if(!icValidateNurse()) return;
-  const msg=buildIcMessage();
-  document.getElementById('icMsgPreview').textContent=msg;
-  document.getElementById('icPreviewModal').style.display='flex';
-}
-
-function icCopyMsg(){
-  const msg=document.getElementById('icMsgPreview').textContent;
-  navigator.clipboard.writeText(msg).then(()=>toast('คัดลอกแล้ว ✓')).catch(()=>toast('คัดลอกไม่ได้',true));
-}
-
-// เขียนวันเริ่ม/หยุดของอุปกรณ์ IC จาก bd ลงใน record พร้อมคำนวณจำนวนวัน (ใช้ร่วมกันทั้ง In Charge และ RN)
-function applyIcDevices(updated,bd){
-  const icMap={vent:['Ventilator (Start)','Ventilator (End)','Vent. (day)'],aline:['A-Line (Start)','A-Line (End)','A-Line (day)'],cline:['C-Line (Start)','C-Line (End.)','C-Line (day)'],iv:['IV (Start)','IV (End)','IV (day)'],fc:['F/C (Start)','F/C (END)','F/C (day)'],icd:['ICD (Start)','ICD (End)','ICD (day)'],dl:['DL for HD (Start)','DL for HD (End)','DL for HD (day)']};
-  Object.entries(icMap).forEach(([k,[s,e,d]])=>{
-    if(bd[k+'_start']!==undefined) updated[s]=bd[k+'_start'];
-    if(bd[k+'_stop']!==undefined) updated[e]=bd[k+'_stop'];
-    updated[d]=devDays(updated[s],updated[e]); // กติกาเดียวกับวันนอน
-  });
-}
-
-async function saveInChargeToPatients(){
-  const now_=new Date();
-  const m=parseInt(document.getElementById('fMonth')?.value||now_.getMonth()+1);
-  const y=parseInt(document.getElementById('fYear')?.value||now_.getFullYear());
-  const updates=[];
-
-  for(const pt of _icAdmittedPts){
-    const bedId=(pt['เตียง']||'').trim();
-    const bd=_icBedData[bedId]||{};
-    // บันทึกทุกเตียงที่มีข้อมูลใน _icBedData
-
-    const updated={...pt};
-    if(bd.dx!==undefined) updated['Diagnosis แรกรับ']=bd.dx;
-    if(bd.hadrugsList!==undefined) updated['ยา HD']=bd.hadrugsList;
-    if(bd.doctor!==undefined) updated['แพทย์เจ้าของไข้']=bd.doctor;
-    if(bd.sos!==undefined) updated['SOS Score']=bd.sos;
-    if(bd.patType!==undefined) updated['ประเภทผู้ป่วย ICU']=bd.patType;
-    if(bd.note!==undefined) updated['หมายเหตุ']=bd.note;
-    // Patient Safety
-    if(bd.icdscLatest!==undefined) updated['ICDSC Score']=bd.icdscLatest;
-    if(bd.icdscDate!==undefined) updated['ICDSC Date']=bd.icdscDate;
-    if(bd.icdscMax!==undefined) updated['ICDSC Max']=bd.icdscMax;
-    if(bd.icdscMaxDate!==undefined) updated['ICDSC Max Date']=bd.icdscMaxDate;
-    if(bd.piEvents!==undefined) updated['Pressure Injury']=JSON.stringify(bd.piEvents);
-    if(bd.ueEvents!==undefined) updated['Unplanned Extubation']=JSON.stringify(bd.ueEvents);
-    if(bd.meEvents!==undefined) updated['Medication Error']=JSON.stringify(bd.meEvents);
-    if(bd.icdscHistory!==undefined) updated['ICDSC History']=JSON.stringify(bd.icdscHistory);
-    applyIcDevices(updated,bd);
-    const ptId=pt['id']||pt['id ']||'';
-    if(!updated['HN']) updated['HN']=pt['HN']||'';
-    if(!updated['เตียง']) updated['เตียง']=pt['เตียง']||'';
-    updates.push({id:ptId,month:m,year:y,data:updated});
-  }
-
-  if(updates.length===0){toast('ℹ️ ไม่มีผู้ป่วยที่กำลัง Admit');return;}
-
-  showLoad(`กำลังอัปเดต ${updates.length} เตียง...`);
-  try{
-    for(const u of updates){
-      await api('savePatient',{},{id:u.id,month:u.month,year:u.year,data:u.data});
-    }
-    _pts=await api('getPatients',{month:m,year:y});
-    applyFilter(); updateStats(); startNewsBoard();
-    _icAdmittedPts=_pts.filter(p=>p['สถานะ']==='กำลัง admit');
-    renderBedMap(_pts);
-    renderBedAdmitTable(_pts);
-    renderBedSummaryCards(_pts);
-    toast(`✅ อัปเดต ${updates.length} เตียงสำเร็จ`);
-  }catch(e){
-    toast('⚠️ ไม่สำเร็จ: '+e.message,true);
-  }finally{hideLoad();}
-}
-
-
-async function icSendLine(){
-  if(!icValidateNurse()) return;
-  // บันทึกข้อมูลผู้ป่วยก่อนส่ง
-  await saveInChargeToPatients();
-  const token=_icSettings.telegramToken;
-  const chatId=_icSettings.telegramChatId;
-  if(!token||!chatId){
-    toast('⚠️ ยังไม่ได้ตั้งค่า Telegram Bot Token / Chat ID — ไปที่เมนู ตั้งค่า',true);
-    return;
-  }
-  const msg=buildIcMessage();
-  showLoad('กำลังส่ง Telegram...');
-  try{
-    const res=await api('sendTelegram',{},{token,chatId,message:msg});
-    if(res && res.ok!==false){
-      toast('✅ ส่ง Telegram สำเร็จ!');
-      document.getElementById('icPreviewModal').style.display='none';
-    } else {
-      throw new Error(res?.error||'ส่งไม่สำเร็จ');
-    }
-  }catch(e){
-    toast('⚠️ ส่งไม่สำเร็จ: '+e.message+' — ลองคัดลอกข้อความแทน',true);
-    icPreviewMsg();
-  }finally{ hideLoad(); }
-}
 
 // ── NEWS BOARD ───────────────────────────────────────────────
 const NB_TYPES={
@@ -4365,7 +3025,6 @@ function _buildNbSlide(sl,pts,admitted,dc,male){
 
   return lbl+'<div style="font-size:11px;color:var(--gray400)">-</div>';
 }
-
 
 function filterBy(val){
   document.getElementById('fStatus').value=val;
@@ -4580,6 +3239,8 @@ function switchTab(tid){document.querySelectorAll('.modal-tab').forEach(t=>t.cla
 function buildForm(p){
   const now=new Date(),todayV=now.toISOString().split('T')[0],timeV=now.toTimeString().substring(0,5);
   const isDC=!!(p['D/C (Date)']);
+  // Kardex ตอบ Palliative = Yes และผู้ป่วยอยู่ในขั้นจำหน่ายแล้ว (มีวันที่ D/C) → ฟอร์มแนะนำ Yes ให้ (แก้ได้) ไม่เติมให้ตอนยังไม่จำหน่าย เพื่อไม่เขียนค่าโดยไม่ตั้งใจ
+  const dcPallSuggest=!!p['D/C (Date)']&&kxAllowed()&&kxParse(p).palliative==='Yes';
   const inp=(name,type,val,extra='')=>`<input type="${type}" name="${name}" value="${esc(String(val||''))}" ${extra}>`;
   const fg=(lbl,html,full=false,note='',isReq=false)=>`<div class="fg${full?' full':''}"><label>${lbl}${isReq?'<span class="req"> *</span>':''}${note?`<span class="auto-badge">${note}</span>`:''}</label>${html}</div>`;
   const sel=(name,arr,val,optKey)=>{
@@ -4688,7 +3349,7 @@ function buildForm(p){
         ${fg('ผู้บันทึก D/C',sel('ผู้บันทึก D/C',o('recorderDC'),p['ผู้บันทึก D/C'],'recorderDC'))}
         ${fg('รวมวันนอน',inp('รวมวันนอน','number',p['รวมวันนอน']||''),'','auto')}
         ${fg('CPR',sel('CPR',['Yes','No'],p['CPR']),'','จำเป็นเมื่อ D/C',true)}
-        ${fg('Palliative',sel('Palliative',['Yes','No'],p['Palliative']),'','จำเป็นเมื่อ D/C',true)}
+        ${fg('Palliative',sel('Palliative',['Yes','No'],p['Palliative']||(dcPallSuggest?'Yes':''))+`<div id="palHint" class="kx-hint" style="display:${(!p['Palliative']&&dcPallSuggest)?'block':'none'}">💡 แนะนำ Yes ตามที่บันทึกใน Kardex (Palliative = Yes) — แก้ได้</div>`,'','จำเป็นเมื่อ D/C',true)}
         ${fg('หมายเหตุ',`<textarea name="หมายเหตุ">${p['หมายเหตุ']||''}</textarea>`,true)}
       </div></div>`,
     'tab-ic':`
@@ -6432,7 +5093,6 @@ function renderBedMap(pts){
   </div>`;
 }
 
-
 function sosToType(sos){
   const s=parseInt(sos)||0;
   if(s>=13) return {label:'4a',color:'#c62828',desc:'ICU'};
@@ -6541,34 +5201,6 @@ function setBedCol(name,show){
   });
 }
 
-// รวมข้อมูลที่ In Charge/RN แก้ไว้ระดับเตียง (_icBedData) ทับข้อมูลผู้ป่วยจากชีต — ใช้ร่วมกันระหว่างตารางแผนผังเตียงและ Kardex
-function mergeBedData(p){
-  const bedId=(p['เตียง']||'').trim();
-  const bd=_icBedData[bedId];
-  if(!bd) return p;
-  return {
-    ...p,
-    'Diagnosis แรกรับ': bd.dx!==undefined?bd.dx:p['Diagnosis แรกรับ'],
-    'ยา HD': bd.hadrugsList!==undefined?bd.hadrugsList:p['ยา HD'],
-    'แพทย์เจ้าของไข้': bd.doctor!==undefined?bd.doctor:p['แพทย์เจ้าของไข้'],
-    'SOS Score': bd.sos!==undefined?bd.sos:p['SOS Score'],
-    'ประเภทผู้ป่วย ICU': bd.patType!==undefined?bd.patType:p['ประเภทผู้ป่วย ICU'],
-    'Ventilator (Start)': bd.vent_start||p['Ventilator (Start)'],
-    'Ventilator (End)': bd.vent_stop||p['Ventilator (End)'],
-    'A-Line (Start)': bd.aline_start||p['A-Line (Start)'],
-    'A-Line (End)': bd.aline_stop||p['A-Line (End)'],
-    'C-Line (Start)': bd.cline_start||p['C-Line (Start)'],
-    'C-Line (End.)': bd.cline_stop||p['C-Line (End.)'],
-    'IV (Start)': bd.iv_start||p['IV (Start)'],
-    'IV (End)': bd.iv_stop||p['IV (End)'],
-    'F/C (Start)': bd.fc_start||p['F/C (Start)'],
-    'F/C (END)': bd.fc_stop||p['F/C (END)'],
-    'ICD (Start)': bd.icd_start||p['ICD (Start)'],
-    'ICD (End)': bd.icd_stop||p['ICD (End)'],
-    'DL for HD (Start)': bd.dl_start||p['DL for HD (Start)'],
-    'DL for HD (End)': bd.dl_stop||p['DL for HD (End)'],
-  };
-}
 function renderBedAdmitTable(pts){
   const admitted=pts.filter(p=>p['สถานะ']==='กำลัง admit');
   const body=document.getElementById('bedAdmitBody');
@@ -6577,8 +5209,7 @@ function renderBedAdmitTable(pts){
     body.innerHTML='<tr><td colspan="17" class="loading-msg">ไม่มีผู้ป่วยที่กำลัง Admit</td></tr>';
     return;
   }
-  // merge ข้อมูลจาก _icBedData (ถ้ามี) — ใช้ตัวเดียวกับ Kardex
-  const mergedPts=admitted.map(mergeBedData);
+  const mergedPts=admitted.slice();
   mergedPts.sort((a,b)=>{
     const n=x=>parseInt(String(x['เตียง']||'').replace(/\D/g,''))||999;
     return n(a)-n(b);
@@ -6628,7 +5259,6 @@ function renderBedAdmitTable(pts){
       <td class="bc-PI" style="text-align:center;font-size:10px">${(()=>{try{const ev=JSON.parse(p['Pressure Injury']||'[]');return ev.length?ev.map(e=>e.grade||'').join(', '):'-';}catch(e){return '-';}})()}</td>
       <td class="bc-หมอ" style="font-size:10px">${p['แพทย์เจ้าของไข้']||'-'}</td>
       <td class="bc-พยาบาล" style="font-size:10px">${p['nurseInCharge']||'-'}</td>
-      <td style="white-space:nowrap"><button class="btn btn-outline btn-sm" onclick="openBedEdit('${esc(pid)}',${bm},${by})">✏️ แก้ไข</button> ${kxAllowed()?`<button class="btn btn-outline btn-sm" title="สรุปผู้ป่วย (Kardex) พิมพ์ได้" onclick="openKardex('${esc(pid)}')">📋 Kardex</button>`:''}</td>
     </tr>`;
   }).join('');
 }
@@ -6932,9 +5562,10 @@ function buildKardexHtml(p,k,edit){
   let pi='<span class="kx-empty">-</span>';
   try{const ev=JSON.parse(p['Pressure Injury']||'[]');if(ev.length)pi=ev.map(e=>_ht(e.grade||'')+(e.date?' ('+kxDate(e.date)+')':'')).join(', ');}catch(e){}
   const clabsi=/^(ใช่|yes)$/i.test(String(p['CLABSI']||'').trim())?'<span class="kx-tag">CLABSI</span>':'<span class="kx-empty">-</span>';
-  // คะแนนประเมิน (จากระบบ): NEWS = ช่อง SOS Score เหมือนในตารางแผนผังเตียง / Apache IV
+  // คะแนนประเมิน (จากระบบ): NEWS2 (คะแนน + วันที่ จากข้อมูลผู้ป่วย) / Apache IV
+  const news2=String(p['NEWS2 Score']==null?'':p['NEWS2 Score']).trim(),news2d=p['NEWS2 Date'];
   const apache=String(p['Apache IV Score']||'').trim(),apm=String(p['Apache IV Mortality']||'').trim();
-  const scoresHtml=kxRow('NEWS',kxText(p['SOS Score']))+kxRow('Apache IV',apache?_ht(apache)+(apm?' <span class="kx-sys">(Mortality '+_ht(apm)+(/%/.test(apm)?'':'%')+')</span>':''):'<span class="kx-empty">-</span>');
+  const scoresHtml=kxRow('NEWS2',news2?_ht(news2)+(kxDate(news2d)?' <span class="kx-sys">('+kxDate(news2d)+')</span>':''):'<span class="kx-empty">-</span>')+kxRow('Apache IV',apache?_ht(apache)+(apm?' <span class="kx-sys">(Mortality '+_ht(apm)+(/%/.test(apm)?'':'%')+')</span>':''):'<span class="kx-empty">-</span>');
   // การติดเชื้อ (จากระบบ): VAP / CAUTI / SSI / MDR + เชื้อที่พบ + สิ่งส่งตรวจ  (CLABSI แสดงในหัวข้อ Complication ตามแบบของหน่วย)
   const infFlags=['VAP','CAUTI','SSI','MDR'].filter(f=>/^(ใช่|yes)$/i.test(String(p[f]||'').trim()));
   const pathogen=String(p['ชนิดของเชื้อที่พบ']||'').trim(),specimen=String(p['ชนิดสิ่งส่งตรวจ']||'').trim();
@@ -7083,6 +5714,21 @@ function kxRender(){
   document.getElementById('kxFtEdit').style.display=_kx.edit?'contents':'none';
 }
 // Kardex ถูกล็อก (ดู/พิมพ์ได้อย่างเดียว ทุกบทบาท) เมื่อ จำหน่ายแล้ว / ยกยอดเดือนแล้ว / มีวันที่ D/C — ฝั่งเซิร์ฟเวอร์ตรวจกติกาเดียวกัน
+// ฟอร์มผู้ป่วย แท็บ D/C: พอเริ่มกรอกการจำหน่าย (วันที่ D/C / เหตุผล / สถานะ = จำหน่ายแล้ว) และยังไม่ได้เลือก Palliative → แนะนำ Yes ถ้า Kardex ตอบ Yes
+function dcSuggestPalliative(){
+  const q=n=>document.querySelector('#modalBd [name="'+n+'"]');
+  const f=q('Palliative');if(!f||f.value)return;
+  const dcStarted=!!((q('D/C (Date)')||{}).value)||!!((q('เหตุผลจำหน่าย')||{}).value)||((q('สถานะ')||{}).value==='จำหน่ายแล้ว');
+  if(!dcStarted||!kxAllowed())return;
+  const p=(_pts||[]).find(x=>(x.id||String(x._row))===editPtId);
+  if(!p||kxParse(p).palliative!=='Yes')return;
+  f.value='Yes';const h=document.getElementById('palHint');if(h)h.style.display='block';
+}
+document.addEventListener('change',e=>{
+  const n=e.target&&e.target.name;
+  if(n==='D/C (Date)'||n==='เหตุผลจำหน่าย'||n==='สถานะ')dcSuggestPalliative();
+  if(n==='Palliative'){const h=document.getElementById('palHint');if(h)h.style.display='none';}   // เลือกเองแล้ว ไม่ต้องแสดงคำแนะนำ
+});
 function kxIsLocked(p){
   const st=String((p&&p['สถานะ'])||'').trim(),dc=String((p&&p['D/C (Date)'])||'').trim();
   return st==='จำหน่ายแล้ว'||st==='ค้างเดือน'||dc!=='';
@@ -7093,7 +5739,7 @@ function openKardex(pid,opts){
   if(!kxAllowed()){toast('🔒 ไม่มีสิทธิ์เข้าถึง Kardex',true);return;}
   const raw=_pts.find(x=>(x.id||String(x._row))===pid);
   if(!raw){toast('ไม่พบข้อมูลผู้ป่วยรายนี้ ลองรีเฟรชหน้าแผนผังเตียงอีกครั้ง',true);return;}
-  const p=mergeBedData(raw);
+  const p=raw;
   const nowK=new Date();
   _kx={pid,p,raw,k:kxParse(raw),edit:false,ro:!!(opts&&opts.ro),m:(opts&&opts.m)||nowK.getMonth()+1,y:(opts&&opts.y)||nowK.getFullYear()};   // เดือนของแถวที่เปิด (จากหน้ารายชื่อ = เดือนที่เลือก, จากแผนผังเตียง/หน้า Kardex = เดือนปัจจุบัน)
   document.getElementById('kardexTitle').textContent='Kardex — เตียง '+(p['เตียง']||'-');
@@ -7228,7 +5874,7 @@ async function loadKardexBoard(){
   renderKardexBoard();
 }
 function kbCard(raw){
-  const p=mergeBedData(raw),k=kxParse(raw),pid=raw.id||String(raw._row);
+  const p=raw,k=kxParse(raw),pid=raw.id||String(raw._row);
   const admit=(/^(\d{4}-\d{2}-\d{2})/.exec(String(p['Admit (Date)']||''))||[])[1]||'',days=admit?devDays(admit,''):'';
   const allergy=String(p['แพ้ยา']||'').trim(),hasAll=allergy&&!/^ไม่(มี|แพ้)/.test(allergy);
   const ageRaw=String(p['อายุ']||'').trim(),age=/^\d+$/.test(ageRaw)?ageRaw+' ปี':ageRaw;
@@ -7265,101 +5911,6 @@ function renderKardexBoard(){
   }
   list.filter(p=>!inList(p)).forEach(p=>html.push(kbCard(p)));   // ผู้ป่วยที่ใช้เตียงนอกรายการ / ไม่ระบุเตียง
   grid.innerHTML=html.join('');
-}
-
-let _bedEditPid=null,_bedEditM=null,_bedEditY=null;
-
-function openBedEdit(pid,m,y){
-  const p=_pts.find(x=>(x.id||String(x._row))===pid);
-  if(!p){toast('ไม่พบข้อมูลผู้ป่วยรายนี้ ลองรีเฟรชหน้าแผนผังเตียงอีกครั้ง',true);return;}
-  _bedEditPid=pid;_bedEditM=m;_bedEditY=y;
-  document.getElementById('bedEditTitle').textContent=`แก้ไขข้อมูล — เตียง ${p['เตียง']||'-'} (${p['ชื่อ-สกุล']||'-'})`;
-
-  const v=(k)=>esc(p[k]||'');
-  const fld=(lbl,html)=>`<div style="margin-bottom:10px"><label style="display:block;font-size:12px;font-weight:700;color:var(--gray600);margin-bottom:3px">${lbl}</label>${html}</div>`;
-  const txt=(id,val)=>`<input type="text" id="${id}" value="${val}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
-  const num=(id,val)=>`<input type="number" id="${id}" value="${val}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
-  const ta=(id,val)=>`<textarea id="${id}" rows="2" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px;resize:vertical">${val}</textarea>`;
-  const dt=(id,val)=>`<input type="date" id="${id}" value="${di(val)}" style="width:100%;padding:8px;border:1.5px solid var(--g200);border-radius:8px;font-size:13px">`;
-  const dtPair=(lbl,sId,sVal,eId,eVal)=>fld(lbl,`<div style="display:flex;gap:6px"><div style="flex:1"><div style="font-size:10px;color:var(--gray400);margin-bottom:2px">เริ่ม</div>${dt(sId,sVal)}</div><div style="flex:1"><div style="font-size:10px;color:var(--gray400);margin-bottom:2px">สิ้นสุด</div>${dt(eId,eVal)}</div></div>`);
-
-  document.getElementById('bedEditBd').innerHTML=`
-    ${fld('Diagnosis แรกรับ (Dx)',ta('be_dx',v('Diagnosis แรกรับ')))}
-    <div style="display:flex;gap:8px;align-items:flex-end">
-      <div style="flex:1">${fld('Apache แรกรับ <span style="font-weight:400;color:var(--gray400)">(กรอกครั้งเดียวตอนแรกรับ ดูได้จากหน้ารายชื่อ)</span>',`<div style="padding:8px;background:var(--g50);border-radius:8px;font-weight:700;color:#c62828">${p['Apache IV Score']||'-'}</div>`)}</div>
-      <div style="flex:1">${fld('NEWS',txt('be_sos',v('SOS Score')))}</div>
-    </div>
-    <div style="font-size:10px;color:var(--gray400);margin:-6px 0 10px">* Apache แรกรับ ไม่ต้องกรอกซ้ำ ใช้ค่าที่ประเมินตอนรับผู้ป่วยครั้งแรกเท่านั้น</div>
-    ${fld('ประเภทผู้ป่วย ICU',txt('be_pattype',v('ประเภทผู้ป่วย ICU')))}
-    ${fld('💊 ยา HD',ta('be_ha',v('ยา HD')))}
-    ${fld('🌬️ การหายใจ',txt('be_breath',v('การหายใจ')))}
-    ${dtPair('💉 A-Line','be_aline_s',p['A-Line (Start)'],'be_aline_e',p['A-Line (End)'])}
-    ${dtPair('🔗 C-Line','be_cline_s',p['C-Line (Start)'],'be_cline_e',p['C-Line (End.)'])}
-    ${dtPair('🩸 IV','be_iv_s',p['IV (Start)'],'be_iv_e',p['IV (End)'])}
-    ${dtPair('🪠 F/C','be_fc_s',p['F/C (Start)'],'be_fc_e',p['F/C (END)'])}
-    ${dtPair('🩺 ICD','be_icd_s',p['ICD (Start)'],'be_icd_e',p['ICD (End)'])}
-    ${dtPair('🩸 DL for HD','be_dl_s',p['DL for HD (Start)'],'be_dl_e',p['DL for HD (End)'])}
-    ${fld('🧠 ICDSC Score <span style="font-weight:400;color:var(--gray400)">(เช็คเวรบ่าย)</span>',num('be_icdsc',v('ICDSC Score')))}
-    <div style="display:flex;gap:8px">
-      <div style="flex:1">${fld('👨‍⚕️ แพทย์เจ้าของไข้ <span style="font-weight:400;color:var(--gray400)">(ทวนสอบ)</span>',txt('be_doctor',v('แพทย์เจ้าของไข้')))}</div>
-      <div style="flex:1">${fld('👩‍⚕️ พยาบาล In Charge',txt('be_nurse',v('nurseInCharge')))}</div>
-    </div>
-    <div style="font-size:11px;color:var(--gray400);margin-top:4px">* ฟิลด์อื่นๆ (เช่น Bedsore แบบละเอียด, ข้อมูล D/C, U/D) แก้ไขได้จากหน้า "รายชื่อ" → ปุ่มแก้ไขแบบเต็มฟอร์ม</div>
-  `;
-  document.getElementById('bedEditModal').classList.add('open');
-}
-
-function closeBedEditModal(){document.getElementById('bedEditModal').classList.remove('open');}
-
-async function saveBedEdit(){
-  if(!_bedEditPid)return;
-  const g=(id)=>document.getElementById(id)?.value||'';
-  const data={
-    'Diagnosis แรกรับ': g('be_dx'),
-    'SOS Score': g('be_sos'),
-    'ประเภทผู้ป่วย ICU': g('be_pattype'),
-    'ยา HD': g('be_ha'),
-    'การหายใจ': g('be_breath'),
-    'A-Line (Start)': g('be_aline_s'),
-    'A-Line (End)': g('be_aline_e'),
-    'C-Line (Start)': g('be_cline_s'),
-    'C-Line (End.)': g('be_cline_e'),
-    'IV (Start)': g('be_iv_s'),
-    'IV (End)': g('be_iv_e'),
-    'F/C (Start)': g('be_fc_s'),
-    'F/C (END)': g('be_fc_e'),
-    'ICD (Start)': g('be_icd_s'),
-    'ICD (End)': g('be_icd_e'),
-    'DL for HD (Start)': g('be_dl_s'),
-    'DL for HD (End)': g('be_dl_e'),
-    'ICDSC Score': g('be_icdsc'),
-    'แพทย์เจ้าของไข้': g('be_doctor'),
-    'nurseInCharge': g('be_nurse'),
-  };
-  // แพทย์เจ้าของไข้ / NEWS (SOS Score): ถ้าเดิมมีค่าอยู่ ห้ามเว้นว่าง (ไม่ให้ข้ามการบังคับกรอกผ่านหน้านี้)
-  const origQ=_pts.find(x=>(x.id||String(x._row))===_bedEditPid)||{};
-  const blanked=[['แพทย์เจ้าของไข้','แพทย์เจ้าของไข้'],['SOS Score','NEWS']].filter(([k])=>!data[k]&&String(origQ[k]||'').trim()!=='').map(([,l])=>l);
-  if(blanked.length){toast('กรุณากรอก: '+blanked.join(', ')+' (ห้ามเว้นว่าง)',true);return;}
-  // คำนวณจำนวนวันของอุปกรณ์ (ไม่งั้นคอลัมน์ (day) จะค้างค่าเก่า และกระทบสถิติรวมวัน)
-  const calcDay=(s,e)=>devDays(s,e); // กติกาเดียวกับวันนอน (ขั้นต่ำ 1 วัน, ยังไม่หยุดนับถึงวันนี้)
-  data['A-Line (day)']=calcDay(data['A-Line (Start)'],data['A-Line (End)']);
-  data['C-Line (day)']=calcDay(data['C-Line (Start)'],data['C-Line (End.)']);
-  data['IV (day)']=calcDay(data['IV (Start)'],data['IV (End)']);
-  data['F/C (day)']=calcDay(data['F/C (Start)'],data['F/C (END)']);
-  data['ICD (day)']=calcDay(data['ICD (Start)'],data['ICD (End)']);
-  data['DL for HD (day)']=calcDay(data['DL for HD (Start)'],data['DL for HD (End)']);
-  const btn=document.getElementById('bedEditSaveBtn');
-  btn.disabled=true;btn.textContent='กำลังบันทึก...';
-  showLoad('กำลังบันทึก...');
-  try{
-    await api('savePatient',{},{id:_bedEditPid,month:_bedEditM,year:_bedEditY,data});
-    await api('writeLog',{},{user:currentUser.fullname,action:'แก้ไขข้อมูลเตียงจากแผนผังเตียง'});
-    closeBedEditModal();
-    toast('บันทึกสำเร็จ ✓');
-    Object.keys(_dashCache).forEach(k=>delete _dashCache[k]);
-    await loadBedMap();
-  }catch(e){toast('บันทึกไม่สำเร็จ: '+e.message,true);}
-  finally{hideLoad();btn.disabled=false;btn.textContent='💾 บันทึก';}
 }
 
 let _trendMode='day';
