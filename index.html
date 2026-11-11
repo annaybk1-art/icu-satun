@@ -479,6 +479,14 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 @media screen and (max-width:620px){.kx-grid,.kx-boxes{grid-template-columns:1fr}.kx-k{flex-basis:96px}.kx-bed{font-size:20px}}
 #kardexPrintRoot{display:none}
 .kx-pre{white-space:pre-wrap}
+.kx-probtools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:2px}
+.kx-budget{font-size:11.5px;color:#607d60}.kx-budget b{font-weight:700}.kx-budget b.warn,.kx-budget.warn{color:#b26a00}.kx-budget b.over,.kx-budget.over{color:#c62828;font-weight:700}
+.kx-closedbox{margin-top:10px;border-top:1px dashed #cfd8cf;padding-top:6px}
+.kx-ccard{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border:1px solid #d9e2d9;border-radius:6px;padding:4px 8px;margin-bottom:4px;background:#f7faf7}
+.kx-ccard .kx-ct{flex:1 1 140px}.kx-cdw{display:inline-flex;align-items:center;gap:4px;width:190px}
+.kx-closed{margin-top:6px;font-size:13px}
+.kx-closed-det{margin-top:3px;font-size:13px}.kx-closed-det summary{cursor:pointer;color:#2e7d32;font-size:12px}
+.kx-endbar{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;margin-top:16px;padding-top:10px;border-top:1px solid #dfe8df;padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
 .kx-rec{margin-top:5px;font-size:13px}.kx-rec i{font-style:normal;color:#555;margin-right:3px}.kx-rec b{font-weight:700}
 .kx-idl{border-bottom:1px solid #b9c9b9;padding:0 0 5px;margin:0 0 8px}
 .kx-line{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2px 20px;font-size:13px;line-height:1.7}
@@ -1849,14 +1857,18 @@ textarea.kx-in{overflow:hidden}
 <div class="overlay" id="kardexModal">
   <div class="modal" style="max-width:780px;max-height:94vh;overflow:hidden;display:flex;flex-direction:column">
     <div class="modal-hd"><h2 id="kardexTitle">Kardex</h2><button class="modal-x" onclick="closeKardex()">✕</button></div>
-    <div class="modal-bd" style="overflow-y:auto;padding:14px"><div id="kardexSheet"></div></div>
-    <div class="modal-ft">
-      <span id="kxFtView" style="display:contents">
+    <div class="modal-bd" style="overflow-y:auto;padding:14px">
+      <div id="kardexSheet"></div>
+      <!-- ตอนอ่าน: ปุ่มอยู่ท้ายเอกสาร เลื่อนไปกับเนื้อหา (ไม่ตรึงลอยอยู่ท้ายจอ) -->
+      <div id="kxFtView" class="kx-endbar">
         <button class="btn btn-outline" onclick="closeKardex()">ปิด</button>
         <button class="btn btn-outline" id="kxEditBtn" onclick="kxStartEdit()">✏️ แก้ไข Kardex</button>
         <button class="btn btn-primary" onclick="printKardex()">🖨️ พิมพ์</button>
-      </span>
-      <span id="kxFtEdit" style="display:none">
+      </div>
+    </div>
+    <!-- ตอนแก้ไข: ตรึงปุ่มบันทึกไว้ท้ายหน้าต่าง (ต้องกดได้ตลอดเวลาที่เลื่อนกรอกข้อมูล) -->
+    <div class="modal-ft" id="kxFtBar" style="display:none">
+      <span id="kxFtEdit" style="display:contents">
         <button class="btn btn-outline" onclick="kxCancelEdit()">ยกเลิก</button>
         <button class="btn btn-primary" id="kxSaveBtn" onclick="kxSave()">💾 บันทึก Kardex</button>
       </span>
@@ -2065,7 +2077,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.38';
+const APP_VERSION='2026-10-17.42';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -4758,7 +4770,7 @@ function buildForm(p){
     'C-Line (End.)','C-Line (day)','F/C (Start)','F/C (END)','F/C (day)',
     'ICD (Start)','ICD (End)','ICD (day)','DL for HD (Start)','DL for HD (End)','DL for HD (day)','Falling','APACHE II','Pain score',
     'VAP','CAUTI','CLABSI','SSI','MDR','ชนิดของเชื้อที่พบ','ชนิดสิ่งส่งตรวจ',
-    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','Kardex','แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
+    'CPR','Palliative','มีแผนกที่ Consult','แผนกที่ Consult','แพทย์ที่ Consult','ผ่าตัด','จำนวนครั้งผ่าตัด','ชนิดการผ่าตัด','วันที่ผ่าตัด','Kardex',...KX_ALL_COLS,'แพ้ยา','ยา HD','SOS Score','ประเภทผู้ป่วย ICU',
     'การหายใจ','dxSpecialType','nurseInCharge','IV (Start)','IV (End)','IV (day)','หมายเหตุ',
     'Pressure Injury','Pressure Injury Date','Unplanned Extubation','Unplanned Extubation Date',
     'Medication Error','Medication Error Date','Medication Error Type','ICDSC Score',
@@ -6649,7 +6661,76 @@ function kxGender(name){
   if(n.startsWith('น.ส')||n.startsWith('นาง')||n.startsWith('เด็กหญิง')||n.startsWith('ด.ญ.'))return 'หญิง';
   return '';
 }
-function kxParse(p){try{const o=JSON.parse((p&&p['Kardex'])||'{}');return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}}
+// ── Kardex แยกคอลัมน์ตามเรื่อง (ชีต: คอลัมน์ "Kardex: …") ──
+const KX_COLMAP={cc:'Kardex: CC',hpi:'Kardex: HPI',specRisk:'Kardex: Specific Risk',commonRisk:'Kardex: Common Risk',foodAllergy:'Kardex: แพ้อาหาร',surgHx:'Kardex: ประวัติผ่าตัดเดิม',caprini:'Kardex: Caprini',dvtUS:'Kardex: U/S DVT',rehab:'Kardex: Rehabilitation',psych:'Kardex: ด้านจิต-สังคม',complication:'Kardex: Complication อื่นๆ',palliative:'Kardex: Palliative',pps:'Kardex: PPS',diet:'Kardex: Diet',bowel:'Kardex: ประวัติการถ่าย',culture:'Kardex: Culture',imaging:'Kardex: ผลตรวจ CT ฯลฯ',handover:'Kardex: ส่งต่อเวรถัดไป',hospAdmit:'Kardex: Hospital Admit (Date)',_at:'Kardex: อัปเดตล่าสุด',_by:'Kardex: ผู้แก้ล่าสุด'};
+const KX_COL_PROB='Kardex: Problems',KX_COL_PROBCLOSED='Kardex: Problems ที่จบแล้ว',KX_COL_DEV='Kardex: อุปกรณ์ เหตุผล-เบอร์-remind',KX_COL_DEVHIST='Kardex: อุปกรณ์ ประวัติครั้งก่อน',KX_COL_DEVEXTRA='Kardex: อุปกรณ์อื่น';
+const KX_ALL_COLS=[...Object.values(KX_COLMAP),KX_COL_PROB,KX_COL_PROBCLOSED,KX_COL_DEV,KX_COL_DEVHIST,KX_COL_DEVEXTRA];
+// Problems ในชีต: ข้อความเรียงเป็นข้อๆ  "1. ชื่อปัญหา" แล้วบรรทัด "5/11/2569. เนื้อหา" (หรือ "- เนื้อหา" ถ้าไม่มีวันที่) — อ่านแบบผ่อนปรน (บรรทัดแปลกๆ ต่อท้ายบรรทัดก่อนหน้า)
+function kxBeDmy(iso){const m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso||''));return m?(+m[3])+'/'+(+m[2])+'/'+(+m[1]+543):'';}
+function kxIsoFromDmy(d,m,y){d=+d;m=+m;y=+y;if(y<100)y+=2500;if(y>=2400)y-=543;if(!(d>=1&&d<=31&&m>=1&&m<=12))return '';return y+'-'+('0'+m).slice(-2)+'-'+('0'+d).slice(-2);}
+function kxPackProblems(arr,closed){
+  const lines=[];let n=0;
+  (Array.isArray(arr)?arr:[]).forEach(p=>{
+    if(typeof p==='string')p={t:p,e:[]};
+    if(!p||typeof p!=='object')return;
+    const t=String(p.t||'').replace(/\s*\n\s*/g,' ').trim();
+    let e=Array.isArray(p.e)?p.e:[];
+    if(!e.length&&(p.d||p.s))e=[{d:p.d,s:p.s}];                     // รูปแบบเดิม {t,d,s}
+    const ents=[];
+    e.forEach(y=>{if(!y||typeof y!=='object')return;const s=String(y.s||'').replace(/\s*\n\s*/g,' ').trim();if(!s)return;const d=kxBeDmy(y.d);ents.push(d?d+'. '+s:'- '+s);});
+    if(!t&&!ents.length)return;
+    n++;const cd=closed?kxBeDmy(p.c):'';
+    lines.push(n+'. '+t+(cd?' (จบ '+cd+')':''));ents.forEach(x=>lines.push(x));
+  });
+  return lines.join('\n');
+}
+function kxParseProblemsText(txt,closed){
+  const out=[];let cur=null;
+  String(txt==null?'':txt).split(/\r?\n/).forEach(raw=>{
+    const line=raw.trim();if(!line)return;
+    let m=/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\.?(?:\s+(.*))?$/.exec(line);
+    if(m){const iso=kxIsoFromDmy(m[1],m[2],m[3]);if(iso){if(!cur){cur={t:'',e:[]};out.push(cur);}cur.e.push({d:iso,s:(m[4]||'').trim()});return;}}
+    m=/^[-•]\s+(.*)$/.exec(line);
+    if(m){if(!cur){cur={t:'',e:[]};out.push(cur);}cur.e.push({d:'',s:m[1].trim()});return;}
+    m=/^\d+[\.\)]\s*(.*)$/.exec(line);
+    if(m){
+      cur={t:m[1].trim(),e:[]};
+      if(closed){const cm=/\s*\(จบ\s+(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})\)\s*$/.exec(cur.t);if(cm){const iso=kxIsoFromDmy(cm[1],cm[2],cm[3]);if(iso){cur.c=iso;cur.t=cur.t.slice(0,cm.index).trim();}}}   // "ชื่อปัญหา (จบ 8/11/2569)"
+      out.push(cur);return;
+    }
+    if(cur&&cur.e.length)cur.e[cur.e.length-1].s=(cur.e[cur.e.length-1].s+' '+line).trim();
+    else if(cur&&!cur.t)cur.t=line;
+    else{cur={t:line,e:[]};out.push(cur);}
+  });
+  return out;
+}
+function kxParseOld(p){try{const o=JSON.parse((p&&p['Kardex'])||'{}');return o&&typeof o==='object'&&!Array.isArray(o)?o:{};}catch(e){return {};}}
+function kxParse(p){
+  if(!p)return {};
+  const filled=c=>String(p[c]==null?'':p[c]).trim()!=='';
+  if(!KX_ALL_COLS.some(filled))return kxParseOld(p);          // แถวที่บันทึกก่อนแยกคอลัมน์ (JSON ก้อนเดียว) — อ่านได้ และบันทึกครั้งแรกจะย้ายเป็นคอลัมน์แยกให้
+  const o={v:1};
+  Object.keys(KX_COLMAP).forEach(key=>{const v=p[KX_COLMAP[key]];if(v!=null&&String(v)!=='')o[key]=String(v);});
+  const pr=kxParseProblemsText(p[KX_COL_PROB]);if(pr.length)o.problems=pr;
+  const pcl=kxParseProblemsText(p[KX_COL_PROBCLOSED],true);if(pcl.length)o.problemsClosed=pcl;
+  const js=c=>{try{return JSON.parse(p[c]);}catch(e){return null;}};
+  const dv=js(KX_COL_DEV);if(dv&&typeof dv==='object'&&!Array.isArray(dv)&&Object.keys(dv).length)o.dev=dv;
+  const dh=js(KX_COL_DEVHIST);if(Array.isArray(dh)&&dh.length)o.devHist=dh;
+  const de=js(KX_COL_DEVEXTRA);if(Array.isArray(de)&&de.length)o.devExtra=de;
+  return o;
+}
+// เขียน: คืน {ชื่อคอลัมน์: ค่า} ครบทุกคอลัมน์ (ช่องที่ถูกล้างต้องส่งเป็น "" เพื่อให้ถูกล้างในชีตด้วย) + ล้างคอลัมน์ "Kardex" เดิม (ข้อมูลย้ายมาอยู่ในคอลัมน์แยกแล้ว)
+function kxPack(k){
+  const cols={};
+  Object.keys(KX_COLMAP).forEach(key=>{cols[KX_COLMAP[key]]=k[key]==null?'':String(k[key]);});
+  cols[KX_COL_PROB]=kxPackProblems(k.problems);
+  cols[KX_COL_PROBCLOSED]=kxPackProblems(k.problemsClosed,true);
+  cols[KX_COL_DEV]=(k.dev&&typeof k.dev==='object'&&!Array.isArray(k.dev)&&Object.keys(k.dev).length)?JSON.stringify(k.dev):'';
+  cols[KX_COL_DEVHIST]=(Array.isArray(k.devHist)&&k.devHist.length)?JSON.stringify(k.devHist):'';
+  cols[KX_COL_DEVEXTRA]=(Array.isArray(k.devExtra)&&k.devExtra.length)?JSON.stringify(k.devExtra):'';
+  cols['Kardex']='';
+  return cols;
+}
 const kxv=(k,key)=>String(k&&k[key]!=null?k[key]:'');
 function kxRow(k,v){return `<div class="kx-r"><div class="kx-k">${k}</div><div class="kx-v">${v}</div></div>`;}
 // ช่องที่พยาบาลกรอกเพิ่ม: โหมดดู = ข้อความ | โหมดแก้ = ช่องกรอก
@@ -6683,14 +6764,24 @@ function kxAdmissionNarrative(p,k){
   return sent.length?'<div class="kx-narr"><p>'+sent.join(' ')+'</p></div>':'<span class="kx-empty">-</span>';
 }
 // ── Problems: ชื่อปัญหา + บรรทัดบันทึกรายวัน (วันที่ตรงเนื้อหา: "2/12/69. เกิดอะไร → treat อะไร") ──
-const KX_MAXHIST=30,KX_MAXENT=10;
+const KX_MAXHIST=30,KX_MAXENT=200,KX_MAXCLOSED=60;   // บรรทัดต่อปัญหา: ไม่จำกัดตามจริง (คุมด้วยจำนวนตัวอักษรรวมของคอลัมน์ Problems ≤ 45,000)
+// กันบันทึกกับ Code.gs รุ่นเก่า: เซิร์ฟเวอร์รุ่นเก่าไม่รู้จักคอลัมน์ Kardex แบบแยก (จะทิ้งข้อมูลเงียบๆ แล้วยังล้างคอลัมน์ "Kardex" เดิม) — ต้องเป็นรุ่นนี้หรือใหม่กว่าเท่านั้น
+const KX_MIN_SERVER='2026-10-17.42';
+let _kxSrvOkAt=0;
+async function kxServerOk(){
+  if(Date.now()-_kxSrvOkAt<10*60*1000)return true;               // เช็คแล้วผ่านภายใน 10 นาที ไม่ต้องเช็คซ้ำ
+  let sv='';try{const r=await api('getVersion');sv=String((r&&r.version)||'');}catch(e){sv='';}
+  if(sv&&sv>=KX_MIN_SERVER){_kxSrvOkAt=Date.now();return true;}
+  return false;
+}
+const KX_MAX_JSON=45000;   // เพดานขนาดข้อมูลต่อ 1 คอลัมน์ Kardex (เซลล์ชีตจุ 50,000 ตัวอักษร เผื่อไว้)
 function kxNormProblems(a){
   return (Array.isArray(a)?a:[]).map(x=>{
     if(typeof x==='string')return {t:x,e:[]};
     if(!x||typeof x!=='object')return null;
     let e=Array.isArray(x.e)?x.e.filter(y=>y&&typeof y==='object').map(y=>({d:String(y.d||''),s:String(y.s||'')})):[];
     if(!e.length&&(x.d||x.s))e=[{d:String(x.d||''),s:String(x.s||'')}];      // รูปแบบเดิม {t,d,s}
-    return {t:String(x.t||''),e:e.filter(y=>y.s)};
+    const o={t:String(x.t||''),e:e.filter(y=>y.s)};if(typeof x.c==='string'&&/^\d{4}-\d{2}-\d{2}/.test(x.c))o.c=x.c.slice(0,10);return o;
   }).filter(x=>x&&(x.t||x.e.length));
 }
 function kxShortDate(iso){const t=toDMY(String(iso||'').slice(0,10));if(!t)return '';const a=t.split('/');return a.length===3?(+a[0])+'/'+(+a[1])+'/'+String(a[2]).slice(-2):'';}   // 2/12/69
@@ -6700,14 +6791,14 @@ function kxProbEntry(en){
 }
 function kxProbCard(pr){
   pr=pr||{};
-  return `<div class="kx-pcard"><div class="kx-prow1"><input class="kx-in kx-pt" type="text" maxlength="100" value="${_ha(pr.t||'')}" placeholder="ปัญหา (สั้นๆ)"><button type="button" class="btn btn-danger btn-sm" title="ลบปัญหา" onclick="kxRemoveProblem(this)">✕</button></div><div class="kx-elist">${(pr.e&&pr.e.length?pr.e:[{}]).map(kxProbEntry).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddEntry(this)">➕ เพิ่มวันที่ / บรรทัด</button></div>`;
+  return `<div class="kx-pcard"><div class="kx-prow1"><input class="kx-in kx-pt" type="text" maxlength="100" value="${_ha(pr.t||'')}" placeholder="ปัญหา (สั้นๆ)"><button type="button" class="btn btn-outline btn-sm" title="ปิดปัญหานี้ (จบแล้ว) — ย้ายไปรายการปัญหาที่จบแล้ว" onclick="kxCloseProblem(this)">✔ จบแล้ว</button><button type="button" class="btn btn-danger btn-sm" title="ลบปัญหา" onclick="kxRemoveProblem(this)">✕</button></div><div class="kx-elist">${(pr.e&&pr.e.length?pr.e:[{}]).map(kxProbEntry).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddEntry(this)">➕ เพิ่มวันที่ / บรรทัด</button></div>`;
 }
 function kxAddEntry(btn){
   const l=btn.closest('.kx-pcard').querySelector('.kx-elist');
   if(l.children.length>=KX_MAXENT){toast('เพิ่มได้สูงสุด '+KX_MAXENT+' บรรทัดต่อปัญหา',true);return;}
-  l.insertAdjacentHTML('beforeend',kxProbEntry({}));
+  l.insertAdjacentHTML('beforeend',kxProbEntry({}));kxBudgetSoon();
 }
-function kxRemoveEntry(btn){const l=btn.closest('.kx-elist');btn.closest('.kx-erow').remove();if(!l.children.length)l.insertAdjacentHTML('beforeend',kxProbEntry({}));}
+function kxRemoveEntry(btn){const l=btn.closest('.kx-elist');btn.closest('.kx-erow').remove();if(!l.children.length)l.insertAdjacentHTML('beforeend',kxProbEntry({}));kxBudgetSoon();}
 // ── การผ่าตัด: ก่อนเข้า ICU / หลังเข้า ICU แยกตามวันที่เทียบกับวัน Admit ICU (วันเดียวกัน = ก่อนเข้า ICU เพราะมักผ่าตัดแล้วย้ายเข้า ICU; ไม่ทราบวันที่ = จัดไว้หลังเข้า ICU) ──
 function kxSurgeries(p){
   if(p['ผ่าตัด']!=='Yes')return [];
@@ -6828,9 +6919,12 @@ function buildKardexHtml(p,k,edit){
   const los=dayCount(admitIso);
   const ageRaw=String(p['อายุ']||'').trim(),age=/^\d+$/.test(ageRaw)?ageRaw+' ปี':ageRaw;
   // Problems
-  const probs=kxNormProblems(k.problems);
-  const probView=probs.length?probs.map((x,i)=>`<div class="kx-pitem"><div><b>${i+1}. ${_ht(x.t||'(ไม่มีชื่อ)')}</b></div>${x.e.map(y=>`<div class="kx-psum">${y.d?'<span class="kx-pdate">'+_ht(kxShortDate(y.d))+'.</span> ':''}<span class="kx-pre">${_ht(y.s)}</span></div>`).join('')}</div>`).join(''):'<span class="kx-empty">-</span>';
-  const probEdit=`<div id="kxProbList">${(probs.length?probs:[{}]).map(kxProbCard).join('')}</div><button type="button" class="btn btn-outline btn-sm" onclick="kxAddProblem()">➕ เพิ่ม Problem</button>`;
+  const probs=kxNormProblems(k.problems),closedProbs=kxNormProblems(k.problemsClosed);
+  const probItem=(x,i,cl)=>`<div class="kx-pitem"><div><b>${i+1}. ${_ht(x.t||'(ไม่มีชื่อ)')}</b>${cl&&x.c?' <span class="kx-sys">(จบ '+_ht(kxShortDate(x.c))+')</span>':''}</div>${x.e.map(y=>`<div class="kx-psum">${y.d?'<span class="kx-pdate">'+_ht(kxShortDate(y.d))+'.</span> ':''}<span class="kx-pre">${_ht(y.s)}</span></div>`).join('')}</div>`;
+  const closedView=closedProbs.length?`<div class="kx-closed"><b>ปัญหาที่จบแล้ว:</b> ${closedProbs.map(x=>_ht(x.t||'(ไม่มีชื่อ)')+(x.c?' (จบ '+_ht(kxShortDate(x.c))+')':'')).join(', ')}</div><details class="kx-closed-det kx-noprint"><summary>ดูรายละเอียดปัญหาที่จบแล้ว</summary>${closedProbs.map((x,i)=>probItem(x,i,true)).join('')}</details>`:'';   // ใบพิมพ์: เฉพาะรายการสั้นๆ (รายละเอียดดูบนจอ)
+  const probView=(probs.length?probs.map((x,i)=>probItem(x,i,false)).join(''):'<span class="kx-empty">-</span>')+closedView;
+  const probEdit=`<div id="kxProbList">${(probs.length?probs:[{}]).map(kxProbCard).join('')}</div><div class="kx-probtools"><button type="button" class="btn btn-outline btn-sm" onclick="kxAddProblem()">➕ เพิ่ม Problem</button><span id="kxProbBudget" class="kx-budget ok"></span></div>
+    <div class="kx-closedbox"><div class="kx-hist-h">ปัญหาที่จบแล้ว — กด "✔ จบแล้ว" ที่ปัญหาเพื่อย้ายมาไว้ที่นี่ (ใบพิมพ์แสดงเป็นรายการสั้นๆ) กด "↩ เปิดอีกครั้ง" เพื่อนำกลับ</div><div id="kxClosedList">${closedProbs.map(kxClosedCard).join('')}</div></div>`;
   // ICDSC (จากระบบ)
   const icdsc=String(p['ICDSC Score']||'').trim();
   const icdscHtml=icdsc?((parseInt(icdsc)>=4?`<span style="color:#c62828;font-weight:700">${_ht(icdsc)} ⚠️</span>`:_ht(icdsc))+(p['ICDSC Date']?' <span class="kx-sys">('+kxDate(p['ICDSC Date'])+')</span>':'')):'<span class="kx-empty">-</span>';
@@ -6924,16 +7018,67 @@ function kxAddProblem(){
   const l=document.getElementById('kxProbList');if(!l)return;
   if(l.children.length>=KX_MAXPROB){toast('เพิ่มได้สูงสุด '+KX_MAXPROB+' ข้อ',true);return;}
   l.insertAdjacentHTML('beforeend',kxProbCard({}));
-  const ins=l.querySelectorAll('.kx-pt');ins[ins.length-1].focus();
+  const ins=l.querySelectorAll('.kx-pt');ins[ins.length-1].focus();kxBudgetSoon();
 }
-function kxRemoveProblem(btn){const l=document.getElementById('kxProbList');btn.closest('.kx-pcard').remove();if(l&&!l.children.length)l.insertAdjacentHTML('beforeend',kxProbCard({}));}
+function kxRemoveProblem(btn){const l=document.getElementById('kxProbList');btn.closest('.kx-pcard').remove();if(l&&!l.children.length)l.insertAdjacentHTML('beforeend',kxProbCard({}));kxBudget();}
+// อ่านปัญหาจากหน้าจอ (ที่ยังเปิดอยู่ / ที่จบแล้ว)
+function kxReadCard(c){
+  return {t:c.querySelector('.kx-pt').value.trim().slice(0,100),e:Array.from(c.querySelectorAll('.kx-erow')).map(r=>({d:kxDateOf(r,'kx-ed'),s:r.querySelector('.kx-es').value.trim().slice(0,400)})).filter(y=>y.s)};
+}
+function kxReadProblems(){
+  return Array.from(document.querySelectorAll('#kxProbList .kx-pcard')).map(kxReadCard).filter(x=>x.t).map(x=>{const o={t:x.t};if(x.e.length)o.e=x.e.map(y=>{const q={};if(y.d)q.d=y.d;q.s=y.s;return q;});return o;});
+}
+function kxReadClosed(){
+  return Array.from(document.querySelectorAll('#kxClosedList .kx-ccard')).map(c=>{
+    let o={};try{o=JSON.parse(c.dataset.p||'{}');}catch(e){o={};}
+    const cd=c.querySelector('input[type="date"].kx-cd');const r={t:String(o.t||'')};
+    if(Array.isArray(o.e)&&o.e.length)r.e=o.e;
+    if(cd&&cd.value)r.c=cd.value;
+    return r;
+  }).filter(x=>x.t||x.e);
+}
+function kxClosedCard(o){
+  o=o||{};const n=(o.e||[]).length;
+  return `<div class="kx-ccard" data-p="${_ha(JSON.stringify({t:o.t||'',e:o.e||[]}))}"><b class="kx-ct">${_ht(o.t||'(ไม่มีชื่อ)')}</b> <span class="kx-sys">(${n} บรรทัด)</span><span class="kx-cdw"><span class="kx-h-sep">จบ</span><input class="kx-in kx-cd" type="date" name="kxDate" value="${_ha(o.c||'')}"></span><button type="button" class="btn btn-outline btn-sm" title="เปิดปัญหานี้อีกครั้ง" onclick="kxReopenProblem(this)">↩ เปิดอีกครั้ง</button><button type="button" class="btn btn-danger btn-sm" title="ลบ" onclick="kxRemoveClosed(this)">✕</button></div>`;
+}
+function kxCloseProblem(btn){
+  const card=btn.closest('.kx-pcard'),o=kxReadCard(card);
+  if(!o.t){toast('กรุณากรอกชื่อปัญหาก่อนปิดปัญหา',true);return;}
+  const cl=document.getElementById('kxClosedList');
+  if(cl.children.length>=KX_MAXCLOSED){toast('ปัญหาที่จบแล้วเก็บได้สูงสุด '+KX_MAXCLOSED+' ข้อ',true);return;}
+  cl.insertAdjacentHTML('beforeend',kxClosedCard({t:o.t,e:o.e,c:localToday()}));
+  const l=document.getElementById('kxProbList');card.remove();if(!l.children.length)l.insertAdjacentHTML('beforeend',kxProbCard({}));
+  toast('ย้าย "'+o.t+'" ไปปัญหาที่จบแล้ว (กด ↩ เพื่อเปิดอีกครั้ง) — อย่าลืมกด "บันทึก Kardex"');
+  kxBudget();
+}
+function kxReopenProblem(btn){
+  const card=btn.closest('.kx-ccard');let o={};try{o=JSON.parse(card.dataset.p||'{}');}catch(e){o={};}
+  const l=document.getElementById('kxProbList');
+  const filled=Array.from(l.children).filter(c=>c.querySelector('.kx-pt').value.trim()||c.querySelector('.kx-es').value.trim());
+  if(filled.length>=KX_MAXPROB){toast('ปัญหาที่ยังเปิดอยู่มีได้สูงสุด '+KX_MAXPROB+' ข้อ',true);return;}
+  if(l.children.length===1&&!filled.length)l.innerHTML='';
+  l.insertAdjacentHTML('beforeend',kxProbCard({t:o.t,e:o.e}));card.remove();kxBudget();
+}
+function kxRemoveClosed(btn){btn.closest('.kx-ccard').remove();kxBudget();}
+// ตัวนับตัวอักษร: คอลัมน์ Problems / Problems ที่จบแล้ว ต้องไม่เกิน KX_MAX_JSON (45,000) — เหลือง ≥80% แดง >100%
+function kxBudget(){
+  const el=document.getElementById('kxProbBudget');if(!el)return;
+  const a=kxPackProblems(kxReadProblems()).length,b=kxPackProblems(kxReadClosed(),true).length;
+  const cls=n=>n>KX_MAX_JSON?'over':(n>=KX_MAX_JSON*0.8?'warn':'ok');
+  const worst=Math.max(a,b);el.className='kx-budget '+cls(worst);
+  el.innerHTML='ตัวอักษรที่ใช้: Problems <b class="'+cls(a)+'">'+a.toLocaleString('en-US')+'</b> / '+KX_MAX_JSON.toLocaleString('en-US')+(b?' · ที่จบแล้ว <b class="'+cls(b)+'">'+b.toLocaleString('en-US')+'</b> / '+KX_MAX_JSON.toLocaleString('en-US'):'');
+}
+let _kxBudTimer=null;
+function kxBudgetSoon(){clearTimeout(_kxBudTimer);_kxBudTimer=setTimeout(kxBudget,200);}
+document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxProbList'))kxBudgetSoon();});
 function kxAutosize(el){el.style.height='auto';el.style.height=(el.scrollHeight+2)+'px';}
 function kxAutosizeAll(){document.querySelectorAll('#kardexSheet textarea.kx-in').forEach(kxAutosize);}
 document.addEventListener('input',e=>{const t=e.target;if(t&&t.matches&&t.matches('#kardexSheet textarea.kx-in'))kxAutosize(t);});
 function kxRender(){
   document.getElementById('kardexSheet').innerHTML=buildKardexHtml(_kx.p,_kx.k,_kx.edit);
-  if(_kx.edit)requestAnimationFrame(kxAutosizeAll);
-  document.getElementById('kxFtView').style.display=_kx.edit?'none':'contents';
+  if(_kx.edit){requestAnimationFrame(kxAutosizeAll);kxBudget();}
+  document.getElementById('kxFtView').style.display=_kx.edit?'none':'flex';        // ปุ่มท้ายเอกสาร (โหมดอ่าน)
+  const fb=document.getElementById('kxFtBar');if(fb)fb.style.display=_kx.edit?'':'none';   // แถบบันทึกที่ตรึงไว้ (โหมดแก้ไขเท่านั้น)
   const eb=document.getElementById('kxEditBtn');if(eb)eb.style.display=kxReadOnly()?'none':'';
   document.getElementById('kxFtEdit').style.display=_kx.edit?'contents':'none';
 }
@@ -6988,6 +7133,10 @@ function kxValidate(){
     if(!t&&ents.some(y=>y.s))return 'Problem ข้อ '+(i+1)+': กรุณากรอกชื่อปัญหา';
     if(ents.some(y=>y.s&&y.d&&y.d>today))return 'Problem ข้อ '+(i+1)+': วันที่ต้องไม่เป็นวันในอนาคต';
   }
+  for(const c of Array.from(document.querySelectorAll('#kxClosedList .kx-ccard'))){
+    const cd=c.querySelector('input[type="date"].kx-cd'),nm=(c.querySelector('.kx-ct')||{}).textContent||'';
+    if(cd&&cd.value&&cd.value>today)return 'ปัญหาที่จบแล้ว "'+nm+'": วันที่จบต้องไม่เป็นวันในอนาคต';
+  }
   const hp=document.querySelector('#kardexSheet input[type="date"].kx-hosp'),icu=String((_kx.p&&_kx.p['Admit (Date)'])||'').slice(0,10);
   if(hp&&hp.value){
     if(hp.value>today)return 'Hospital admission: วันที่ต้องไม่เป็นวันในอนาคต';
@@ -7016,8 +7165,9 @@ function kxCollect(){
   const hist=[];
   document.querySelectorAll('#kxHistList .kx-hrow').forEach(r=>{const n=r.querySelector('.kx-h-n').value,s=kxDateOf(r,'kx-h-s'),e=kxDateOf(r,'kx-h-e');if(s)hist.push(e?{n,s,e}:{n,s});});
   if(hist.length)k.devHist=hist.slice(0,KX_MAXHIST);
-  // Problems: ชื่อ + วันที่ + สรุป
-  k.problems=Array.from(document.querySelectorAll('#kxProbList .kx-pcard')).map(c=>({t:c.querySelector('.kx-pt').value.trim().slice(0,100),e:Array.from(c.querySelectorAll('.kx-erow')).map(r=>({d:kxDateOf(r,'kx-ed'),s:r.querySelector('.kx-es').value.trim().slice(0,400)})).filter(y=>y.s)})).filter(x=>x.t).map(x=>{const o={t:x.t};if(x.e.length)o.e=x.e.map(y=>{const q={};if(y.d)q.d=y.d;q.s=y.s;return q;});return o;}).slice(0,KX_MAXPROB);
+  // Problems: ที่ยังเปิดอยู่ / ที่จบแล้ว (ย้ายด้วยปุ่ม ✔ จบแล้ว)
+  k.problems=kxReadProblems().slice(0,KX_MAXPROB);
+  const clp=kxReadClosed();if(clp.length)k.problemsClosed=clp.slice(0,KX_MAXCLOSED);
   const hp=document.querySelector('#kardexSheet input[type="date"].kx-hosp');if(hp&&hp.value)k.hospAdmit=hp.value;
   Object.keys(k).forEach(x=>{if(x!=='v'&&(k[x]===''||(Array.isArray(k[x])&&!k[x].length)))delete k[x];});
   k._at=new Date().toISOString();k._by=(currentUser&&currentUser.fullname)||'';
@@ -7028,13 +7178,16 @@ async function kxSave(){
   if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
   if(_kx.ro){toast('📖 หน้ารายชื่อผู้ป่วยอ่าน Kardex ได้อย่างเดียว — แก้ไขได้ที่เมนู Kardex',true);return;}
   const bad=kxValidate();if(bad){toast(bad,true);return;}
-  const k=kxCollect(),json=JSON.stringify(k);
+  const k=kxCollect(),cols=kxPack(k);
+  const bigCol=Object.keys(cols).find(c=>String(cols[c]).length>KX_MAX_JSON);
+  if(bigCol){toast('Kardex หัวข้อ "'+bigCol.replace('Kardex: ','')+'" ยาวเกินที่ชีตเก็บได้ ('+String(cols[bigCol]).length.toLocaleString('en-US')+' / '+KX_MAX_JSON.toLocaleString('en-US')+' ตัวอักษร) กรุณาตัดข้อความที่ไม่จำเป็นออก เช่น Problem ที่จบแล้วหรือรายละเอียดเก่า ก่อนบันทึก',true);return;}   // 1 เซลล์ใน Google Sheets เก็บได้ไม่เกิน 50,000 ตัวอักษร
   const m=_kx.m,y=_kx.y;   // เดือน/ปีของแถวที่เปิดอยู่
   const btn=document.getElementById('kxSaveBtn');if(btn){btn.disabled=true;btn.textContent='กำลังบันทึก...';}
   try{
-    await api('savePatient',{},{month:m,year:y,id:_kx.pid,data:{Kardex:json}});
+    if(!(await kxServerOk())){toast('⚠️ ยังบันทึก Kardex ไม่ได้: เซิร์ฟเวอร์ (Code.gs) ยังไม่ใช่รุ่นล่าสุด หรือเชื่อมต่อไม่ได้ — ข้อความที่พิมพ์ยังอยู่ในหน้านี้ ไม่สูญหาย กรุณาแจ้งผู้ดูแลระบบให้ Deploy Code.gs รุ่นล่าสุดก่อน แล้วกดบันทึกอีกครั้ง',true);return;}
+    await api('savePatient',{},{month:m,year:y,id:_kx.pid,data:cols});
     _kx.k=k;_kx.edit=false;
-    if(_kx.raw)_kx.raw['Kardex']=json;_kx.p['Kardex']=json;
+    if(_kx.raw)Object.assign(_kx.raw,cols);Object.assign(_kx.p,cols);
     try{api('writeLog',{},{user:currentUser.fullname,action:'แก้ Kardex เตียง '+(_kx.p['เตียง']||'-')});}catch(e){}
     kxRender();toast('บันทึก Kardex แล้ว ✓');
     const kbs=document.getElementById('sec-kardex');if(kbs&&kbs.classList.contains('active'))renderKardexBoard();   // การ์ดบนหน้า Kardex อัปเดตเวลา/ผู้แก้ทันที
