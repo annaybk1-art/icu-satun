@@ -1904,7 +1904,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.49';
+const APP_VERSION='2026-10-17.50';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -5890,9 +5890,10 @@ function openKardexFromList(pid){openKardex(pid,{m:parseInt(document.getElementB
 // Kardex แยกการโหลด: หน้าทั่วไปได้ข้อมูลผู้ป่วยแบบเบา (ไม่มีเนื้อหา Kardex) — กดเปิด Kardex แล้วค่อยขอของคนนั้นคนเดียว (getKardex)
 // ขอใหม่ทุกครั้งที่เปิด (ถ้าข้อมูลที่ถืออยู่เก่ากว่า 15 วินาที) จึงได้ฉบับล่าสุดเสมอ; เซิร์ฟเวอร์รุ่นเก่าที่ส่งแถวเต็มมาให้ ก็ใช้ได้โดยไม่ต้องขอซ้ำ
 const KX_FRESH_MS=15000;
-let _kxOpenSeq=0;
+let _kxOpenSeq=0,_kxNoGetKardex=false;    // _kxNoGetKardex = Code.gs บนเซิร์ฟเวอร์ยังเป็นรุ่นเก่า ไม่มีคำสั่ง getKardex
 function kxHasFull(raw){return Object.prototype.hasOwnProperty.call(raw,'Kardex: HPI')||String(raw['Kardex']==null?'':raw['Kardex']).trim()!=='';}
 function kxNeedFetch(raw){
+  if(_kxNoGetKardex)return false;                               // เซิร์ฟเวอร์ไม่มีคำสั่งนี้: ใช้ข้อมูลที่มีในแถวเลย (รุ่นเก่าส่งแถวเต็มมาให้)
   if(!raw.id)return false;                                       // แถวที่ยังไม่มี id ขอรายคนไม่ได้ (เซิร์ฟเวอร์จะสร้าง id ให้เมื่อโหลดรายชื่อ)
   if(!kxHasFull(raw))return true;
   return !!raw._kxAt&&(Date.now()-raw._kxAt>KX_FRESH_MS);
@@ -5921,7 +5922,16 @@ function openKardex(pid,opts){
     kxMergeCols(raw,r&&r.cols);
     kxOpenReady(raw,pid,opts,m,y);
   }).catch(e=>{
-    if(seq===_kxOpenSeq)toast('โหลด Kardex ไม่สำเร็จ: '+((e&&e.message)||e)+' — กรุณาลองใหม่',true);   // ไม่เปิดหน้าด้วยข้อมูลว่าง (กันบันทึกทับ)
+    if(seq!==_kxOpenSeq)return;
+    const msg=String((e&&e.message)||e);
+    if(/Unknown action/i.test(msg)){
+      // Code.gs บนเซิร์ฟเวอร์ยังเป็นรุ่นเก่า (หน้าเว็บ Deploy ก่อน): เซิร์ฟเวอร์รุ่นเก่าส่งแถวเต็มมาให้อยู่แล้ว เปิดด้วยข้อมูลที่มีได้ — ส่วนการบันทึกยังถูกกันโดยการตรวจเวอร์ชัน (kxServerOk) จึงไม่มีทางเขียนทับข้อมูล
+      _kxNoGetKardex=true;kxOpenReady(raw,pid,opts,m,y);
+      const warn=sv=>toast('⚠️ Code.gs บนเซิร์ฟเวอร์ยังเป็นรุ่นเก่า (เซิร์ฟเวอร์ '+(sv||'ไม่ทราบ')+' · หน้าเว็บ '+APP_VERSION+') — กรุณา Deploy Code.gs ล่าสุดคู่กับหน้าเว็บ',true);
+      api('getVersion').then(r=>warn(String((r&&r.version)||''))).catch(()=>warn(''));
+      return;
+    }
+    toast('โหลด Kardex ไม่สำเร็จ: '+msg+' — กรุณาลองใหม่',true);   // ไม่เปิดหน้าด้วยข้อมูลว่าง (กันบันทึกทับ)
   }).finally(()=>{if(seq===_kxOpenSeq)hideLoad();});
 }
 function closeKardex(){document.getElementById('kardexModal').classList.remove('open');_kx.edit=false;}
