@@ -488,6 +488,7 @@ td{padding:7px 7px;border-bottom:1px solid var(--theme-tbl-border);vertical-alig
 .kx-n2wrap{margin:4px 0 8px}.kx-n2lab{font-weight:700;font-size:12.5px;color:#555;margin-bottom:3px}
 .kx-n2grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:6px 8px}
 .kx-n2f{display:flex;flex-direction:column;font-size:11px;color:#555}.kx-n2f i{font-style:normal;color:#8a9a8a;font-size:10px}.kx-n2f .kx-in{width:100%}
+.kx-n2edtbl .kx-gi{width:62px;font-size:12px;padding:3px 4px;box-sizing:border-box}.kx-n2edtbl .kx-gdt .kx-gi{width:112px;display:block;margin-bottom:2px}.kx-n2edtbl select.kx-gi{width:auto;min-width:70px}.kx-gbp{white-space:nowrap}.kx-gbp .kx-gi{width:52px}.kx-s2{display:block;font-size:10px;color:#555}.kx-addrow{background:#f4faf4}.kx-n2hint{font-size:11.5px;margin:4px 0}td.kx-n2res{margin:0;border-radius:0;font-size:12px}
 .kx-n2res{margin:6px 0;padding:6px 9px;border-radius:6px;background:#f2f5f2;font-size:12.5px}
 .kx-n2res.n2-low{background:#e8f5e9}.kx-n2res.n2-lowmed{background:#fff8e1}.kx-n2res.n2-med{background:#fff3e0}.kx-n2res.n2-high{background:#ffebee}
 .kx-n2parts{font-size:10.5px;color:#555;margin-top:2px}
@@ -1910,7 +1911,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.51';
+const APP_VERSION='2026-10-17.53';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -5355,7 +5356,7 @@ function kxParseProblemsText(txt,closed){
 // ============================================================
 // V/S (Vital Signs) — พยาบาลกรอกค่า ระบบคำนวณ NEWS2 (Royal College of Physicians, 2017) จากค่าที่กรอก เก็บเป็นประวัติทุกครั้ง
 // ============================================================
-const KX_VS_MAX=300;                               // จำนวนครั้งสูงสุดที่เก็บ (≈ 33,000 ตัวอักษร ยังต่ำกว่าเพดาน 45,000 ของคอลัมน์)
+const KX_VS_MAX=1;                               // จำนวนครั้งสูงสุดที่เก็บ (≈ 33,000 ตัวอักษร ยังต่ำกว่าเพดาน 45,000 ของคอลัมน์)
 let _kxVs=[];                                      // ประวัติ V/S ที่กำลังแก้ (ยังไม่บันทึกจนกว่าจะกด "บันทึก Kardex")
 function kxN2Parts(v){
   const out={},r=+v.rr,s=+v.sp,onO2=!!v.ox,b=+v.sb,h=+v.hr,t=Math.round(+v.tp*10)/10;
@@ -5395,25 +5396,23 @@ function kxVsTblRow(x){
   const bp=(x.sb===null||x.sb===undefined)?'-':_ht(String(x.sb))+(x.db!==null&&x.db!==undefined?'/'+_ht(String(x.db)):'');
   const nz=y=>y!==null&&y!==undefined;
   const bal=(nz(x.iin)&&nz(x.iout))?x.iin-x.iout:null;
-  const io=(nz(x.iin)||nz(x.iout))?'In '+(nz(x.iin)?x.iin:'-')+' / Out '+(nz(x.iout)?x.iout:'-')+(bal!==null?' · Bal '+(bal>0?'+':'')+bal:''):'-';
   const sos=nz(x.sos)?(x.sos>=4?'<b class="n2-high">'+x.sos+'</b>':String(x.sos)):'-';
-  return `<tr><td>${_ht(kxVsWhen(x.t))}</td><td>${v('tp')}</td><td>${v('hr')}</td><td>${v('rr')}</td><td>${bp}</td><td>${v('sp','%')}${x.s2?' <span class="kx-sys">S2</span>':''}</td><td>${x.ox?'O₂':'Air'}</td><td>${_ht(KX_AVPU[x.av]||x.av)}</td><td>${v('ur')}</td><td>${io}</td><td>${sos}</td><td class="${r.cls}"><b>${_ht(String(x.n))}</b> <span class="kx-n2t">${r.t}</span></td><td>${_ht(x.by||'-')}</td></tr>`;
+  return `<tr><td>${_ht(kxVsWhen(x.t))}</td><td>${v('tp')}</td><td>${v('hr')}</td><td>${v('rr')}</td><td>${bp}</td><td>${v('sp','%')}${x.s2?' <span class="kx-sys">S2</span>':''}</td><td>${x.ox?'O₂':'Air'}</td><td>${_ht(KX_AVPU[x.av]||x.av)}</td><td>${v('ur')}</td><td>${v('iin')}</td><td>${v('iout')}</td><td>${bal!==null?(bal>0?'+':'')+bal:'-'}</td><td>${sos}</td><td class="${r.cls}"><b>${_ht(String(x.n))}</b> <span class="kx-n2t">${r.t}</span></td><td>${_ht(x.by||'-')}</td></tr>`;
 }
-const KX_VS_HEAD='<th>วัน-เวลา</th><th>BT °C</th><th>PR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>O₂</th><th>ความรู้สึกตัว</th><th>Urine mL</th><th>I/O mL</th><th>SOS</th><th>NEWS2</th><th>ผู้บันทึก</th>';
+const KX_VS_HEAD='<th>วัน-เวลา</th><th>BT °C</th><th>HR/PR</th><th>RR</th><th>BP</th><th>SpO₂</th><th>O₂</th><th>ความรู้สึกตัว</th><th>Urine mL</th><th>Intake mL</th><th>Output mL</th><th>Balance</th><th>SOS</th><th>NEWS2</th><th>ผู้บันทึก</th>';
 function kxVsTable(list){return `<div class="kx-tblwrap"><table class="kx-tbl kx-n2tbl"><thead><tr>${KX_VS_HEAD}</tr></thead><tbody>${list.map(kxVsTblRow).join('')}</tbody></table></div>`;}
 // หัวข้อ V/S (โหมดอ่าน / ใบพิมพ์): 5 ครั้งล่าสุด ที่เหลือพับไว้บนจอ (ไม่พิมพ์)
 function kxVsView(k){
   const h=kxNormVs(k&&k.vs);
   if(!h.length)return '<span class="kx-empty">-</span>';
-  const rev=h.slice().reverse(),rest=rev.slice(5);
-  return '<div class="kx-n2hist">'+kxVsTable(rev.slice(0,5))+(rest.length?'<details class="kx-n2det kx-noprint"><summary>ดูประวัติ V/S ทั้งหมด ('+h.length+' ครั้ง)</summary>'+kxVsTable(rest)+'</details>':'')+'</div>';
+  return '<div class="kx-n2hist">'+kxVsTable(h.slice(-1))+'</div>';
 }
 // แถว NEWS2 ในหัวข้อคะแนนประเมิน: ค่าล่าสุดที่คำนวณจาก V/S (ไม่มี V/S → ค่าเดิมในระบบถ้ามี)
 function kxSosRow(p,k){
   const h=kxNormVs(k&&k.vs).filter(x=>x.sos!==null&&x.sos!==undefined);
   if(!h.length){const n=String(p['SOS Score']==null?'':p['SOS Score']).trim();return kxRow('SOS',n?_ht(n):'<span class="kx-empty">-</span>');}
   const L=h[h.length-1];
-  return kxRow('SOS','<b'+(L.sos>=4?' class="n2-high"':'')+'>'+_ht(String(L.sos))+'</b> <span class="kx-sys">(จาก V/S '+_ht(kxVsWhen(L.t))+(L.by?' · '+_ht(L.by):'')+')</span>');
+  return kxRow('SOS','<b'+(L.sos>=4?' class="n2-high"':'')+'>'+_ht(String(L.sos))+'</b> <span class="kx-sys">(จากการประเมิน '+_ht(kxVsWhen(L.t))+(L.by?' · '+_ht(L.by):'')+')</span>');
 }
 function kxNews2Row(p,k){
   const h=kxNormVs(k&&k.vs);
@@ -5422,41 +5421,38 @@ function kxNews2Row(p,k){
     return kxRow('NEWS2',n?_ht(n)+(kxDate(d)?' <span class="kx-sys">('+kxDate(d)+')</span>':''):'<span class="kx-empty">-</span>');
   }
   const L=h[h.length-1],r=KX_N2_RISK[kxN2EntryRisk(L)];
-  return kxRow('NEWS2','<span class="'+r.cls+'"><b>'+_ht(String(L.n))+'</b> '+r.t+'</span> <span class="kx-sys">(คำนวณจาก V/S '+_ht(kxVsWhen(L.t))+(L.by?' · '+_ht(L.by):'')+')</span>');
+  return kxRow('NEWS2','<span class="'+r.cls+'"><b>'+_ht(String(L.n))+'</b> '+r.t+'</span> <span class="kx-sys">(คำนวณจากการประเมิน '+_ht(kxVsWhen(L.t))+(L.by?' · '+_ht(L.by):'')+')</span>');
 }
 // ---- ฟอร์มกรอก V/S (โหมดแก้ไข) ----
-function kxVsListHtml(){
-  if(!_kxVs.length)return '<div class="kx-empty" style="font-size:12px">ยังไม่มีประวัติ V/S</div>';
-  const rev=_kxVs.map((x,i)=>({x,i})).reverse();
-  return `<div class="kx-tblwrap"><table class="kx-tbl kx-n2tbl"><thead><tr>${KX_VS_HEAD}<th></th></tr></thead><tbody>${rev.map(o=>kxVsTblRow(o.x).replace('</tr>',`<td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="kxVsDel(${o.i})">✕</button></td></tr>`)).join('')}</tbody></table></div>`;
+function kxVsListHtml(){   // แถวประวัติ (ใหม่สุดอยู่บน) — ใส่ใน <tbody id="kxVsBody">
+  if(!_kxVs.length)return '<tr><td colspan="16" class="kx-empty" style="font-size:12px">ยังไม่มีค่าการประเมิน</td></tr>';
+  return _kxVs.map((x,i)=>({x,i})).reverse().map(o=>kxVsTblRow(o.x).replace('</tr>',`<td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="kxVsDel(${o.i})">✕</button></td></tr>`)).join('');
 }
 function kxVsEditor(k){
   const now=new Date(),hh=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  const num=(id,lab,mn,mx,st,u)=>`<label class="kx-n2f"><span>${lab}${u?' <i>'+u+'</i>':''}</span><input class="kx-in" type="number" id="${id}" min="${mn}" max="${mx}" step="${st}" inputmode="decimal"></label>`;
-  return `<div class="kx-n2wrap">
-    <div class="kx-n2ed" id="kxVsPanel">
-      <div class="kx-n2h">เพิ่ม V/S <span class="kx-sys">(กรอกค่า — ระบบคำนวณ NEWS2 ให้ และเก็บเป็นประวัติทุกครั้ง)</span></div>
-      <div class="kx-n2grid">
-        <label class="kx-n2f"><span>วันที่</span><span class="kx-n2dw"><input class="kx-in" type="date" id="kxVsD" name="kxDate" value="${_ha(localToday())}"></span></label>
-        <label class="kx-n2f"><span>เวลา</span><input class="kx-in" type="time" id="kxVsT" value="${hh}"></label>
-        ${num('kxVsTp','BT',30,45,0.1,'°C')}
-        ${num('kxVsHr','PR',20,250,1,'ครั้ง/นาที')}
-        ${num('kxVsRr','RR',3,60,1,'ครั้ง/นาที')}
-        ${num('kxVsSb','SBP',40,300,1,'mmHg')}
-        ${num('kxVsDb','DBP (ไม่บังคับ)',20,200,1,'mmHg')}
-        ${num('kxVsSp','SpO₂',50,100,1,'%')}
-        <label class="kx-n2f"><span>ออกซิเจน</span><select class="kx-in" id="kxVsOx"><option value="0">Room air</option><option value="1">On O₂</option></select></label>
-        <label class="kx-n2f"><span>ความรู้สึกตัว</span><select class="kx-in" id="kxVsAv">${Object.keys(KX_AVPU).map(c=>`<option value="${c}">${KX_AVPU[c]}</option>`).join('')}</select></label>
-        ${num('kxVsUr','Urine (ไม่บังคับ)',0,20000,10,'mL')}
-        ${num('kxVsIin','Intake (ไม่บังคับ)',0,20000,10,'mL')}
-        ${num('kxVsIout','Output (ไม่บังคับ)',0,20000,10,'mL')}
-        ${num('kxVsSos','SOS score (ไม่บังคับ)',0,16,1,'0–16')}
-      </div>
-      <label class="kx-chk" style="margin-top:4px"><input type="checkbox" id="kxVsS2"> ใช้ SpO₂ Scale 2 สำหรับ NEWS2 (เป้า 88–92% — ผู้ป่วย hypercapnic respiratory failure ตามที่แพทย์กำหนด)</label>
-      <div class="kx-n2res" id="kxVsRes">กรอกค่าให้ครบเพื่อคำนวณ NEWS2</div>
-      <button type="button" class="btn btn-outline btn-sm" onclick="kxVsAdd()">➕ เพิ่มรายการ V/S</button>
-    </div>
-    <div id="kxVsList">${kxVsListHtml()}</div></div>`;
+  const num=(id,mn,mx,st,ph)=>`<input class="kx-in kx-gi" type="number" id="${id}" min="${mn}" max="${mx}" step="${st}" inputmode="decimal" placeholder="${ph}">`;
+  return `<div class="kx-n2wrap"><div class="kx-tblwrap"><table class="kx-tbl kx-n2tbl kx-n2edtbl">
+    <thead><tr>${KX_VS_HEAD}<th></th></tr></thead>
+    <tbody id="kxVsPanel"><tr class="kx-addrow">
+      <td class="kx-gdt"><input class="kx-in kx-gi" type="date" id="kxVsD" name="kxDate" value="${_ha(localToday())}"><input class="kx-in kx-gi" type="time" id="kxVsT" value="${hh}"></td>
+      <td>${num('kxVsTp',30,45,0.1,'°C')}</td>
+      <td>${num('kxVsHr',20,250,1,'HR')}</td>
+      <td>${num('kxVsRr',3,60,1,'RR')}</td>
+      <td class="kx-gbp">${num('kxVsSb',40,300,1,'SBP')}<span>/</span>${num('kxVsDb',20,200,1,'DBP')}</td>
+      <td>${num('kxVsSp',50,100,1,'%')}<label class="kx-s2" title="SpO₂ Scale 2 (เป้า 88–92% — ผู้ป่วย hypercapnic ตามแพทย์กำหนด)"><input type="checkbox" id="kxVsS2"> Scale 2</label></td>
+      <td><select class="kx-in kx-gi" id="kxVsOx"><option value="0">Air</option><option value="1">O₂</option></select></td>
+      <td><select class="kx-in kx-gi" id="kxVsAv">${Object.keys(KX_AVPU).map(c=>`<option value="${c}">${KX_AVPU[c]}</option>`).join('')}</select></td>
+      <td>${num('kxVsUr',0,20000,10,'mL')}</td>
+      <td>${num('kxVsIin',0,20000,10,'mL')}</td>
+      <td>${num('kxVsIout',0,20000,10,'mL')}</td>
+      <td>-</td>
+      <td>${num('kxVsSos',0,16,1,'0–16')}</td>
+      <td class="kx-n2res" id="kxVsRes">-</td>
+      <td>-</td>
+      <td><button type="button" class="btn btn-outline btn-sm" title="บันทึกเป็นค่าล่าสุด (ทับค่าเดิม)" onclick="kxVsAdd()">➕</button></td>
+    </tr></tbody>
+    <tbody id="kxVsBody">${kxVsListHtml()}</tbody></table></div>
+    <div class="kx-sys kx-n2hint" id="kxVsHint">เก็บเฉพาะค่าล่าสุด — กรอกในแถวบนสุด แล้วกด ➕ ค่าใหม่จะทับค่าเดิม (แถวล่างคือค่าปัจจุบัน) — NEWS2 คำนวณให้จาก BT, HR, RR, SBP, SpO₂, O₂, ความรู้สึกตัว (ต้องกรอกให้ครบ 5 ค่าแรก) · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div></div>`;
 }
 function kxVsRead(){
   const g=id=>{const e=document.getElementById(id);return e?e.value:'';};
@@ -5464,12 +5460,13 @@ function kxVsRead(){
   return {d:d?d.value:'',time:g('kxVsT'),rr:g('kxVsRr'),sp:g('kxVsSp'),sb:g('kxVsSb'),db:g('kxVsDb'),hr:g('kxVsHr'),tp:g('kxVsTp'),ox:g('kxVsOx')==='1'?1:0,av:g('kxVsAv')||'A',s2:(document.getElementById('kxVsS2')||{}).checked?1:0,ur:g('kxVsUr'),iin:g('kxVsIin'),iout:g('kxVsIout'),sos:g('kxVsSos')};
 }
 function kxVsLive(){
-  const r=document.getElementById('kxVsRes');if(!r)return;
+  const r=document.getElementById('kxVsRes'),h=document.getElementById('kxVsHint');if(!r)return;
   const v=kxVsRead();
-  if(['rr','sp','sb','hr','tp'].some(f=>v[f]==='')){r.className='kx-n2res';r.textContent='กรอกค่าให้ครบ (BT, PR, RR, SBP, SpO₂) เพื่อคำนวณ NEWS2';return;}
+  if(['rr','sp','sb','hr','tp'].some(f=>v[f]==='')){r.className='kx-n2res';r.textContent='-';return;}
   const c=kxN2Calc(v),rk=KX_N2_RISK[c.risk],P=c.parts;
   r.className='kx-n2res '+rk.cls;
-  r.innerHTML='NEWS2 = <b>'+c.total+'</b> / 20 — '+_ht(rk.act)+'<div class="kx-n2parts">RR '+P.rr+' · SpO₂ '+P.sp+' · O₂ '+P.ox+' · SBP '+P.sb+' · PR '+P.hr+' · ความรู้สึกตัว '+P.av+' · BT '+P.tp+'</div>';
+  r.innerHTML='<b>'+c.total+'</b> <span class="kx-n2t">'+rk.t+'</span>';
+  if(h)h.innerHTML='NEWS2 = <b>'+c.total+'</b> / 20 — '+_ht(rk.act)+' · RR '+P.rr+' · SpO₂ '+P.sp+' · O₂ '+P.ox+' · SBP '+P.sb+' · HR '+P.hr+' · ความรู้สึกตัว '+P.av+' · BT '+P.tp;
 }
 function kxVsAdd(){
   const v=kxVsRead(),num=(x,lab,mn,mx)=>{const n=Number(x);if(x===''||!isFinite(n)){toast('กรุณากรอก '+lab,true);return null;}if(n<mn||n>mx){toast(lab+' ต้องอยู่ระหว่าง '+mn+'–'+mx,true);return null;}return n;};
@@ -5488,19 +5485,18 @@ function kxVsAdd(){
   const iin=opt(v.iin,'Intake',0,20000);if(iin===null)return;
   const iout=opt(v.iout,'Output',0,20000);if(iout===null)return;
   const sos=opt(v.sos,'SOS score',0,16,true);if(sos===null)return;
-  if(_kxVs.length>=KX_VS_MAX){toast('ประวัติ V/S เต็ม ('+KX_VS_MAX+' ครั้ง) — ลบรายการเก่าที่ไม่จำเป็นออกก่อน',true);return;}
   const total=kxN2Calc({rr,sp,s2:v.s2,ox:v.ox,sb,hr,av:v.av,tp}).total;
   const e={t,tp,hr,rr,sb,sp,av:v.av,n:total,by:(currentUser&&currentUser.fullname)||''};
   if(db!==null)e.db=db;if(v.s2)e.s2=1;if(v.ox)e.ox=1;
   if(ur!==undefined)e.ur=ur;if(iin!==undefined)e.iin=iin;if(iout!==undefined)e.iout=iout;if(sos!==undefined)e.sos=sos;
-  _kxVs.push(e);_kxVs=kxNormVs(_kxVs);
+  _kxVs=[e];   // เก็บเฉพาะค่าล่าสุด (ค่าใหม่ทับค่าเดิม)
   _kx.vsChanged=true;
-  document.getElementById('kxVsList').innerHTML=kxVsListHtml();
+  document.getElementById('kxVsBody').innerHTML=kxVsListHtml();
   ['kxVsTp','kxVsHr','kxVsRr','kxVsSb','kxVsDb','kxVsSp','kxVsUr','kxVsIin','kxVsIout','kxVsSos'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('kxVsOx').value='0';document.getElementById('kxVsAv').value='A';document.getElementById('kxVsS2').checked=false;
-  kxVsLive();toast('เพิ่ม V/S แล้ว — NEWS2 = '+total+' — อย่าลืมกด "บันทึก Kardex"');
+  kxVsLive();toast('อัปเดตค่าการประเมินล่าสุดแล้ว — NEWS2 = '+total+' — อย่าลืมกด "บันทึก Kardex"');
 }
-function kxVsDel(i){_kxVs.splice(i,1);_kx.vsChanged=true;document.getElementById('kxVsList').innerHTML=kxVsListHtml();}
+function kxVsDel(i){_kxVs.splice(i,1);_kx.vsChanged=true;document.getElementById('kxVsBody').innerHTML=kxVsListHtml();}
 document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxVsPanel'))kxVsLive();});
 document.addEventListener('change',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxVsPanel'))kxVsLive();});
 // ── Dropdown เลือกหลายค่าใน Kardex (ใช้ตัวช่วยเดียวกับฟอร์มผู้ป่วย: msdToggle/msdChange/msdFilter/msdClear/quickAddToMsd) ──
@@ -5950,7 +5946,7 @@ function buildKardexHtml(p,k,edit){
     ${kxSec(20,'ผลการเพาะเชื้อ (Culture)',kxNew('','culture',k,edit,'ชนิดสิ่งส่งตรวจ วันที่ส่ง ผลเชื้อที่พบ และความไวต่อยา',3).replace('<div class="kx-k"></div>',''))}
     ${kxSec(21,'ผลตรวจ (CT brain ฯลฯ)',kxNew('','imaging',k,edit,'CT / MRI / X-ray / อื่นๆ',2).replace('<div class="kx-k"></div>',''))}
     ${kxSec(22,'รายการส่งต่อและแผนการดำเนินการในเวรถัดไป',kxNew('','handover',k,edit,'ระบุรายการที่ค้างส่งตรวจ รายการที่ฝากดำเนินการต่อ และแผนการดำเนินการในเวรถัดไป',4).replace('<div class="kx-k"></div>',''))}
-    ${kxSec(23,'V/S (Vital Signs)',edit?kxVsEditor(k):kxVsView(k),'(NEWS2 คำนวณจากค่าที่กรอก)')}
+    ${kxSec(23,'การประเมิน',edit?kxVsEditor(k):kxVsView(k),'(ค่าล่าสุด · NEWS2 คำนวณจากค่าที่กรอก)')}
   </div>`;
 }
 function kxAddProblem(){
@@ -6095,7 +6091,7 @@ const kxReadOnly=()=>!!(_kx.p&&(kxIsLocked(_kx.p)||_kx.ro));
 function kxStartEdit(){
   if(_kx.p&&kxIsLocked(_kx.p)){toast('🔒 จำหน่ายแล้ว — Kardex ดูและพิมพ์ได้อย่างเดียว',true);return;}
   if(_kx.ro){toast('📖 หน้ารายชื่อผู้ป่วยอ่าน Kardex ได้อย่างเดียว — แก้ไขได้ที่เมนู Kardex',true);return;}
-  _kxVs=kxNormVs(_kx.k&&_kx.k.vs);_kx.vsChanged=false;            // ประวัติ V/S ที่กำลังแก้
+  _kxVs=kxNormVs(_kx.k&&_kx.k.vs).slice(-1);_kx.vsChanged=false;            // ประวัติ V/S ที่กำลังแก้
   _kxIcd=kxNormIcd(_kx.k&&_kx.k.icdsc);_kx.icdChanged=false;       // ประวัติ ICDSC ที่กำลังแก้
   _kx.edit=true;kxRender();
 }
