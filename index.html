@@ -1911,7 +1911,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.64';
+const APP_VERSION='2026-10-17.71';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -5331,7 +5331,7 @@ function kxGender(name){
   return '';
 }
 // ── Kardex แยกคอลัมน์ตามเรื่อง (ชีต: คอลัมน์ "Kardex: …") ──
-const KX_COLMAP={cc:'Kardex: CC',hpi:'Kardex: HPI',specRisk:'Kardex: Specific Risk',commonRisk:'Kardex: Common Risk',foodAllergy:'Kardex: แพ้อาหาร',surgHx:'Kardex: ประวัติผ่าตัดเดิม',caprini:'Kardex: Caprini',dvtUS:'Kardex: U/S DVT',rehab:'Kardex: Rehabilitation',psych:'Kardex: ด้านจิต-สังคม',complication:'Kardex: Complication อื่นๆ',palliative:'Kardex: Palliative',pps:'Kardex: PPS',diet:'Kardex: Diet',bowel:'Kardex: ประวัติการถ่าย',culture:'Kardex: Culture',imaging:'Kardex: ผลตรวจ CT ฯลฯ',handover:'Kardex: ส่งต่อเวรถัดไป',hospAdmit:'Kardex: Hospital Admit (Date)',dxNow:'Kardex: Dx ล่าสุด',rass:'Kardex: RASS',_at:'Kardex: อัปเดตล่าสุด',_by:'Kardex: ผู้แก้ล่าสุด'};
+const KX_COLMAP={cc:'Kardex: CC',hpi:'Kardex: HPI',specRisk:'Kardex: Specific Risk',commonRisk:'Kardex: Common Risk',foodAllergy:'Kardex: แพ้อาหาร',surgHx:'Kardex: ประวัติผ่าตัดเดิม',caprini:'Kardex: Caprini',dvtUS:'Kardex: U/S DVT',rehab:'Kardex: Rehabilitation',psych:'Kardex: ด้านจิต-สังคม',complication:'Kardex: Complication อื่นๆ',palliative:'Kardex: Palliative',pps:'Kardex: PPS',diet:'Kardex: Diet',bowel:'Kardex: ประวัติการถ่าย',culture:'Kardex: Culture',imaging:'Kardex: ผลตรวจ CT ฯลฯ',handover:'Kardex: ส่งต่อเวรถัดไป',hospAdmit:'Kardex: Hospital Admit (Date)',dxNow:'Kardex: Dx ล่าสุด',rass:'Kardex: RASS',news2Adm:'Kardex: NEWS2 แรกรับ',sofa:'Kardex: SOFA แรกรับ',_at:'Kardex: อัปเดตล่าสุด',_by:'Kardex: ผู้แก้ล่าสุด'};
 const KX_COL_ICDSC='Kardex: ICDSC ประวัติ',KX_COL_PROC='Kardex: หัตถการใน ICU',KX_COL_PHLEB='Kardex: Phlebitis',KX_COL_WEAN='Kardex: Weaning',KX_COL_DAILY='Kardex: ประเมินรายวัน',KX_COL_VS='Kardex: V/S ประวัติ',KX_COL_NEWS2_OLD='Kardex: NEWS2 ประวัติ',KX_COL_PROB='Kardex: Problems',KX_COL_PROBCLOSED='Kardex: Problems ที่จบแล้ว',KX_COL_DEV='Kardex: อุปกรณ์ เหตุผล-เบอร์-remind',KX_COL_DEVHIST='Kardex: อุปกรณ์ ประวัติครั้งก่อน',KX_COL_DEVEXTRA='Kardex: อุปกรณ์อื่น';
 const KX_ALL_COLS=[...Object.values(KX_COLMAP),KX_COL_VS,KX_COL_ICDSC,KX_COL_PROC,KX_COL_PHLEB,KX_COL_WEAN,KX_COL_DAILY,KX_COL_PROB,KX_COL_PROBCLOSED,KX_COL_DEV,KX_COL_DEVHIST,KX_COL_DEVEXTRA];
 // Problems ในชีต: ข้อความเรียงเป็นข้อๆ  "1. ชื่อปัญหา" แล้วบรรทัด "5/11/2569. เนื้อหา" (หรือ "- เนื้อหา" ถ้าไม่มีวันที่) — อ่านแบบผ่อนปรน (บรรทัดแปลกๆ ต่อท้ายบรรทัดก่อนหน้า)
@@ -5376,7 +5376,23 @@ function kxParseProblemsText(txt,closed){
 // ============================================================
 // V/S (Vital Signs) — พยาบาลกรอกค่า ระบบคำนวณ NEWS2 (Royal College of Physicians, 2017) จากค่าที่กรอก เก็บเป็นประวัติทุกครั้ง
 // ============================================================
-const KX_VS_MAX=31;                               // จำนวนครั้งสูงสุดที่เก็บ (≈ 33,000 ตัวอักษร ยังต่ำกว่าเพดาน 45,000 ของคอลัมน์)
+const KX_VS_MAX=93;
+// ── เวร: ดึก 00:00–07:59 · เช้า 08:00–15:59 · บ่าย 16:00–23:59 (นับตามวันที่ปฏิทินจริง) ลำดับในวัน = ดึก → เช้า → บ่าย ──
+const KX_SHIFTS=['ดึก','เช้า','บ่าย'];
+function kxShiftOf(hhmm){const h=parseInt(String(hhmm||'').slice(0,2),10);return h<8?'ดึก':(h<16?'เช้า':'บ่าย');}
+function kxSlotNum(d,sh){return Math.round(Date.parse(d+'T00:00:00Z')/864e5)*3+Math.max(0,KX_SHIFTS.indexOf(sh));}
+function kxSlotInfo(n){const day=Math.floor(n/3);return {d:new Date(day*864e5).toISOString().slice(0,10),sh:KX_SHIFTS[n-day*3]};}
+function kxNowSlot(){const t=new Date();return kxSlotNum(localToday(),kxShiftOf(String(t.getHours()).padStart(2,'0')+':00'));}
+const KX_SHT={'ดึก':'03:00','เช้า':'10:00','บ่าย':'18:00'};
+function kxSlotsDone(vs,dl,pre){pre=pre||'';const S={};(vs||[]).forEach(x=>{S[kxSlotNum(String(x.t).slice(0,10),kxShiftOf(String(x.t).slice(11,16)))]=1;});(dl||[]).forEach(e=>{Object.keys(e.sk||{}).forEach(h=>{const ok=pre?h.indexOf(pre+':')===0:KX_SHIFTS.indexOf(h)>=0;if(ok)S[kxSlotNum(e.d,h.replace(pre+':',''))]=1;});});return S;}
+const kxRassPseudo=a=>(a||[]).filter(x=>x.d).map(x=>({t:x.d+'T'+(KX_SHT[x.s]||x.t||'12:00')}));
+const kxPainPseudo=a=>{const o=[];(a||[]).forEach(e=>Object.keys(e.pn||{}).forEach(h=>o.push({t:e.d+'T'+KX_SHT[h]})));return o;};
+// ตรวจว่าบันทึกเวรนี้ได้ไหม: เวรก่อนหน้าต้องมีบันทึก/ข้าม (ถ้ายังไม่เคยมีบันทึกเลย ไม่ติดเงื่อนไข) — คืนรายการเวรที่ค้าง
+function kxShiftGate(d,sh,vs,dl,pre){
+  const S=kxSlotsDone(vs,dl,pre),n=kxSlotNum(d,sh);if(S[n]||S[n-1])return null;
+  const before=Object.keys(S).map(Number).filter(x=>x<n);if(!before.length)return null;
+  const last=Math.max.apply(null,before),miss=[];for(let i=last+1;i<n&&miss.length<60;i++)miss.push(kxSlotInfo(i));return miss;
+}                               // จำนวนครั้งสูงสุดที่เก็บ (≈ 33,000 ตัวอักษร ยังต่ำกว่าเพดาน 45,000 ของคอลัมน์)
 let _kxWean=[];let _kxVs=[];                                      // ประวัติ V/S ที่กำลังแก้ (ยังไม่บันทึกจนกว่าจะกด "บันทึก Kardex")
 function kxN2Parts(v){
   const out={},r=+v.rr,s=+v.sp,onO2=!!v.ox,b=+v.sb,h=+v.hr,t=Math.round(+v.tp*10)/10;
@@ -5409,27 +5425,35 @@ function kxDailyNorm(a){
   const m={};
   (Array.isArray(a)?a:[]).forEach(x=>{if(!x||typeof x!=='object'||!/^\d{4}-\d{2}-\d{2}$/.test(String(x.d||'')))return;
     const e={d:String(x.d),cp:num(x.cp,0,50),cpot:num(x.cpot,0,8),ps:num(x.ps,0,10),by:String(x.by||'').slice(0,60)};
-    if(e.cp===null&&e.cpot===null&&e.ps===null)return;m[e.d]=e;});
+    const pn={};if(x.pn&&typeof x.pn==='object')KX_SHIFTS.forEach(h=>{const o=x.pn[h];if(o&&typeof o==='object'){const c=num(o.c,0,8),q=num(o.p,0,10);if(c!==null||q!==null)pn[h]={c,p:q};}});
+    if(Object.keys(pn).length){e.pn=pn;e.cpot=null;e.ps=null;KX_SHIFTS.forEach(h=>{const o=pn[h];if(!o)return;if(o.c!==null&&(e.cpot===null||o.c>e.cpot)){e.cpot=o.c;e.cpotS=h;}if(o.p!==null&&(e.ps===null||o.p>e.ps)){e.ps=o.p;e.psS=h;}});}
+    const sk={};if(x.sk&&typeof x.sk==='object')Object.keys(x.sk).forEach(h=>{if(/^((RASS|Pain):)?(ดึก|เช้า|บ่าย)$/.test(h)&&x.sk[h])sk[h]=String(x.sk[h]).slice(0,80);});if(Object.keys(sk).length)e.sk=sk;
+    if(e.cp===null&&e.cpot===null&&e.ps===null&&!e.sk)return;m[e.d]=e;});
   return Object.keys(m).sort().map(q=>m[q]).slice(-KX_DAILY_MAX);
 }
+let _kxDtOld=null;   // ข้อมูลเดือนก่อน (ดูอย่างเดียว) — null = เดือนที่เปิดอยู่
 function kxDtData(){
-  const k=(_kx&&_kx.k)||{},ed=!!(_kx&&_kx.edit);
-  const rass=kxRassNorm(ed?_kxRass:k.rass),vs=kxNormVs(ed?_kxVs:k.vs),icd=kxNormIcd(ed?_kxIcd:k.icdsc),dl=kxDailyNorm(ed?_kxDaily:k.daily);
+  const k=(_kx&&_kx.k)||{},ed=!!(_kx&&_kx.edit&&!_kxDtOld);
+  const src=_kxDtOld||null;
+  const rass=kxRassNorm(src?src.rass:(ed?_kxRass:k.rass)),vs=kxNormVs(src?src.vs:(ed?_kxVs:k.vs)),icd=kxNormIcd(src?src.icd:(ed?_kxIcd:k.icdsc)),dl=kxDailyNorm(src?src.dl:(ed?_kxDaily:k.daily));
   const M={};const g=d=>M[d]||(M[d]={d});
-  rass.forEach(e=>{if(e.d)g(e.d).rass=e.v;});
-  vs.forEach(e=>{const d=String(e.t).slice(0,10);const o=g(d);o.news=e.n;o.sos=e.sos;});
-  icd.forEach(e=>{const d=String(e.t).slice(0,10);const o=g(d);o.icd=(o.icd===undefined||e.n>o.icd)?e.n:o.icd;});
-  dl.forEach(e=>{const o=g(e.d);o.cp=e.cp;o.cpot=e.cpot;o.ps=e.ps;});
-  return Object.keys(M).sort().map(d=>M[d]);
+  const addBy=(d,n)=>{n=String(n||'').trim();if(!n)return;const o=g(d);(o._by=o._by||[]);if(o._by.indexOf(n)<0)o._by.push(n);};
+  rass.forEach(e=>{if(e.d){const o=g(e.d);if(o.rass===undefined||Math.abs(Number(e.v))>Math.abs(Number(o.rass))){o.rass=e.v;o.rassS=e.s||'';}addBy(e.d,e.by);}});
+  vs.forEach(e=>{const d=String(e.t).slice(0,10);const o=g(d),h=kxShiftOf(String(e.t).slice(11,16));if(e.n!==null&&e.n!==undefined&&(o.news===undefined||e.n>o.news)){o.news=e.n;o.newsS=h;}if(e.sos!==null&&e.sos!==undefined&&(o.sos===undefined||e.sos>o.sos)){o.sos=e.sos;o.sosS=h;}addBy(d,e.by);});
+  icd.forEach(e=>{const d=String(e.t).slice(0,10);const o=g(d);o.icd=(o.icd===undefined||e.n>o.icd)?e.n:o.icd;addBy(d,e.by);});
+  dl.forEach(e=>{const o=g(e.d);o.cp=e.cp;o.cpot=e.cpot;o.ps=e.ps;o.cpotS=e.cpotS||'';o.psS=e.psS||'';if(e.sk)o.sk=Object.keys(e.sk).map(h=>h+(e.sk[h]?' ('+e.sk[h]+')':'')).join(', ');addBy(e.d,e.by);});
+  return Object.keys(M).sort().map(d=>{const o=M[d];o.by=(o._by||[]).join(', ');return o;});
 }
 const KX_DT_ROWS=[
   {k:'sos',t:'SOS',f:v=>v,hi:v=>Number(v)>=4},
   {k:'news',t:'NEWS2',f:v=>v,hi:v=>Number(v)>=5},
   {k:'rass',t:'RASS',f:v=>v,hi:v=>Math.abs(Number(v))>=3},
-  {k:'icd',t:'ICDSC',f:v=>v,hi:v=>Number(v)>=4},
-  {k:'cp',t:'VTE Caprini',f:v=>v,hi:v=>Number(v)>=5},
+  {k:'icd',t:'ICDSC (เวรบ่าย)',f:v=>v,hi:v=>Number(v)>=4},
+  {k:'cp',t:'VTE Caprini (เวรดึก)',f:v=>v,hi:v=>Number(v)>=5},
   {k:'cpot',t:'CPOT (0–8)',f:v=>v,hi:v=>Number(v)>=3},
-  {k:'ps',t:'PS (0–10)',f:v=>v,hi:v=>Number(v)>=4}
+  {k:'ps',t:'PS (0–10)',f:v=>v,hi:v=>Number(v)>=4},
+  {k:'sk',t:'เวรที่ไม่ได้ประเมิน',f:v=>v,hi:()=>false,small:true},
+  {k:'by',t:'ผู้ประเมิน',f:v=>v,hi:()=>false,small:true}
 ];
 function kxDtHtml(pt,page){
   const all=kxDtData(),pages=Math.max(1,Math.ceil(all.length/KX_DT_COLS));
@@ -5441,53 +5465,122 @@ function kxDtHtml(pt,page){
   return `${pt?'<div style="margin-bottom:6px;font-size:13px"><b>ตารางประเมินรายวัน</b> &nbsp; ผู้ป่วย: <b>'+_ht(pt.name||'')+'</b> &nbsp; HN: <b>'+_ht(pt.hn||'')+'</b> &nbsp; เตียง: <b>'+_ht(pt.bed||'')+'</b></div>':''}
   <table style="border-collapse:collapse;width:100%;table-layout:fixed"><colgroup><col style="width:17%">${'<col style="width:8.3%">'.repeat(KX_DT_COLS)}</colgroup>
   <thead><tr><td style="${td};background:#fff59d;font-weight:700;text-align:left">การประเมิน</td>${cols.map(e=>`<td style="${td};background:#fff59d;font-weight:700">${e?'วันที่ '+dn(e.d)+'<br><span style="font-weight:400;font-size:9px;white-space:nowrap">'+_ht(kxDate(e.d))+'</span>':'วันที่ :'}</td>`).join('')}</tr></thead>
-  <tbody>${KX_DT_ROWS.map(r=>`<tr><td style="${td};background:#eee;font-weight:700;text-align:left">${r.t}</td>${cols.map(e=>{const x=e?e[r.k]:undefined;const has=x!==undefined&&x!==null&&x!=='';return `<td style="${td};${has&&r.hi(x)?'color:#c62828;font-weight:700':''}">${has?_ht(String(r.f(x))):''}</td>`;}).join('')}</tr>`).join('')}</tbody></table>
-  <div style="font-size:10px;margin-top:4px;color:#444">สีแดง = ควรเฝ้าระวัง (SOS ≥4 · NEWS2 ≥5 · RASS ±3 ขึ้นไป · ICDSC ≥4 · Caprini ≥5 · CPOT ≥3 · PS ≥4) · NEWS2/SOS = ค่าล่าสุดของวัน · ICDSC = ค่าสูงสุดของวัน${pages>1?' · หน้า '+(pg+1)+'/'+pages:''}</div>`;
+  <tbody>${KX_DT_ROWS.map(r=>`<tr><td style="${td};background:#eee;font-weight:700;text-align:left">${r.t}</td>${cols.map(e=>{const x=e?e[r.k]:undefined;const has=x!==undefined&&x!==null&&x!=='';return `<td style="${td};${has&&r.hi(x)?'color:#c62828;font-weight:700':''}${r.small?';font-size:8.5px;line-height:1.1;word-break:break-word':''}">${has?_ht(String(r.f(x)))+(e[r.k+'S']?'<br><span style="font-size:8px;font-weight:400;color:#444">('+_ht(e[r.k+'S'])+')</span>':''):''}</td>`;}).join('')}</tr>`).join('')}</tbody></table>
+  <div style="font-size:10px;margin-top:4px;color:#444">สีแดง = ควรเฝ้าระวัง (SOS ≥4 · NEWS2 ≥5 · RASS ±3 ขึ้นไป · ICDSC ≥4 · Caprini ≥5 · CPOT ≥3 · PS ≥4) · SOS/NEWS2/RASS/CPOT/PS = ค่าที่แย่สุดของวัน (วงเล็บ = เวร: ดึก 00–08 · เช้า 08–16 · บ่าย 16–24) · ICDSC ประเมินเวรบ่าย · VTE/Weaning ประเมินเวรดึก${pages>1?' · หน้า '+(pg+1)+'/'+pages:''}</div>`;
 }
-function kxDtListHtml(){
-  if(!_kxDaily.length)return '<div class="kx-empty" style="font-size:12px">ยังไม่มีบันทึก Caprini / CPOT / PS</div>';
-  const f=v=>v===null?'-':v;
-  return '<div style="max-height:170px;overflow:auto"><table class="kx-tbl" style="text-align:left"><thead><tr><th>วันที่</th><th>Caprini</th><th>CPOT</th><th>PS</th><th>ผู้บันทึก</th><th></th></tr></thead><tbody>'+_kxDaily.map((e,i)=>({e,i})).reverse().map(o=>'<tr><td>'+_ht(kxDate(o.e.d))+'</td><td>'+f(o.e.cp)+'</td><td>'+f(o.e.cpot)+'</td><td>'+f(o.e.ps)+'</td><td>'+_ht(o.e.by||'-')+'</td><td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="kxDtDel('+o.i+')">✕</button></td></tr>').join('')+'</tbody></table></div>';
+// ป้าย "ยังไม่อัพเดต": เวรที่เพิ่งจบ (เช่น 08:00 → เวรดึก, 16:00 → เวรเช้า, 24:00 → เวรบ่าย) ยังไม่มีบันทึก V/S และไม่ได้กดข้าม
+function kxPendInfo(){
+  if(!_kx||!_kx.p||/จำหน่าย|ค้างเดือน/.test(String(_kx.p['สถานะ']||'')))return null;
+  const t=new Date();if(_kx.y&&_kx.m&&(Number(_kx.y)!==t.getFullYear()||Number(_kx.m)!==t.getMonth()+1))return null;
+  const ed=!!(_kx.edit&&!_kxDtOld),k=_kx.k||{},vs=ed?_kxVs:kxNormVs(k.vs),dl=ed?_kxDaily:kxDailyNorm(k.daily);
+  if(!vs.length)return null;const S=kxSlotsDone(vs,dl),n=kxNowSlot()-1;if(S[n])return null;
+  const last=Math.max.apply(null,Object.keys(S).map(Number));if(last>=n)return null;return kxSlotInfo(n);
 }
+function kxPendHtml(){const i=kxPendInfo();return i?'<div style="background:#fff3e0;border:1px solid #ef6c00;color:#bf360c;border-radius:6px;padding:4px 8px;margin-bottom:6px;font-size:12px;font-weight:700">⚠ ยังไม่อัพเดต V/S เวร'+_ht(i.sh)+' ('+_ht(kxDate(i.d))+')</div>':'';}
 function kxDtSumHtml(){
-  const all=kxDtData();
-  const rows=KX_DT_ROWS.map(r=>{let L=null;for(let i=all.length-1;i>=0;i--){const x=all[i][r.k];if(x!==undefined&&x!==null&&x!==''){L={v:x,d:all[i].d};break;}}
-    return '<tr><td style="font-weight:700;background:#f3f6f3;width:34%">'+r.t+'</td><td style="'+(L&&r.hi(L.v)?'color:#c62828;font-weight:700':'font-weight:700')+'">'+(L?_ht(String(L.v)):'<span class="kx-empty">-</span>')+'</td><td class="kx-sys">'+(L?_ht(kxDate(L.d)):'')+'</td></tr>';}).join('');
-  return '<div class="kx-tblwrap"><table class="kx-tbl" style="text-align:left"><thead><tr><th>การประเมิน</th><th>ค่าล่าสุด</th><th>วันที่</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  const sv=_kxDtOld;_kxDtOld=null;const all=kxDtData();_kxDtOld=sv;   // สรุปใน Kardex = เดือนที่เปิดอยู่เสมอ แม้หน้าต่างตารางกำลังดูเดือนก่อน
+  const rows=KX_DT_ROWS.filter(r=>!r.small).map(r=>{let L=null;for(let i=all.length-1;i>=0;i--){const x=all[i][r.k];if(x!==undefined&&x!==null&&x!==''){L={v:x,d:all[i].d,s:all[i][r.k+'S']||''};break;}}
+    return '<tr><td style="font-weight:700;background:#f3f6f3;width:34%">'+r.t+'</td><td style="'+(L&&r.hi(L.v)?'color:#c62828;font-weight:700':'font-weight:700')+'">'+(L?_ht(String(L.v))+(L.s?' <span class="kx-sys">('+_ht(L.s)+')</span>':''):'<span class="kx-empty">-</span>')+'</td><td class="kx-sys">'+(L?_ht(kxDate(L.d)):'')+'</td></tr>';}).join('');
+  return kxPendHtml()+'<div class="kx-tblwrap"><table class="kx-tbl" style="text-align:left"><thead><tr><th>การประเมิน</th><th>ค่าล่าสุด</th><th>วันที่</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
 }
 function kxDtSection(edit){
-  return '<div id="kxDtSum">'+kxDtSumHtml()+'</div><div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-outline btn-sm" onclick="kxDtOpen()">'+(edit?'📋 กรอก / ดูตาราง / พิมพ์':'📄 ดูตาราง / พิมพ์')+'</button></div>';
+  return '<div id="kxDtSum">'+kxDtSumHtml()+'</div><div class="kx-sys" style="font-size:11px;margin-top:4px">ตารางสรุปอย่างเดียว — ดึงค่ามาจาก V/S · RASS · ICDSC · Caprini · Pain ไม่ต้องกรอกที่นี่</div><div style="margin-top:6px"><button type="button" class="btn btn-outline btn-sm" onclick="kxDtOpen()">📄 ดูตาราง / พิมพ์</button></div>';
 }
 function kxDtOpen(){
-  kxDtClose();_kxDtPage=-1;
+  kxDtClose();_kxDtPage=-1;_kxDtOld=null;
   const edit=!!(_kx&&_kx.edit);
-  const form=edit?`<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px"><input class="kx-in" type="date" id="kxDtD" name="kxDate" value="${_ha(localToday())}" style="max-width:150px"><input class="kx-in" type="number" id="kxDtCp" min="0" max="50" placeholder="Caprini" style="max-width:100px"><input class="kx-in" type="number" id="kxDtCpot" min="0" max="8" placeholder="CPOT 0–8" style="max-width:105px"><input class="kx-in" type="number" id="kxDtPs" min="0" max="10" placeholder="PS 0–10" style="max-width:100px"><button type="button" class="btn btn-outline btn-sm" onclick="kxDtAdd()">➕ บันทึก</button></div><div id="kxDtList" style="margin-bottom:8px">${kxDtListHtml()}</div><div class="kx-sys" style="font-size:11px;margin-bottom:8px">SOS · NEWS2 กรอกที่ V/S · RASS กรอกที่หัวข้อ RASS · ICDSC กรอกที่หัวข้อ Delirium — ตารางนี้ดึงมาแสดงให้อัตโนมัติ · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div>`:'';
+  const form='';
   const ov=document.createElement('div');ov.id='kxDtOv';
   ov.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;justify-content:center;padding:12px;overflow:auto';
-  ov.innerHTML='<div style="background:#fff;border-radius:12px;max-width:900px;width:100%;padding:12px 14px;box-shadow:0 10px 40px rgba(0,0,0,.4)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap"><h4 style="margin:0">ตารางประเมินรายวัน</h4><div style="display:flex;gap:6px;align-items:center"><span id="kxDtNav" style="display:flex;gap:8px;align-items:center"></span><button type="button" class="btn btn-primary btn-sm" onclick="kxDtPrint()">🖨 พิมพ์หน้านี้</button><button type="button" class="btn btn-outline btn-sm" onclick="kxDtClose()">✕ ปิด</button></div></div>'+form+'<div id="kxDtBody" style="overflow-x:auto">'+kxDtHtml(null)+'</div></div>';
+  ov.innerHTML='<div style="background:#fff;border-radius:12px;max-width:900px;width:100%;padding:12px 14px;box-shadow:0 10px 40px rgba(0,0,0,.4)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px;flex-wrap:wrap"><h4 style="margin:0">ตารางประเมินรายวัน</h4><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select id="kxDtMon" class="kx-in" style="max-width:200px" onchange="kxDtMonth(this.value)">'+kxWsMonOpts()+'</select><span id="kxDtNav" style="display:flex;gap:8px;align-items:center"></span><button type="button" class="btn btn-primary btn-sm" onclick="kxDtPrint()">🖨 พิมพ์หน้านี้</button><button type="button" class="btn btn-outline btn-sm" onclick="kxDtClose()">✕ ปิด</button></div></div>'+form+'<div id="kxDtBody" style="overflow-x:auto">'+kxDtHtml(null)+'</div></div>';
   document.body.appendChild(ov);kxDtNav();
 }
-function kxDtClose(){const o=document.getElementById('kxDtOv');if(o)o.remove();const sm=document.getElementById('kxDtSum');if(sm)sm.innerHTML=kxDtSumHtml();}
+function kxDtMonth(v){   // ดูข้อมูลเดือนก่อน (อ่านอย่างเดียว) — หาผู้ป่วยคนเดิมจาก HN โหลดครั้งเดียวได้ทุกแถว
+  const done=()=>{_kxDtPage=-1;kxDtRefresh();};
+  if(!v){_kxDtOld=null;done();return;}
+  const q=v.split('-'),hn=(_kx&&_kx.p&&_kx.p['HN'])||'',reset=()=>{const e=document.getElementById('kxDtMon');if(e)e.value='';_kxDtOld=null;done();};
+  if(!hn){toast('ผู้ป่วยรายนี้ไม่มี HN จึงค้นเดือนก่อนไม่ได้',true);reset();return;}
+  api('getKardex',{month:parseInt(q[0]),year:parseInt(q[1]),hn:hn}).then(r=>{
+    const o=kxParse(Object.assign({},(r&&r.cols)||{}))||{};
+    _kxDtOld={rass:o.rass,vs:o.vs,icd:o.icdsc,dl:o.daily};done();
+    if(!kxDtData().length)toast('เดือนนั้นไม่มีข้อมูลประเมินของผู้ป่วยรายนี้');
+  }).catch(e=>{const msg=String((e&&e.message)||e);toast(/ไม่พบ/.test(msg)?'ไม่พบผู้ป่วยรายนี้ในเดือนนั้น':'โหลดเดือนก่อนไม่ได้: '+msg,true);reset();});
+}
+function kxDtClose(){_kxDtOld=null;const o=document.getElementById('kxDtOv');if(o)o.remove();const sm=document.getElementById('kxDtSum');if(sm)sm.innerHTML=kxDtSumHtml();}
 function kxDtNav(){
   const n=document.getElementById('kxDtNav');if(!n)return;
   const t=Math.max(1,Math.ceil(kxDtData().length/KX_DT_COLS));let c=_kxDtPage;if(c<0||c>=t)c=t-1;
   n.innerHTML=t>1?'<button type="button" class="btn btn-outline btn-sm"'+(c<=0?' disabled':'')+' onclick="kxDtGo(-1)">◀ ก่อนหน้า</button><b style="font-size:12px">หน้า '+(c+1)+' / '+t+'</b><button type="button" class="btn btn-outline btn-sm"'+(c>=t-1?' disabled':'')+' onclick="kxDtGo(1)">ถัดไป ▶</button>':'';
 }
-function kxDtRefresh(){const sm=document.getElementById('kxDtSum');if(sm)sm.innerHTML=kxDtSumHtml();const b=document.getElementById('kxDtBody');if(!b)return;b.innerHTML=kxDtHtml(null);kxDtNav();const l=document.getElementById('kxDtList');if(l)l.innerHTML=kxDtListHtml();}
+function kxDtRefresh(){const sm=document.getElementById('kxDtSum');if(sm)sm.innerHTML=kxDtSumHtml();const b=document.getElementById('kxDtBody');if(!b)return;b.innerHTML=kxDtHtml(null);kxDtNav();}
 function kxDtGo(d){const t=Math.max(1,Math.ceil(kxDtData().length/KX_DT_COLS));let c=_kxDtPage;if(c<0||c>=t)c=t-1;_kxDtPage=Math.max(0,Math.min(t-1,c+d));kxDtRefresh();}
-function kxDtAdd(){
-  const val=id=>{const x=(document.getElementById(id)||{}).value;return x===''||x===undefined?null:Number(x);};
-  const d=(document.getElementById('kxDtD')||{}).value||'',cp=val('kxDtCp'),cpot=val('kxDtCpot'),ps=val('kxDtPs');
+// ---- บันทึกรายวันในช่อง "Kardex: ประเมินรายวัน": Caprini (หัวข้อ VTE) และ CPOT/PS (หัวข้อ Pain) — ตารางประเมินรายวันเป็นแค่ตารางสรุป ----
+function kxSkipSet(slots,reason,pre){
+  slots.forEach(o=>{const old=_kxDaily.find(x=>x.d===o.d)||{};const sk=Object.assign({},old.sk||{});sk[pre?pre+':'+o.sh:o.sh]=reason;
+    _kxDaily=kxDailyNorm(_kxDaily.filter(x=>x.d!==o.d).concat([Object.assign({cp:null,cpot:null,ps:null},old,{sk,d:o.d,by:(currentUser&&currentUser.fullname)||''})]));});
+}
+function kxDailyUpsert(d,patch){
+  const old=_kxDaily.find(x=>x.d===d)||{};
+  _kxDaily=kxDailyNorm(_kxDaily.filter(x=>x.d!==d).concat([Object.assign({cp:null,cpot:null,ps:null},old,patch,{d,by:(currentUser&&currentUser.fullname)||''})]));
+}
+function kxDailyClear(d,fields){
+  const old=_kxDaily.find(x=>x.d===d);if(!old)return;const patch={};fields.forEach(f=>{patch[f]=null;});
+  _kxDaily=kxDailyNorm(_kxDaily.filter(x=>x.d!==d).concat([Object.assign({},old,patch)]));
+}
+const kxNumOf=id=>{const x=(document.getElementById(id)||{}).value;return x===''||x===undefined?null:Number(x);};
+function kxDailyListHtml(listId,fields,heads,delFn){
+  const rows=_kxDaily.filter(e=>fields.some(f=>e[f]!==null));
+  if(!rows.length)return '<div class="kx-empty" style="font-size:12px">ยังไม่มีบันทึก</div>';
+  return '<div style="max-height:170px;overflow:auto"><table class="kx-tbl" style="text-align:left"><thead><tr><th>วันที่</th>'+heads.map(h=>'<th>'+h+'</th>').join('')+'<th>ผู้บันทึก</th><th></th></tr></thead><tbody>'+rows.slice().reverse().map(e=>'<tr><td>'+_ht(kxDate(e.d))+'</td>'+fields.map(f=>'<td>'+(e[f]===null?'-':e[f]+(e[f+'S']?' <span class="kx-sys">('+_ht(e[f+'S'])+')</span>':''))+'</td>').join('')+'<td>'+_ht(e.by||'-')+'</td><td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="'+delFn+'(\''+e.d+'\')">✕</button></td></tr>').join('')+'</tbody></table></div>';
+}
+function kxDailyRefreshAll(){
+  const a=document.getElementById('kxPnList');if(a)a.innerHTML=kxDailyListHtml('kxPnList',['cpot','ps'],['CPOT','PS'],'kxPainDel');
+  const c=document.getElementById('kxCpList');if(c)c.innerHTML=kxDailyListHtml('kxCpList',['cp'],['Caprini'],'kxCapDel');
+  kxDtRefresh();
+}
+// Pain (CPOT / PS)
+function kxPainEditor(k){
+  return `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input class="kx-in" type="date" id="kxPnD" name="kxDate" value="${_ha(localToday())}" style="max-width:150px"><select class="kx-in" id="kxPnSh" style="max-width:90px" title="เวร">${KX_SHIFTS.map(h=>'<option'+(h===kxShiftOf(new Date().getHours()+':00')?' selected':'')+'>'+h+'</option>').join('')}</select><input class="kx-in" type="number" id="kxPnCpot" min="0" max="8" placeholder="CPOT 0–8" style="max-width:105px"><input class="kx-in" type="number" id="kxPnPs" min="0" max="10" placeholder="PS 0–10" style="max-width:100px"><button type="button" class="btn btn-outline btn-sm" onclick="kxPainAdd()">➕ บันทึก</button></div><div class="kx-sys" style="font-size:11px;margin:4px 0">CPOT ใช้กับผู้ป่วยที่สื่อสารไม่ได้ (ใส่ท่อ) · PS ใช้กับผู้ป่วยที่บอกความปวดได้ · วันละ 1 ค่า (กรอกซ้ำวันเดิมจะทับเฉพาะช่องที่กรอก) · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div><div id="kxPnGate">${kxGateBox("Pain","Pain",localToday(),kxShiftOf(new Date().getHours()+":00"),kxPainPseudo(_kxDaily),"kxPnSkR","kxPnSkip")}</div><div id="kxPnList">${kxDailyListHtml('kxPnList',['cpot','ps'],['CPOT','PS'],'kxPainDel')}</div>`;
+}
+function kxPainAdd(){
+  const d=(document.getElementById('kxPnD')||{}).value||'',cpot=kxNumOf('kxPnCpot'),ps=kxNumOf('kxPnPs');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('กรุณาระบุวันที่',true);return;}
   if(d>localToday()){toast('วันที่ต้องไม่เป็นอนาคต',true);return;}
-  if(cp===null&&cpot===null&&ps===null){toast('กรอกอย่างน้อย 1 ค่า (Caprini / CPOT / PS)',true);return;}
-  if((cp!==null&&(cp<0||cp>50))||(cpot!==null&&(cpot<0||cpot>8))||(ps!==null&&(ps<0||ps>10))){toast('ค่าอยู่นอกช่วง (Caprini 0–50 · CPOT 0–8 · PS 0–10)',true);return;}
-  const old=_kxDaily.find(x=>x.d===d)||{};   // วันเดิม: ช่องที่เว้นว่างคงค่าเดิมไว้
-  _kxDaily=kxDailyNorm(_kxDaily.filter(x=>x.d!==d).concat([{d,cp:cp!==null?cp:old.cp,cpot:cpot!==null?cpot:old.cpot,ps:ps!==null?ps:old.ps,by:(currentUser&&currentUser.fullname)||''}]));
-  ['kxDtCp','kxDtCpot','kxDtPs'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
-  _kxDtPage=-1;kxDtRefresh();toast('บันทึกวันที่ '+kxDate(d)+' แล้ว — อย่าลืมกด "บันทึก Kardex"');
+  if(cpot===null&&ps===null){toast('กรอก CPOT หรือ PS อย่างน้อย 1 ค่า',true);return;}
+  if((cpot!==null&&(cpot<0||cpot>8))||(ps!==null&&(ps<0||ps>10))){toast('ค่าอยู่นอกช่วง (CPOT 0–8 · PS 0–10)',true);return;}
+  const sh=(document.getElementById('kxPnSh')||{}).value||kxShiftOf(new Date().getHours()+':00');
+  const gt=kxShiftGate(d,sh,kxPainPseudo(_kxDaily),_kxDaily,'Pain');if(gt){kxPnGateRefresh();toast('ยังไม่อัพเดต Pain เวร'+gt.map(o=>o.sh+' '+kxDate(o.d)).join(', ')+' — บันทึกเวรก่อนหน้าก่อน หรือกด "ไม่ได้ประเมินเวรนี้"',true);return;}
+  const oldE=_kxDaily.find(x=>x.d===d)||{},pn=Object.assign({},oldE.pn||{}),pv=pn[sh]||{c:null,p:null};
+  if(cpot!==null)pv.c=cpot;if(ps!==null)pv.p=ps;pn[sh]=pv;
+  const patch={pn};kxDailyUpsert(d,patch);['kxPnCpot','kxPnPs'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+  kxDailyRefreshAll();toast('บันทึก Pain วันที่ '+kxDate(d)+' แล้ว — อย่าลืมกด "บันทึก Kardex"');
 }
-function kxDtDel(i){_kxDaily.splice(i,1);kxDtRefresh();}
+function kxPainDel(d){kxDailyClear(d,['cpot','ps','pn']);kxDailyRefreshAll();}
+function kxPainView(k){
+  const L=kxDailyNorm(k&&k.daily).filter(e=>e.cpot!==null||e.ps!==null);
+  if(!L.length)return '<span class="kx-empty">-</span>';
+  const e=L[L.length-1],hi=(v,t)=>v!==null&&v>=t?'color:#c62828;font-weight:700':'font-weight:700';
+  return (e.cpot!==null?'CPOT <span style="'+hi(e.cpot,3)+'">'+e.cpot+'</span> ':'')+(e.ps!==null?'PS <span style="'+hi(e.ps,4)+'">'+e.ps+'</span> ':'')+'<span class="kx-sys">('+_ht(kxDate(e.d))+(e.by?' · '+_ht(e.by):'')+')</span>'+(L.length>1?'<div style="margin-top:4px">'+L.slice(-7).map(x=>'<span class="kx-sys" style="margin-right:6px">'+_ht(kxDate(x.d))+': '+(x.cpot!==null?'C'+x.cpot:'')+(x.cpot!==null&&x.ps!==null?'/':'')+(x.ps!==null?'P'+x.ps:'')+'</span>').join('')+'</div>':'');
+}
+// VTE Caprini
+function kxCapEditor(){
+  return `<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input class="kx-in" type="date" id="kxCpD" name="kxDate" value="${_ha(localToday())}" style="max-width:150px"><input class="kx-in" type="number" id="kxCpV" min="0" max="50" placeholder="Caprini" style="max-width:100px"><button type="button" class="btn btn-outline btn-sm" onclick="kxCapAdd()">➕ บันทึก</button></div><div class="kx-sys" style="font-size:11px;margin:4px 0">วันละ 1 ค่า · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div><div id="kxCpList">${kxDailyListHtml('kxCpList',['cp'],['Caprini'],'kxCapDel')}</div>`;
+}
+function kxCapAdd(){
+  const d=(document.getElementById('kxCpD')||{}).value||'',v=kxNumOf('kxCpV');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('กรุณาระบุวันที่',true);return;}
+  if(d>localToday()){toast('วันที่ต้องไม่เป็นอนาคต',true);return;}
+  if(v===null||v<0||v>50){toast('กรอกคะแนน Caprini 0–50',true);return;}
+  kxDailyUpsert(d,{cp:v});const e=document.getElementById('kxCpV');if(e)e.value='';
+  kxDailyRefreshAll();toast('บันทึก Caprini วันที่ '+kxDate(d)+' แล้ว — อย่าลืมกด "บันทึก Kardex"');
+}
+function kxCapDel(d){kxDailyClear(d,['cp']);kxDailyRefreshAll();}
+function kxCapView(k){
+  const L=kxDailyNorm(k&&k.daily).filter(e=>e.cp!==null),legacy=kxv(k,'caprini');
+  if(!L.length)return legacy!==''?kxText(legacy):'<span class="kx-empty">-</span>';
+  const e=L[L.length-1];
+  return '<b'+(e.cp>=5?' style="color:#c62828"':'')+'>'+e.cp+'</b> <span class="kx-sys">('+_ht(kxDate(e.d))+(e.by?' · '+_ht(e.by):'')+')</span>';
+}
 function kxDtPrint(){
   const P=_kx&&_kx.p?_kx.p:{};
   const old=document.getElementById('kardexPrintRoot');if(old)old.remove();
@@ -5498,7 +5591,7 @@ function kxDtPrint(){
 document.addEventListener('click',()=>{setTimeout(()=>{if(document.getElementById('kxDtBody')||document.getElementById('kxDtSum'))kxDtRefresh();},60);});
 
 const KX_RASS_DESC={'+4':['Combative','ก้าวร้าวรุนแรง อันตรายต่อบุคลากร พยายามดึงท่อหรือทำร้ายผู้อื่น'],'+3':['Very Agitated','กระสับกระส่ายมาก ดึงท่อหรือสายต่าง ๆ อย่างรุนแรง'],'+2':['Agitated','กระวนกระวาย เคลื่อนไหวบ่อย ไม่ประสานกับเครื่องช่วยหายใจ'],'+1':['Restless','กระสับกระส่ายเล็กน้อย วิตกกังวล แต่ไม่ก้าวร้าว'],'0':['Alert and calm','ตื่นตัว สงบ ตอบสนองได้ปกติ'],'-1':['Drowsy','ง่วงเล็กน้อย ลืมตาเมื่อเรียกเสียง และสบตาได้นาน >10 วินาที'],'-2':['Light Sedation','ลืมตาเมื่อเรียกเสียง แต่สบตา <10 วินาที'],'-3':['Moderate Sedation','ลืมตาหรือขยับตัวเมื่อเรียกเสียง แต่ไม่สบตา'],'-4':['Deep Sedation','ไม่ตอบสนองต่อเสียง แต่ตอบสนองต่อการกระตุ้นทางกาย'],'-5':['Unarousable','ไม่ตอบสนองต่อเสียงและการกระตุ้นทางกาย']};
-const KX_RASS_MAX=31;
+const KX_RASS_MAX=93;
 let _kxRass=[];
 // RASS เก็บรายวัน (วันละ 1 ค่า) ในคอลัมน์ "Kardex: RASS" เป็น JSON [{d,t,v,by}] — อ่านค่าเดิมที่เป็นข้อความตัวเดียวได้ (ไม่มีวันที่)
 function kxRassNorm(raw){
@@ -5507,8 +5600,8 @@ function kxRassNorm(raw){
   else{const t=String(raw==null?'':raw).trim();if(!t)return [];if(t.charAt(0)==='['){try{a=JSON.parse(t);}catch(e){a=null;}}else if(KX_RASS[t])return [{d:'',t:'',v:t,by:''}];}
   if(!Array.isArray(a))return [];
   const m={};
-  a.forEach(x=>{if(!x||typeof x!=='object'||!KX_RASS[String(x.v)])return;const d=/^\d{4}-\d{2}-\d{2}$/.test(String(x.d||''))?String(x.d):'',t=/^\d{2}:\d{2}$/.test(String(x.t||''))?String(x.t):'';m[d||'_']={d,t,v:String(x.v),by:String(x.by||'').slice(0,60)};});
-  const out=Object.keys(m).map(q=>m[q]).sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0);
+  a.forEach(x=>{if(!x||typeof x!=='object'||!KX_RASS[String(x.v)])return;const d=/^\d{4}-\d{2}-\d{2}$/.test(String(x.d||''))?String(x.d):'',t=/^\d{2}:\d{2}$/.test(String(x.t||''))?String(x.t):'';const sh=KX_SHIFTS.indexOf(x.s)>=0?x.s:(t?kxShiftOf(t):'');m[(d||'_')+'|'+sh]={d,t,s:sh,v:String(x.v),by:String(x.by||'').slice(0,60)};});
+  const out=Object.keys(m).map(q=>m[q]).sort((a,b)=>(a.d+(KX_SHIFTS.indexOf(a.s)))<(b.d+(KX_SHIFTS.indexOf(b.s)))?-1:(a.d+(KX_SHIFTS.indexOf(a.s)))>(b.d+(KX_SHIFTS.indexOf(b.s)))?1:0);
   return (out.some(x=>x.d)?out.filter(x=>x.d):out).slice(-KX_RASS_MAX);   // ค่าเดิมที่ไม่มีวันที่ ถูกแทนด้วยค่ารายวันเมื่อมีบันทึกใหม่
 }
 const kxRassCls=v=>{const n=Number(v);return Math.abs(n)>=3?'color:#c62828;font-weight:700':(n===0?'color:#2e7d32;font-weight:700':'font-weight:700');};
@@ -5517,22 +5610,24 @@ function kxRassView(k){
   if(!h.length)return '<span class="kx-empty">-</span><div style="margin-top:6px"><button type="button" class="btn btn-outline btn-sm" onclick="kxRassRefOpen()">📘 ตาราง RASS</button></div>';
   const L=h[h.length-1];
   const chips=h.slice(-7).map(e=>'<span class="kx-sys" style="margin-right:4px">'+(e.d?_ht(kxDate(e.d))+': ':'')+_ht(e.v)+'</span>').join('');
-  return '<span style="'+kxRassCls(L.v)+'">'+_ht(KX_RASS[L.v])+'</span>'+(L.d?' <span class="kx-sys">('+_ht(kxDate(L.d))+(L.t?' '+_ht(L.t):'')+(L.by?' · '+_ht(L.by):'')+')</span>':'')+(h.length>1?'<div style="margin-top:4px">'+chips+'</div>':'')+'<div style="margin-top:6px"><button type="button" class="btn btn-outline btn-sm" onclick="kxRassRefOpen()">📘 ตาราง RASS</button></div>';
+  return '<span style="'+kxRassCls(L.v)+'">'+_ht(KX_RASS[L.v])+'</span>'+(L.d?' <span class="kx-sys">('+_ht(kxDate(L.d))+(L.t?' '+_ht(L.t):'')+(L.s?' เวร'+_ht(L.s):'')+(L.by?' · '+_ht(L.by):'')+')</span>':'')+(h.length>1?'<div style="margin-top:4px">'+chips+'</div>':'')+'<div style="margin-top:6px"><button type="button" class="btn btn-outline btn-sm" onclick="kxRassRefOpen()">📘 ตาราง RASS</button></div>';
 }
 function kxRassListHtml(){
   if(!_kxRass.length)return '<div class="kx-empty" style="font-size:12px">ยังไม่มีบันทึก RASS</div>';
-  return '<div style="max-height:230px;overflow:auto"><table class="kx-tbl" style="text-align:left"><thead><tr><th>วันที่</th><th>เวลา</th><th>RASS</th><th>ผู้บันทึก</th><th></th></tr></thead><tbody>'+_kxRass.map((e,i)=>({e,i})).reverse().map(o=>'<tr><td>'+(o.e.d?_ht(kxDate(o.e.d)):'-')+'</td><td>'+_ht(o.e.t||'-')+'</td><td style="'+kxRassCls(o.e.v)+'">'+_ht(KX_RASS[o.e.v])+'</td><td>'+_ht(o.e.by||'-')+'</td><td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="kxRassDel('+o.i+')">✕</button></td></tr>').join('')+'</tbody></table></div>';
+  return '<div style="max-height:230px;overflow:auto"><table class="kx-tbl" style="text-align:left"><thead><tr><th>วันที่</th><th>เวลา</th><th>RASS</th><th>ผู้บันทึก</th><th></th></tr></thead><tbody>'+_kxRass.map((e,i)=>({e,i})).reverse().map(o=>'<tr><td>'+(o.e.d?_ht(kxDate(o.e.d)):'-')+'</td><td>'+_ht(o.e.t||'-')+(o.e.s?' <span class="kx-sys">('+_ht(o.e.s)+')</span>':'')+'</td><td style="'+kxRassCls(o.e.v)+'">'+_ht(KX_RASS[o.e.v])+'</td><td>'+_ht(o.e.by||'-')+'</td><td><button type="button" class="btn btn-danger btn-sm" title="ลบรายการนี้" onclick="kxRassDel('+o.i+')">✕</button></td></tr>').join('')+'</tbody></table></div>';
 }
 function kxRassEditor(k){
   const now=new Date(),hh=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-  return '<div id="kxRassBox"><div class="kx-wn-top" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input class="kx-in" type="date" id="kxRsD" name="kxDate" value="'+_ha(localToday())+'" style="max-width:150px"><input class="kx-in" type="time" id="kxRsT" value="'+hh+'" style="max-width:140px;min-width:125px"><select class="kx-in" id="kxRsV" style="max-width:260px"><option value="">-- RASS --</option>'+Object.keys(KX_RASS).map(o=>'<option value="'+o+'">'+_ht(KX_RASS[o])+'</option>').join('')+'</select><button type="button" class="btn btn-outline btn-sm" onclick="kxRassAdd()" title="บันทึกของวันนี้ (วันละ 1 ค่า — บันทึกซ้ำในวันเดียวกันจะทับของเดิม)">➕ บันทึก</button><button type="button" class="btn btn-outline btn-sm" onclick="kxRassRefOpen()">📘 ตาราง RASS</button></div><div id="kxRassHist" style="margin-top:6px">'+kxRassListHtml()+'</div><div class="kx-sys" style="font-size:11px;margin-top:4px">เก็บวันละ 1 ค่า ย้อนหลัง 31 วัน · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div></div>';
+  return '<div id="kxRassBox"><div class="kx-wn-top" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><input class="kx-in" type="date" id="kxRsD" name="kxDate" value="'+_ha(localToday())+'" style="max-width:150px"><input class="kx-in" type="time" id="kxRsT" value="'+hh+'" style="max-width:140px;min-width:125px"><select class="kx-in" id="kxRsV" style="max-width:260px"><option value="">-- RASS --</option>'+Object.keys(KX_RASS).map(o=>'<option value="'+o+'">'+_ht(KX_RASS[o])+'</option>').join('')+'</select><button type="button" class="btn btn-outline btn-sm" onclick="kxRassAdd()" title="บันทึกตามเวรของเวลาที่ระบุ (เวรเดียวกันบันทึกซ้ำจะทับของเดิม)">➕ บันทึก</button><button type="button" class="btn btn-outline btn-sm" onclick="kxRassRefOpen()">📘 ตาราง RASS</button></div><div id="kxRsGate">'+kxGateBox('RASS','RASS',localToday(),kxShiftOf(hh),kxRassPseudo(_kxRass),'kxRsSkR','kxRsSkip')+'</div><div id="kxRassHist" style="margin-top:6px">'+kxRassListHtml()+'</div><div class="kx-sys" style="font-size:11px;margin-top:4px">เก็บทุกเวร (เวรเดียวกันบันทึกซ้ำจะทับ) · ตารางรายวันแสดงค่าที่แย่สุดของวัน · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div></div>';
 }
 function kxRassAdd(){
   const d=(document.getElementById('kxRsD')||{}).value||'',t=(document.getElementById('kxRsT')||{}).value||'',v=(document.getElementById('kxRsV')||{}).value||'';
   if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('กรุณาระบุวันที่',true);return;}
   if(!KX_RASS[v]){toast('กรุณาเลือกระดับ RASS',true);return;}
   if(d>localToday()){toast('วันที่ต้องไม่เป็นอนาคต',true);return;}
-  _kxRass=kxRassNorm(_kxRass.filter(x=>x.d!==d).concat([{d,t:/^\d{2}:\d{2}$/.test(t)?t:'',v,by:(currentUser&&currentUser.fullname)||''}]));
+  const sh=/^\d{2}:\d{2}$/.test(t)?kxShiftOf(t):kxShiftOf(new Date().getHours()+':00');
+  const gt=kxShiftGate(d,sh,kxRassPseudo(_kxRass),_kxDaily,'RASS');if(gt){kxRsGateRefresh();toast('ยังไม่อัพเดต RASS เวร'+gt.map(o=>o.sh+' '+kxDate(o.d)).join(', ')+' — บันทึกเวรก่อนหน้าก่อน หรือกด "ไม่ได้ประเมินเวรนี้"',true);return;}
+  _kxRass=kxRassNorm(_kxRass.filter(x=>!(x.d===d&&x.s===sh)).concat([{d,t:/^\d{2}:\d{2}$/.test(t)?t:'',s:sh,v,by:(currentUser&&currentUser.fullname)||''}]));
   document.getElementById('kxRassHist').innerHTML=kxRassListHtml();document.getElementById('kxRsV').value='';
   toast('บันทึก RASS วันที่ '+kxDate(d)+' แล้ว — อย่าลืมกด "บันทึก Kardex"');
 }
@@ -5581,7 +5676,7 @@ function kxN2EntryRisk(x){
   if(full)return kxN2Calc(x).risk;
   return x.n>=7?'high':x.n>=5?'med':'low';
 }
-const kxVsWhen=t=>kxDate(String(t).slice(0,10))+' '+String(t).slice(11,16);
+const kxVsWhen=t=>kxDate(String(t).slice(0,10))+' '+String(t).slice(11,16)+' ('+kxShiftOf(String(t).slice(11,16))+')';
 function kxVsTblRow(x){
   const r=KX_N2_RISK[kxN2EntryRisk(x)],v=(f,u)=>x[f]===null||x[f]===undefined?'-':_ht(String(x[f]))+(u||'');
   const bp=(x.sb===null||x.sb===undefined)?'-':_ht(String(x.sb))+(x.db!==null&&x.db!==undefined?'/'+_ht(String(x.db)):'');
@@ -5644,10 +5739,41 @@ function kxVsEditor(k){
       <td class="kx-n2res" id="kxVsSosRes">-</td>
       <td class="kx-n2res" id="kxVsRes">-</td>
       <td>-</td>
-      <td><button type="button" class="btn btn-outline btn-sm" title="บันทึกของวันนี้ (วันละ 1 ชุด — บันทึกซ้ำในวันเดียวกันจะทับของเดิม)" onclick="kxVsAdd()">➕</button></td>
+      <td><button type="button" class="btn btn-outline btn-sm" title="บันทึกตามเวรของเวลาที่ระบุ" onclick="kxVsAdd()">➕</button></td>
     </tr></tbody>
-    <tbody id="kxVsBody">${kxVsListHtml()}</tbody></table></div>
-    <div class="kx-sys kx-n2hint" id="kxVsHint">เก็บวันละ 1 ชุด (ค่าล่าสุดของวันนั้น) ย้อนหลัง 31 วัน — กรอกในแถวบนสุด แล้วกด ➕ · ถ้าวันเดียวกันบันทึกซ้ำจะทับของเดิม (Kardex ด้านบนแสดงเฉพาะค่าล่าสุด) — NEWS2 คำนวณให้จาก BT, HR, RR, SBP, SpO₂, O₂, ความรู้สึกตัว (ต้องกรอกให้ครบ 5 ค่าแรก) · SOS คำนวณจาก BT, SBP, HR, RR, ความรู้สึกตัว (SOS) และปัสสาวะ (ถ้ากรอก) · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div></div>`;
+    <tbody id="kxVsBody">${kxVsListHtml()}</tbody></table></div><div id="kxVsGate">${kxVsGateHtml()}</div>
+    <div class="kx-sys kx-n2hint" id="kxVsHint">เก็บทุกเวร (ดึก 00–08 · เช้า 08–16 · บ่าย 16–24) ย้อนหลัง 31 วัน — กรอกในแถวบนสุด แล้วกด ➕ · ถ้าเวรเดียวกันบันทึกซ้ำจะทับของเดิม · ลงเวรถัดไปไม่ได้ถ้าเวรก่อนหน้ายังไม่บันทึก (Kardex ด้านบนแสดงเฉพาะค่าล่าสุด) — NEWS2 คำนวณให้จาก BT, HR, RR, SBP, SpO₂, O₂, ความรู้สึกตัว (ต้องกรอกให้ครบ 5 ค่าแรก) · SOS คำนวณจาก BT, SBP, HR, RR, ความรู้สึกตัว (SOS) และปัสสาวะ (ถ้ากรอก) · ต้องกด "บันทึก Kardex" ท้ายหน้าอีกครั้ง</div></div>`;
+}
+function kxVsGateHtml(){
+  const dEl=document.querySelector('#kardexSheet input#kxVsD'),tEl=document.getElementById('kxVsT');
+  const d=dEl?dEl.value:localToday(),tm=tEl?tEl.value:(new Date().getHours()+':00');if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!tm)return '';
+  const sh=kxShiftOf(tm),gate=kxShiftGate(d,sh,_kxVs,_kxDaily);
+  let h='<div class="kx-sys" style="font-size:11px;margin-top:4px">เวรที่จะบันทึก: <b>'+_ht(sh)+'</b> ('+_ht(kxDate(d))+')</div>';
+  if(gate)h+='<div style="background:#fff3e0;border:1px solid #ef6c00;border-radius:6px;padding:6px 8px;margin-top:4px;font-size:12px"><b style="color:#bf360c">⚠ ยังไม่อัพเดต เวร'+gate.map(o=>_ht(o.sh)+' '+_ht(kxDate(o.d))).join(', ')+'</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><input class="kx-in" id="kxVsSkR" placeholder="เหตุผลที่ไม่ได้ประเมิน (จำเป็น)" style="flex:1;min-width:180px"><button type="button" class="btn btn-outline btn-sm" onclick="kxVsSkip()">ไม่ได้ประเมินเวรนี้</button></div></div>';
+  return h;
+}
+function kxGateBox(boxId,pre,d,sh,pseudo,inputId,skipFn){
+  const g=kxShiftGate(d,sh,pseudo,_kxDaily,pre);if(!g)return '';
+  return '<div style="background:#fff3e0;border:1px solid #ef6c00;border-radius:6px;padding:6px 8px;margin-top:4px;font-size:12px"><b style="color:#bf360c">⚠ ยังไม่อัพเดต '+pre+' เวร'+g.map(o=>_ht(o.sh)+' '+_ht(kxDate(o.d))).join(', ')+'</b><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><input class="kx-in" id="'+inputId+'" placeholder="เหตุผลที่ไม่ได้ประเมิน (จำเป็น)" style="flex:1;min-width:180px"><button type="button" class="btn btn-outline btn-sm" onclick="'+skipFn+'()">ไม่ได้ประเมินเวรนี้</button></div></div>';
+}
+function kxGateSkip(pre,d,sh,pseudo,inputId,boxFn){
+  const g=kxShiftGate(d,sh,pseudo,_kxDaily,pre);if(!g)return;const r=((document.getElementById(inputId)||{}).value||'').trim();
+  if(!r){toast('กรุณาระบุเหตุผลที่ไม่ได้ประเมิน',true);return;}
+  kxSkipSet(g,r,pre);_kx.vsChanged=true;boxFn();kxDtRefresh();toast('บันทึกว่าไม่ได้ประเมิน '+pre+' '+g.length+' เวร แล้ว — อย่าลืมกด "บันทึก Kardex"');
+}
+function kxRsCtx(){const d=(document.getElementById('kxRsD')||{}).value||localToday(),t=(document.getElementById('kxRsT')||{}).value||'12:00';return {d,sh:kxShiftOf(t)};}
+function kxRsGateRefresh(){const b=document.getElementById('kxRsGate');if(!b)return;const c=kxRsCtx();b.innerHTML=kxGateBox('RASS','RASS',c.d,c.sh,kxRassPseudo(_kxRass),'kxRsSkR','kxRsSkip');}
+function kxRsSkip(){const c=kxRsCtx();kxGateSkip('RASS',c.d,c.sh,kxRassPseudo(_kxRass),'kxRsSkR',kxRsGateRefresh);}
+function kxPnCtx(){return {d:(document.getElementById('kxPnD')||{}).value||localToday(),sh:(document.getElementById('kxPnSh')||{}).value||'เช้า'};}
+function kxPnGateRefresh(){const b=document.getElementById('kxPnGate');if(!b)return;const c=kxPnCtx();b.innerHTML=kxGateBox('Pain','Pain',c.d,c.sh,kxPainPseudo(_kxDaily),'kxPnSkR','kxPnSkip');}
+function kxPnSkip(){const c=kxPnCtx();kxGateSkip('Pain',c.d,c.sh,kxPainPseudo(_kxDaily),'kxPnSkR',kxPnGateRefresh);}
+document.addEventListener('change',e=>{const t=e.target;if(!t||!t.id)return;if(/^kxRs[DT]$/.test(t.id))kxRsGateRefresh();if(/^kxPn(D|Sh)$/.test(t.id))kxPnGateRefresh();});
+function kxVsGateRefresh(){const g=document.getElementById('kxVsGate');if(g)g.innerHTML=kxVsGateHtml();}
+function kxVsSkip(){
+  const dEl=document.querySelector('#kardexSheet input#kxVsD'),tEl=document.getElementById('kxVsT'),r=((document.getElementById('kxVsSkR')||{}).value||'').trim();
+  const gate=kxShiftGate(dEl?dEl.value:'',kxShiftOf(tEl?tEl.value:''),_kxVs,_kxDaily);if(!gate)return;
+  if(!r){toast('กรุณาระบุเหตุผลที่ไม่ได้ประเมิน',true);return;}
+  kxSkipSet(gate,r);_kx.vsChanged=true;kxVsGateRefresh();kxDtRefresh();toast('บันทึกว่าไม่ได้ประเมิน '+gate.length+' เวร แล้ว — อย่าลืมกด "บันทึก Kardex"');
 }
 function kxVsRead(){
   const g=id=>{const e=document.getElementById(id);return e?e.value:'';};
@@ -5687,17 +5813,19 @@ function kxVsAdd(){
   const e={t,tp,hr,rr,sb,sp,av:v.av,n:total,by:(currentUser&&currentUser.fullname)||''};
   if(db!==null)e.db=db;if(v.s2)e.s2=1;if(v.ox)e.ox=1;
   if(ur!==undefined)e.ur=ur;if(iin!==undefined)e.iin=iin;if(iout!==undefined)e.iout=iout;if(v.sc)e.sc=v.sc;if(ur!==undefined)e.urp=v.urp;if(v.pr)e.pr=1;if(v.vt)e.vt=1;if(q)e.sos=q.total;
-  const dk=e.t.slice(0,10);   // วันละ 1 ชุด: บันทึกซ้ำในวันเดียวกันจะทับของเดิมของวันนั้น เก็บ KX_VS_MAX วันล่าสุด
-  _kxVs=_kxVs.filter(x=>String(x.t).slice(0,10)!==dk).concat([e]).sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0).slice(-KX_VS_MAX);
+  const dk=e.t.slice(0,10),sh=kxShiftOf(e.t.slice(11,16));   // เวรละ 1 ชุด (ตามวันที่ปฏิทินจริง): บันทึกซ้ำในเวรเดียวกันจะทับของเดิม
+  const gate=kxShiftGate(dk,sh,_kxVs,_kxDaily);
+  if(gate){kxVsGateRefresh();toast('ยังไม่อัพเดต เวร'+gate.map(o=>o.sh+' '+kxDate(o.d)).join(', ')+' — บันทึกเวรก่อนหน้าก่อน หรือกด "ไม่ได้ประเมินเวรนี้" พร้อมเหตุผล',true);return;}
+  _kxVs=_kxVs.filter(x=>!(String(x.t).slice(0,10)===dk&&kxShiftOf(String(x.t).slice(11,16))===sh)).concat([e]).sort((a,b)=>a.t<b.t?-1:a.t>b.t?1:0).slice(-KX_VS_MAX);
   _kx.vsChanged=true;
   document.getElementById('kxVsBody').innerHTML=kxVsListHtml();
   ['kxVsTp','kxVsHr','kxVsRr','kxVsSb','kxVsDb','kxVsSp','kxVsUr','kxVsIin','kxVsIout'].forEach(id=>{document.getElementById(id).value='';});
   document.getElementById('kxVsOx').value='0';document.getElementById('kxVsAv').value='A';document.getElementById('kxVsS2').checked=false;document.getElementById('kxVsSc').value='';document.getElementById('kxVsUrp').value='8';document.getElementById('kxVsPr').checked=false;document.getElementById('kxVsVt').checked=false;
-  kxVsLive();toast('บันทึกค่าการประเมินของวันที่ '+kxDate(dk)+' แล้ว — NEWS2 = '+total+(q?' · SOS = '+q.total:' · SOS ยังไม่คำนวณ (ต้องเลือก "ความรู้สึกตัว (SOS)")')+' — อย่าลืมกด "บันทึก Kardex"');
+  kxVsLive();kxVsGateRefresh();toast('บันทึกค่าการประเมินเวร'+sh+' วันที่ '+kxDate(dk)+' แล้ว — NEWS2 = '+total+(q?' · SOS = '+q.total:' · SOS ยังไม่คำนวณ (ต้องเลือก "ความรู้สึกตัว (SOS)")')+' — อย่าลืมกด "บันทึก Kardex"');
 }
 function kxVsDel(i){_kxVs.splice(i,1);_kx.vsChanged=true;document.getElementById('kxVsBody').innerHTML=kxVsListHtml();}
 document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxVsPanel'))kxVsLive();});
-document.addEventListener('change',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxVsPanel'))kxVsLive();});
+document.addEventListener('change',e=>{if(e.target&&e.target.closest&&e.target.closest('#kxVsPanel')){kxVsLive();kxVsGateRefresh();}});
 // ── Dropdown เลือกหลายค่าใน Kardex (ใช้ตัวช่วยเดียวกับฟอร์มผู้ป่วย: msdToggle/msdChange/msdFilter/msdClear/quickAddToMsd) ──
 function kxMsd(key,optKey,valCsv,attr,fixed){
   const id='kxm_'+key;
@@ -5811,7 +5939,8 @@ function kxWeanTable(h,edit){
   const th=v.map((e,i)=>`<th${edit?` style="cursor:pointer" title="กดเพื่อเปิดแบบฟอร์มของวันนี้" onclick="kxWeanOpen('${e.d}')"`:''}>วันที่ ${kxWeanDayNo(h,e.d)}<br><span style="font-weight:400;font-size:10px">${_ht(kxDate(e.d))}</span></th>`).join('');
   const rows=KX_WEAN.map(st=>`<tr><td style="text-align:left"><b>${_ht(st.t.replace(/ \(.*$/,''))}</b></td>${v.map(e=>'<td>'+kxWeanMark(e.r[st.k])+'</td>').join('')}</tr>`).join('');
   const notes=v.filter(e=>e.n).map(e=>kxDate(e.d)+': '+_ht(e.n)).join(' · ');
-  return `<div class="kx-tblwrap"><table class="kx-tbl" style="text-align:center"><thead><tr><th style="text-align:left">หัวข้อ (ต้องผ่านทุกข้อก่อนขึ้นขั้นถัดไป)</th>${th}</tr></thead><tbody>${rows}</tbody></table></div>${all>KX_WEAN_COLS?'<div class="kx-sys" style="font-size:11px">แสดง '+KX_WEAN_COLS+' วันล่าสุด (บันทึกทั้งหมด '+all+' วัน)</div>':''}${notes?'<div class="kx-sys" style="font-size:11.5px">หมายเหตุ — '+notes+'</div>':''}`;
+  const byRow=`<tr><td style="text-align:left"><b>ผู้ประเมิน</b></td>${v.map(e=>'<td style="font-size:10px;line-height:1.15;word-break:break-word">'+_ht(e.by||'-')+'</td>').join('')}</tr>`;
+  return `<div class="kx-tblwrap"><table class="kx-tbl" style="text-align:center"><thead><tr><th style="text-align:left">หัวข้อ (ต้องผ่านทุกข้อก่อนขึ้นขั้นถัดไป)</th>${th}</tr></thead><tbody>${rows}${byRow}</tbody></table></div>${all>KX_WEAN_COLS?'<div class="kx-sys" style="font-size:11px">แสดง '+KX_WEAN_COLS+' วันล่าสุด (บันทึกทั้งหมด '+all+' วัน)</div>':''}${notes?'<div class="kx-sys" style="font-size:11.5px">หมายเหตุ — '+notes+'</div>':''}`;
 }
 function kxWeanHint(){
   const L=(_kxVs&&_kxVs.length)?_kxVs[_kxVs.length-1]:null;if(!L)return '';
@@ -5844,6 +5973,7 @@ function kxWeanSheetHtml(pt,list,page){
     st.items.forEach((t,i)=>{rows+=`<tr><td style="${bd}padding:1px 4px;height:16px">${t}</td>${cols.map(e=>`<td style="${bd}text-align:center;font-weight:700">${tick(e,st,i)}</td>`).join('')}</tr>`;});
     if(st.after)rows+=`<tr><td colspan="11" style="${bd}text-align:center;font-weight:700;padding:3px">${st.after}</td></tr>`;
   });
+  rows+=`<tr><td style="${bd}padding:2px 4px;font-weight:700">ผู้ประเมิน</td>${cols.map(e=>`<td style="${bd}text-align:center;font-size:8px;line-height:1.1;padding:2px 1px;word-break:break-word;height:26px">${e?_ht(e.by||''):''}</td>`).join('')}</tr>`;
   const hd=cols.map((e,i)=>`<td style="${bd}padding:2px 2px;vertical-align:top;width:6%">วันที่ ${e?kxWeanDayNo(h,e.d):''} :${e?'<div style="font-size:8.5px;white-space:nowrap;margin-left:-2px">'+_ht(kxDate(e.d))+'</div>':''}</td>`).join('');
   const note=v.filter(e=>e&&e.n).map(e=>_ht(kxDate(e.d))+': '+_ht(e.n)).join(' · ');
   return `<div id="kxWsPage" style="font-family:'Cordia New','Sarabun','Noto Sans Thai',sans-serif;font-size:12px;line-height:1.15;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact">
@@ -6281,7 +6411,14 @@ function buildKardexHtml(p,k,edit){
   const clabsi=/^(ใช่|yes)$/i.test(String(p['CLABSI']||'').trim())?'<span class="kx-tag">CLABSI</span>':'<span class="kx-empty">-</span>';
   // คะแนนประเมิน (จากระบบ): NEWS2 (คะแนน + วันที่ จากข้อมูลผู้ป่วย) / Apache IV
   const apache=String(p['Apache IV Score']||'').trim(),apm=String(p['Apache IV Mortality']||'').trim();
-  const scoresHtml=kxNews2Row(p,k)+kxSosRow(p,k)+kxRow('Apache IV',apache?_ht(apache)+(apm?' <span class="kx-sys">(Mortality '+_ht(apm)+(/%/.test(apm)?'':'%')+')</span>':''):'<span class="kx-empty">-</span>')+kxRow('Falling',kxText(p['Falling']));
+  // คะแนนประเมินแรกรับ: Apache IV · NEWS2 แรกรับ · SOS แรกรับ · SOFA แรกรับ · Falling  (ค่าล่าสุดของ NEWS2/SOS อยู่ที่ "V/S ล่าสุด" และตารางประเมินรายวัน)
+  const kxAdmNum=(key,mx,ph)=>edit?`<input class="kx-in" type="number" min="0" max="${mx}" data-kx="${key}" placeholder="${ph}" value="${_ha(kxv(k,key))}" style="max-width:110px">`:(kxv(k,key)!==''?'<b>'+_ht(kxv(k,key))+'</b>':'<span class="kx-empty">-</span>');
+  const n2a=Number(kxv(k,'news2Adm')),sos0=String(p['SOS Score']==null?'':p['SOS Score']).trim();
+  const scoresHtml=kxRow('Apache IV',apache?_ht(apache)+(apm?' <span class="kx-sys">(Mortality '+_ht(apm)+(/%/.test(apm)?'':'%')+')</span>':''):'<span class="kx-empty">-</span>')
+    +kxRow('NEWS2',kxAdmNum('news2Adm',20,'0–20')+(!edit&&kxv(k,'news2Adm')!==''&&n2a>=5?' <span class="n2-high">'+(n2a>=7?'เสี่ยงสูง':'เสี่ยงปานกลาง')+'</span>':''))
+    +kxRow('SOS',sos0?'<b'+(Number(sos0)>=4?' class="n2-high"':'')+'>'+_ht(sos0)+'</b>'+(edit?' <span class="kx-sys">(แก้ได้ที่ฟอร์มข้อมูลผู้ป่วย)</span>':''):'<span class="kx-empty">-</span>')
+    +kxRow('SOFA',kxAdmNum('sofa',24,'0–24')+' <span class="kx-sys">(ประเมินภายใน 24 ชม.แรก)</span>')
+    +kxRow('Falling',kxText(p['Falling']));
   // การติดเชื้อ (จากระบบ): VAP / CAUTI / SSI / MDR + เชื้อที่พบ + สิ่งส่งตรวจ  (CLABSI แสดงในหัวข้อ Complication ตามแบบของหน่วย)
   const infFlags=KX_INF_FLAGS.filter(f=>/^(ใช่|yes)$/i.test(String(p[f]||'').trim()));
   const pathogen=String(p['ชนิดของเชื้อที่พบ']||'').trim(),specimen=String(p['ชนิดสิ่งส่งตรวจ']||'').trim();
@@ -6335,17 +6472,18 @@ function buildKardexHtml(p,k,edit){
     ${kxSec(2,'Chief Complaint (CC)',ccBox)}
     ${kxSec(2,'History of Present Illness (HPI)',hpiBox+`<div class="kx-rec"><i>ผู้บันทึก Admit</i> <b>${kxText(p['ผู้บันทึก Admit'])}</b> <span class="kx-sys">(จากระบบ)</span></div>`)}
     ${kxSec(3,'Dx ล่าสุด',edit?`<div class="kx-r"><div class="kx-v">${kxMsd('dxNow','diagnosis',kxv(k,'dxNow'),'data-kx="dxNow"')}</div></div>`:(kxv(k,'dxNow')?'<b>'+_ht(kxv(k,'dxNow'))+'</b>':'<span class="kx-empty">-</span>'),edit?'(เลือกได้หลายตัว — รายการเดียวกับ Dx แรกรับ)':'')}
-    ${kxSec(3,'V/S ล่าสุด',edit?kxVsEditor(k):kxVsView(k),'(ตัวเลขในวงเล็บ = คะแนน NEWS2 / SOS ของค่านั้น · คำนวณจากค่าที่กรอก)')}
-    ${kxWeanShow(p,k)?kxSec(3,'Weaning (หย่าเครื่องช่วยหายใจ)',edit?kxWeanEditor(k):kxWeanView(k),'(แนวทาง PCT อายุรกรรม 20/8/69 — แสดงเมื่อใส่ Ventilator)'):''}
     ${kxSec(3,'Problems',edit?probEdit:probView)}
     ${kxSec(4,'Specific clinical risk',edit?`<div class="kx-r"><div class="kx-v">${kxMsd('specRisk','specificRisk',kxv(k,'specRisk'),'data-kx="specRisk"')}</div></div>`:kxNew('','specRisk',k,edit,'',2).replace('<div class="kx-k"></div>',''))}
     ${kxSec(5,'Common clinical risk',edit?`<div class="kx-r"><div class="kx-v">${kxMsd('commonRisk','commonRisk',kxv(k,'commonRisk'),'data-kx="commonRisk"')}</div></div>`:kxNew('','commonRisk',k,edit,'',2).replace('<div class="kx-k"></div>',''))}
-    ${kxSec(6,'คะแนนประเมิน',scoresHtml,sys)}
-    ${kxSec(7,'VTE (Caprini) / U/S DVT',
-      kxRow('Caprini score',kxText(kxv(k,'caprini'))+(edit?' <span class="kx-sys">กรอกในตาราง "ประเมินรายวัน" ด้านล่าง</span>':''))+
+    ${kxSec(6,'คะแนนประเมินแรกรับ',scoresHtml,sys)}
+    ${kxSec(6,'V/S ล่าสุด',edit?kxVsEditor(k):kxVsView(k),'(ตัวเลขในวงเล็บ = คะแนน NEWS2 / SOS ของค่านั้น · คำนวณจากค่าที่กรอก)')}
+    ${kxWeanShow(p,k)?kxSec(6,'Weaning (หย่าเครื่องช่วยหายใจ) · ประเมินเวรดึก',edit?kxWeanEditor(k):kxWeanView(k),'(แนวทาง PCT อายุรกรรม 20/8/69 — แสดงเมื่อใส่ Ventilator)'):''}
+    ${kxSec(7,'VTE (Caprini) / U/S DVT · ประเมินเวรดึก',
+      kxRow('Caprini score',edit?kxCapEditor():kxCapView(k))+
       kxNew('U/S DVT','dvtUS',k,edit,'วันที่ / ผล',1))}
     ${kxSec(8,'RASS (ระดับความตื่น/สงบ)',edit?kxRassEditor(k):kxRassView(k))}
-    ${kxSec(8,'Delirium (ICDSC)',edit?kxIcdEditor(p,k):kxIcdView(p,k),edit?'(ประเมินที่นี่ — บันทึกลงข้อมูลผู้ป่วยด้วย)':'')}
+    ${kxSec(8,'Delirium (ICDSC) · ประเมินเวรบ่าย',edit?kxIcdEditor(p,k):kxIcdView(p,k),edit?'(ประเมินที่นี่ — บันทึกลงข้อมูลผู้ป่วยด้วย)':'')}
+    ${kxSec(8,'Pain (CPOT / PS)',edit?kxPainEditor(k):kxPainView(k))}
     ${kxSec(8,'ประเมินรายวัน (SOS · NEWS2 · RASS · ICDSC · Caprini · CPOT/PS)',kxDtSection(edit))}
     ${kxSec(9,'Rehabilitation',kxNew('','rehab',k,edit,'การฟื้นฟู / กายภาพ',2).replace('<div class="kx-k"></div>',''))}
     ${kxSec(10,'ด้านจิต-สังคม',kxNew('','psych',k,edit,'ผู้ดูแล / ครอบครัว / อารมณ์ / เศรษฐานะ ฯลฯ',2).replace('<div class="kx-k"></div>',''))}
@@ -6687,13 +6825,31 @@ async function loadKardexBoard(){
   _kbPts=pts.filter(p=>p['สถานะ']==='กำลัง admit');
   renderKardexBoard();
 }
+// ป้าย "ไม่อัพเดต" บน card Kardex: ดูเวรที่เพิ่งจบเทียบกับบันทึกล่าสุดของแต่ละหัวข้อ (เฉพาะหัวข้อที่เคยมีบันทึกแล้ว)
+function kbPending(k){
+  const out=[],now=kxNowSlot(),n=now-1,dl=kxDailyNorm(k.daily),vs=kxNormVs(k.vs);
+  const lateBy=(S,pre)=>{const a=Object.keys(S).map(Number);return a.length&&Math.max.apply(null,a)<n&&!S[n];};
+  if(vs.length&&lateBy(kxSlotsDone(vs,dl,''),''))out.push('V/S');
+  const rs=kxRassNorm(k.rass).filter(x=>x.d);if(rs.length&&lateBy(kxSlotsDone(kxRassPseudo(rs),dl,'RASS')))out.push('RASS');
+  const pn=kxPainPseudo(dl);if(pn.length&&lateBy(kxSlotsDone(pn,dl,'Pain')))out.push('Pain');
+  const today=localToday(),yest=kxSlotInfo(now-3).d;   // ดึกของวันนี้จบเมื่อ 08:00 · บ่ายของเมื่อวานจบเมื่อ 24:00
+  const hr=new Date().getHours();
+  const icd=kxNormIcd(k.icdsc).map(x=>x.t);
+  if(icd.length&&!icd.some(t=>t.slice(0,10)===yest&&kxShiftOf(t.slice(11,16))==='บ่าย')&&icd[icd.length-1].slice(0,10)<yest)out.push('ICDSC (บ่าย)');
+  if(hr>=8){
+    const cp=dl.filter(e=>e.cp!==null);if(cp.length&&cp[cp.length-1].d<today)out.push('VTE (ดึก)');
+    const wn=kxWeanNorm(k.wean);if(wn.length&&wn[wn.length-1].d<today)out.push('Weaning (ดึก)');
+  }
+  return out;
+}
 function kbCard(raw){
   const p=raw,k=kxParse(raw),pid=raw.id||String(raw._row);
   const admit=(/^(\d{4}-\d{2}-\d{2})/.exec(String(p['Admit (Date)']||''))||[])[1]||'',days=admit?devDays(admit,''):'';
   const allergy=String(p['แพ้ยา']||'').trim(),hasAll=allergy&&!/^ไม่(มี|แพ้)/.test(allergy);
   const ageRaw=String(p['อายุ']||'').trim(),age=/^\d+$/.test(ageRaw)?ageRaw+' ปี':ageRaw;
   const upd=k._at?new Date(k._at).toLocaleString(DATE_LOCALE(),{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-  const foot=upd?`<div class="kb-foot">อัปเดต ${_ht(upd)}${k._by?' · '+_ht(k._by):''}</div>`:'<div class="kb-foot kb-warn">ยังไม่เคยบันทึก Kardex</div>';
+  let pend=[];try{pend=upd?kbPending(k):[];}catch(e){pend=[];}
+  const foot=upd?`<div class="kb-foot">อัปเดต ${_ht(upd)}${k._by?' · '+_ht(k._by):''}</div>${pend.length?'<div class="kb-foot kb-warn">⚠ ไม่อัพเดต: '+_ht(pend.join(' · '))+'</div>':''}`:'<div class="kb-foot kb-warn">ยังไม่เคยบันทึก Kardex</div>';
   return `<button type="button" class="kb-card" onclick="openKardex('${_ha(pid)}')">
     <div class="kb-top"><span class="kb-bed">${_ht(String(p['เตียง']||'-').trim()||'-')}</span><span class="kb-days">${days===''?'':_ht(kxDaysEn(days))}</span></div>
     <div class="kb-name">${kxText(p['ชื่อ-สกุล'])}</div>
