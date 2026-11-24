@@ -1911,7 +1911,7 @@ function hideLoad(){document.getElementById('loadOverlay').classList.remove('ope
 // ทุกครั้งที่ปล่อยเวอร์ชันใหม่: แก้ APP_VERSION ในไฟล์นี้ และ APP_LATEST_VERSION ใน Code.gs ให้เป็นเลขเดียวกัน
 // รูปแบบ 'YYYY-MM-DD.NN' (เทียบเป็นข้อความได้ — เวอร์ชันใหม่กว่าจะมีค่ามากกว่า)
 // ============================================================
-const APP_VERSION='2026-10-17.63';
+const APP_VERSION='2026-10-17.64';
 let _updateDismissedAt=0,_lastUpdateCheck=0;
 
 async function checkAppUpdate(force=false){
@@ -6467,6 +6467,13 @@ function kxNeedFetch(raw){
   if(!kxHasFull(raw))return true;
   return !!raw._kxAt&&(Date.now()-raw._kxAt>KX_FRESH_MS);
 }
+function kxShowTiming(srv,rnd){
+  try{console.log('[Kardex] เซิร์ฟเวอร์ '+Math.round(srv)+' ms · แสดงผล '+Math.round(rnd)+' ms');
+    const t=document.getElementById('kardexTitle');if(!t)return;
+    let e=document.getElementById('kxTimeInfo');if(!e){e=document.createElement('div');e.id='kxTimeInfo';e.style.cssText='font-size:10px;font-weight:400;color:#999;margin-top:2px';t.parentNode.insertBefore(e,t.nextSibling);}
+    e.textContent='โหลด Kardex: รอเซิร์ฟเวอร์ '+(srv/1000).toFixed(1)+' วินาที · แสดงผล '+(rnd/1000).toFixed(2)+' วินาที';
+  }catch(e){}
+}
 function kxMergeCols(raw,cols){
   if(cols&&typeof cols==='object')Object.keys(cols).forEach(h=>{raw[h]=cols[h];});   // ใส่ทุกคอลัมน์ที่เซิร์ฟเวอร์ส่งมา รวมช่องว่าง (ช่องที่ถูกล้างต้องว่างจริง)
   raw._kxAt=Date.now();
@@ -6486,10 +6493,13 @@ function openKardex(pid,opts){
   if(!kxNeedFetch(raw)){kxOpenReady(raw,pid,opts,m,y);return;}
   const seq=++_kxOpenSeq;
   showLoad('กำลังโหลด Kardex...');
+  const _t0=performance.now();
   return api('getKardex',{month:m,year:y,id:raw.id}).then(r=>{
     if(seq!==_kxOpenSeq)return;                                  // เปิดใบอื่นทับไปแล้ว
+    const _t1=performance.now();
     kxMergeCols(raw,r&&r.cols);
     kxOpenReady(raw,pid,opts,m,y);
+    kxShowTiming(_t1-_t0,performance.now()-_t1);   // วัดเวลาโหลด: รอเซิร์ฟเวอร์ / แสดงผลในเครื่อง (ไว้หาว่าช้าที่ไหน)
   }).catch(e=>{
     if(seq!==_kxOpenSeq)return;
     const msg=String((e&&e.message)||e);
